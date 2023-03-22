@@ -2,6 +2,7 @@ package generate
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"path/filepath"
@@ -54,7 +55,13 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 				return
 			}
 
-			fmt.Print(string(rules))
+			jsonRules, err := json.Marshal(rules)
+			if err != nil {
+				fmt.Print(err)
+				return
+			}
+
+			fmt.Print(string(jsonRules))
 		},
 	}
 	generateCmd.PersistentFlags().StringVarP(&swaggerUrl, "url", "u", "", "OpenAPI URL")
