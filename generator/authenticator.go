@@ -6,5 +6,5 @@ import (
 )
 
 type Authenticator interface {
-	CreateAuthenticator(o *openapi3.Operation) *rule.Handler
+	CreateAuthenticator(s *openapi3.SecurityRequirement) (*rule.Handler, error)
 }

@@ -9,8 +9,8 @@ var _ Authenticator = (*AuthenticatorNoop)(nil)
 
 type AuthenticatorNoop struct{}
 
-func (*AuthenticatorNoop) CreateAuthenticator(o *openapi3.Operation) *rule.Handler {
+func (*AuthenticatorNoop) CreateAuthenticator(s *openapi3.SecurityRequirement) (*rule.Handler, error) {
 	return &rule.Handler{
 		Handler: "noop",
-	}
+	}, nil
 }

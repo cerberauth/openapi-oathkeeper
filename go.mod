@@ -25,6 +25,7 @@ require (
 	github.com/avast/retry-go/v4 v4.3.0 // indirect
 	github.com/aws/aws-sdk-go v1.34.28 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
+	github.com/bradleyjkemp/cupaloy v2.3.0+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
