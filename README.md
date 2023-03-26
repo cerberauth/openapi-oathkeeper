@@ -102,7 +102,7 @@ This contract defines a single endpoint at /users/{id} that returns a user objec
 To generate rules using the tool, simply run the command in your terminal with the appropriate arguments.
 
 ```shell
-go run main.go generate -f test/stub/sample.openapi.json
+openapi-oathkeeper -f test/stub/sample.openapi.json
 ```
 
 Here is a Ory Oathkeeper rules output
@@ -158,7 +158,7 @@ Here is a Ory Oathkeeper rules output
 
 ### Command line documentation
 
-Run `go run main.go -h` or `go run main.go help`.
+Run `openapi-oathkeeper -h` or `openapi-oathkeeper help`.
 
 ## Roadmap
 
