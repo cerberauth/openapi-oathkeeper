@@ -20,7 +20,8 @@ var (
 
 func NewGenerateCmd() (generateCmd *cobra.Command) {
 	generateCmd = &cobra.Command{
-		Use: "generate",
+		Use:   "generate",
+		Short: "Generate Ory Oathkeeper rules from an OpenAPI 3 to file or Std output",
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := context.Background()
 
@@ -74,7 +75,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 
 	generateCmd.PersistentFlags().StringVarP(&fileurl, "url", "u", "", "OpenAPI URL")
 	generateCmd.PersistentFlags().StringVarP(&filepath, "file", "f", "", "OpenAPI File Path")
-	generateCmd.PersistentFlags().StringVarP(&outputpath, "output", "o", "", "OAthKeeper Rules output path")
+	generateCmd.PersistentFlags().StringVarP(&outputpath, "output", "o", "", "Oathkeeper Rules output path")
 
 	return generateCmd
 }

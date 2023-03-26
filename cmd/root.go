@@ -11,7 +11,7 @@ import (
 func NewRootCmd() (cmd *cobra.Command) {
 	var rootCmd = &cobra.Command{
 		Use:   "openapi-oathkeeper",
-		Short: "Generate Ory OAthKeeper Rules from OpenAPI 3.0 or Swagger",
+		Short: "Generate Ory Oathkeeper Rules from OpenAPI 3.0 file",
 	}
 	rootCmd.AddCommand(generate.NewGenerateCmd())
 
