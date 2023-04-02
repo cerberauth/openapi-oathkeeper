@@ -53,18 +53,26 @@ func (g *Generator) createRule(verb string, path string, s *openapi3.Server, o *
 		},
 	}
 
-	if o.Security != nil {
-		for _, s := range *o.Security {
+	appendAuthenticator := func(sr *openapi3.SecurityRequirements) error {
+		for _, s := range *sr {
 			for k := range s {
 				if a, ok := g.authenticators[k]; ok {
 					ar, arerror := a.CreateAuthenticator(&s)
 					if arerror != nil {
-						return nil, arerror
+						return arerror
 					}
 					rule.Authenticators = append(rule.Authenticators, *ar)
 				}
 			}
 		}
+
+		return nil
+	}
+
+	if o.Security != nil {
+		appendAuthenticator(o.Security)
+	} else if g.doc.Security != nil {
+		appendAuthenticator(&g.doc.Security)
 	} else {
 		ar, arerror := g.authenticators[string(AuthenticatorTypeNoop)].CreateAuthenticator(nil)
 		if arerror != nil {

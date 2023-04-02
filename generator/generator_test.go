@@ -22,7 +22,7 @@ var (
 	basepath   = filepath.Dir(b)
 )
 
-func newJWTConfig() json.RawMessage {
+func newJWTConfig(scopes []string) json.RawMessage {
 	c := JWTAuthenticatorConfig{
 		JwksUrls: []string{
 			"https://console.ory.sh/.well-known/jwks.json",
@@ -30,14 +30,21 @@ func newJWTConfig() json.RawMessage {
 		TrustedIssuers: []string{
 			"https://console.ory.sh",
 		},
-		RequiredScope: []string{
-			"write:pets",
-			"read:pets",
-		},
+		RequiredScope: scopes,
 	}
 	jsonConfig, _ := json.Marshal(c)
 
 	return jsonConfig
+}
+
+func getRuleById(rules []rule.Rule, id string) *rule.Rule {
+	for _, r := range rules {
+		if r.ID == id {
+			return &r
+		}
+	}
+
+	return nil
 }
 
 func newGenerator(docpath string) (*Generator, error) {
@@ -103,7 +110,10 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 			Authenticators: []rule.Handler{
 				{
 					Handler: "jwt",
-					Config:  newJWTConfig(),
+					Config: newJWTConfig([]string{
+						"write:pets",
+						"read:pets",
+					}),
 				},
 			},
 			Authorizer: rule.Handler{
@@ -125,6 +135,79 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.Equal(t, rules, expectedRules)
+}
+
+func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *testing.T) {
+	expectedRule := rule.Rule{
+		ID:          "updatePet",
+		Description: "Update an existing pet by Id",
+		Match: &rule.Match{
+			URL:     "https://petstore.swagger.io/api/v3/pet",
+			Methods: []string{"PUT"},
+		},
+		Authenticators: []rule.Handler{
+			{
+				Handler: "jwt",
+				Config: newJWTConfig([]string{
+					"write:pets",
+					"read:pets",
+				}),
+			},
+		},
+		Authorizer: rule.Handler{
+			Handler: "allow",
+		},
+		Mutators: []rule.Handler{
+			{
+				Handler: "noop",
+			},
+		},
+	}
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json")
+	if newGeneratorErr != nil {
+		t.Fatal(newGeneratorErr)
+	}
+
+	rules, err := g.Generate()
+
+	require.NoError(t, err)
+	assert.Equal(t, *getRuleById(rules, "updatePet"), expectedRule)
+}
+
+func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSecurityScheme(t *testing.T) {
+	expectedRule := rule.Rule{
+		ID:          "findPetsByStatus",
+		Description: "Multiple status values can be provided with comma separated strings",
+		Match: &rule.Match{
+			URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
+			Methods: []string{"GET"},
+		},
+		Authenticators: []rule.Handler{
+			{
+				Handler: "jwt",
+				Config: newJWTConfig([]string{
+					"read:pets",
+				}),
+			},
+		},
+		Authorizer: rule.Handler{
+			Handler: "allow",
+		},
+		Mutators: []rule.Handler{
+			{
+				Handler: "noop",
+			},
+		},
+	}
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json")
+	if newGeneratorErr != nil {
+		t.Fatal(newGeneratorErr)
+	}
+
+	rules, err := g.Generate()
+
+	require.NoError(t, err)
+	assert.Equal(t, *getRuleById(rules, "findPetsByStatus"), expectedRule)
 }
 
 func TestGenerateFromPetstoreWithOpenIdConnect(t *testing.T) {
