@@ -15,6 +15,7 @@ import (
 var (
 	filepath   string
 	fileurl    string
+	prefixId   string
 	outputpath string
 )
 
@@ -45,7 +46,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 				panic(err)
 			}
 
-			g := generator.NewGenerator()
+			g := generator.NewGenerator(prefixId)
 			if loadErr := g.LoadOpenAPI3Doc(ctx, doc); loadErr != nil {
 				panic(loadErr)
 			}
@@ -73,6 +74,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 		},
 	}
 
+	generateCmd.PersistentFlags().StringVarP(&prefixId, "prefix", "p", "", "OpenAPI Prefix Id")
 	generateCmd.PersistentFlags().StringVarP(&fileurl, "url", "u", "", "OpenAPI URL")
 	generateCmd.PersistentFlags().StringVarP(&filepath, "file", "f", "", "OpenAPI File Path")
 	generateCmd.PersistentFlags().StringVarP(&outputpath, "output", "o", "", "Oathkeeper Rules output path")
