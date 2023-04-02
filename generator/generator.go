@@ -13,6 +13,7 @@ import (
 type Generator struct {
 	doc            *openapi3.T
 	authenticators map[string]Authenticator
+	PrefixId       string
 }
 
 type AuthenticatorType string
@@ -23,6 +24,14 @@ const (
 )
 
 var argre = regexp.MustCompile(`(?m)({(.*)})`)
+
+func (g *Generator) computeId(operationId string) string {
+	if g.PrefixId == "" {
+		return operationId
+	}
+
+	return g.PrefixId + ":" + operationId
+}
 
 func (g *Generator) createRule(verb string, path string, s *openapi3.Server, o *openapi3.Operation) (*rule.Rule, error) {
 	joinUrl, joinErr := url.JoinPath(s.URL, argre.ReplaceAllString(path, string("<.*>")))
@@ -36,7 +45,7 @@ func (g *Generator) createRule(verb string, path string, s *openapi3.Server, o *
 	}
 
 	rule := rule.Rule{
-		ID:          o.OperationID,
+		ID:          g.computeId(o.OperationID),
 		Description: o.Description,
 		Match: &rule.Match{
 			URL:     globalUrl,
@@ -85,8 +94,10 @@ func (g *Generator) createRule(verb string, path string, s *openapi3.Server, o *
 	return &rule, nil
 }
 
-func NewGenerator() *Generator {
-	return &Generator{}
+func NewGenerator(prefixId string) *Generator {
+	return &Generator{
+		PrefixId: prefixId,
+	}
 }
 
 func (g *Generator) LoadOpenAPI3Doc(ctx context.Context, d *openapi3.T) error {

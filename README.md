@@ -18,8 +18,6 @@ To use this tool, you need to provide the path to your OpenAPI 3 contract file, 
 
 Please note that this tool only generates Oathkeeper rules based on OpenAPI 3 contracts that use OpenId Connect for authentication and authorization. It may not be suitable for other use cases or contract formats. Additionally, the generated rules should be reviewed and tested thoroughly before being used in a production environment.
 
-
-
 ### Example
 
 Here's an example of the same OpenAPI contract but in JSON format

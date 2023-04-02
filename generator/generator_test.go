@@ -47,13 +47,13 @@ func getRuleById(rules []rule.Rule, id string) *rule.Rule {
 	return nil
 }
 
-func newGenerator(docpath string) (*Generator, error) {
+func newGenerator(docpath string, prefixId string) (*Generator, error) {
 	doc, err := openapi3.NewLoader().LoadFromFile(path.Join(basepath, docpath))
 	if err != nil {
 		return nil, err
 	}
 
-	g := NewGenerator()
+	g := NewGenerator(prefixId)
 
 	ctx := context.Background()
 	if loadErr := g.LoadOpenAPI3Doc(ctx, doc); loadErr != nil {
@@ -87,7 +87,42 @@ func TestGenerateFromSimpleOpenAPI(t *testing.T) {
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json")
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "")
+	if newGeneratorErr != nil {
+		t.Fatal(newGeneratorErr)
+	}
+
+	rules, err := g.Generate()
+
+	require.NoError(t, err)
+	assert.Equal(t, rules, expectedRules)
+}
+
+func TestGenerateFromSimpleOpenAPIWithPrefixId(t *testing.T) {
+	expectedRules := []rule.Rule{
+		{
+			ID:          "prefix:findPetsByStatus",
+			Description: "Multiple status values can be provided with comma separated strings",
+			Match: &rule.Match{
+				URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
+				Methods: []string{"GET"},
+			},
+			Authenticators: []rule.Handler{
+				{
+					Handler: "noop",
+				},
+			},
+			Authorizer: rule.Handler{
+				Handler: "allow",
+			},
+			Mutators: []rule.Handler{
+				{
+					Handler: "noop",
+				},
+			},
+		},
+	}
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "prefix")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -126,7 +161,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect.openapi.json")
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect.openapi.json", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -163,7 +198,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json")
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -199,7 +234,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json")
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -211,7 +246,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 }
 
 func TestGenerateFromPetstoreWithOpenIdConnect(t *testing.T) {
-	g, newGeneratorErr := newGenerator("../test/stub/petstore_openidconnect.openapi.json")
+	g, newGeneratorErr := newGenerator("../test/stub/petstore_openidconnect.openapi.json", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
