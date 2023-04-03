@@ -14,6 +14,9 @@ type Generator struct {
 	doc            *openapi3.T
 	authenticators map[string]Authenticator
 	PrefixId       string
+
+	JwksUris       *map[string]string
+	AllowedIssuers *map[string]string
 }
 
 type AuthenticatorType string
@@ -21,6 +24,7 @@ type AuthenticatorType string
 const (
 	AuthenticatorTypeNoop          AuthenticatorType = "noop"
 	AuthenticatorTypeOpenIdConnect AuthenticatorType = "openIdConnect"
+	AuthenticatorTypeOAuth2        AuthenticatorType = "oauth2"
 )
 
 var argre = regexp.MustCompile(`(?m)({(.*)})`)
@@ -94,9 +98,12 @@ func (g *Generator) createRule(verb string, path string, s *openapi3.Server, o *
 	return &rule, nil
 }
 
-func NewGenerator(prefixId string) *Generator {
+func NewGenerator(prefixId string, jwksUris *map[string]string, allowedIssuers *map[string]string) *Generator {
 	return &Generator{
 		PrefixId: prefixId,
+
+		JwksUris:       jwksUris,
+		AllowedIssuers: allowedIssuers,
 	}
 }
 
@@ -125,6 +132,18 @@ func (g *Generator) createAuthenticators(doc *openapi3.T) (map[string]Authentica
 		switch sstype {
 		case string(AuthenticatorTypeOpenIdConnect):
 			authenticators[ssn], err = NewAuthenticatorOpenIdConnect(ss)
+		case string(AuthenticatorTypeOAuth2):
+			jwksUri, jwksUriExists := (*g.JwksUris)[ssn]
+			if !jwksUriExists {
+				return nil, errors.New("generator: no jwksuris for a given security scheme")
+			}
+
+			issuer, issuerExists := (*g.AllowedIssuers)[ssn]
+			if !issuerExists {
+				return nil, errors.New("generator: no issuer for a given security scheme")
+			}
+
+			authenticators[ssn], err = NewAuthenticatorOAuth2(ss, jwksUri, issuer)
 
 		default:
 			return nil, errors.New("generator: unknown security scheme")
