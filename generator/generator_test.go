@@ -47,13 +47,13 @@ func getRuleById(rules []rule.Rule, id string) *rule.Rule {
 	return nil
 }
 
-func newGenerator(docpath string, prefixId string) (*Generator, error) {
+func newGenerator(docpath string, prefixId string, jwksUris *map[string]string, allowedIssuers *map[string]string) (*Generator, error) {
 	doc, err := openapi3.NewLoader().LoadFromFile(path.Join(basepath, docpath))
 	if err != nil {
 		return nil, err
 	}
 
-	g := NewGenerator(prefixId)
+	g := NewGenerator(prefixId, jwksUris, allowedIssuers)
 
 	ctx := context.Background()
 	if loadErr := g.LoadOpenAPI3Doc(ctx, doc); loadErr != nil {
@@ -87,7 +87,7 @@ func TestGenerateFromSimpleOpenAPI(t *testing.T) {
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "")
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -122,7 +122,7 @@ func TestGenerateFromSimpleOpenAPIWithPrefixId(t *testing.T) {
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "prefix")
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "prefix", nil, nil)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -161,7 +161,50 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect.openapi.json", "")
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect.openapi.json", "", nil, nil)
+	if newGeneratorErr != nil {
+		t.Fatal(newGeneratorErr)
+	}
+
+	rules, err := g.Generate()
+
+	require.NoError(t, err)
+	assert.Equal(t, rules, expectedRules)
+}
+
+func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
+	expectedRules := []rule.Rule{
+		{
+			ID:          "findPetsByStatus",
+			Description: "Multiple status values can be provided with comma separated strings",
+			Match: &rule.Match{
+				URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
+				Methods: []string{"GET"},
+			},
+			Authenticators: []rule.Handler{
+				{
+					Handler: "jwt",
+					Config: newJWTConfig([]string{
+						"write:pets",
+						"read:pets",
+					}),
+				},
+			},
+			Authorizer: rule.Handler{
+				Handler: "allow",
+			},
+			Mutators: []rule.Handler{
+				{
+					Handler: "noop",
+				},
+			},
+		},
+	}
+	g, newGeneratorErr := newGenerator("../test/stub/simple_oauth2.openapi.json", "", &map[string]string{
+		"petstore_auth": "https://console.ory.sh/.well-known/jwks.json",
+	}, &map[string]string{
+		"petstore_auth": "https://console.ory.sh",
+	})
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -198,7 +241,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "")
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "", nil, nil)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -234,7 +277,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "")
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "", nil, nil)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -246,7 +289,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 }
 
 func TestGenerateFromPetstoreWithOpenIdConnect(t *testing.T) {
-	g, newGeneratorErr := newGenerator("../test/stub/petstore_openidconnect.openapi.json", "")
+	g, newGeneratorErr := newGenerator("../test/stub/petstore_openidconnect.openapi.json", "", nil, nil)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
