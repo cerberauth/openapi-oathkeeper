@@ -25,6 +25,7 @@ const (
 	AuthenticatorTypeNoop          AuthenticatorType = "noop"
 	AuthenticatorTypeOpenIdConnect AuthenticatorType = "openIdConnect"
 	AuthenticatorTypeOAuth2        AuthenticatorType = "oauth2"
+	AuthenticatorTypeHttp          AuthenticatorType = "http"
 )
 
 var argre = regexp.MustCompile(`(?m)({(.*)})`)
@@ -123,6 +124,24 @@ func (g *Generator) LoadOpenAPI3Doc(ctx context.Context, d *openapi3.T) error {
 	return nil
 }
 
+func (g *Generator) getSSJwksUri(ssn string) (string, error) {
+	jwksUri, jwksUriExists := (*g.JwksUris)[ssn]
+	if !jwksUriExists {
+		return "", errors.New("no jwksUris for a given security scheme")
+	}
+
+	return jwksUri, nil
+}
+
+func (g *Generator) getSSIssuer(ssn string) (string, error) {
+	issuer, issuerExists := (*g.AllowedIssuers)[ssn]
+	if !issuerExists {
+		return "", errors.New("no issuer for a given security scheme")
+	}
+
+	return issuer, nil
+}
+
 func (g *Generator) createAuthenticators(doc *openapi3.T) (map[string]Authenticator, error) {
 	authenticators := map[string]Authenticator{}
 	authenticators[string(AuthenticatorTypeNoop)] = &AuthenticatorNoop{}
@@ -133,20 +152,36 @@ func (g *Generator) createAuthenticators(doc *openapi3.T) (map[string]Authentica
 		case string(AuthenticatorTypeOpenIdConnect):
 			authenticators[ssn], err = NewAuthenticatorOpenIdConnect(ss)
 		case string(AuthenticatorTypeOAuth2):
-			jwksUri, jwksUriExists := (*g.JwksUris)[ssn]
-			if !jwksUriExists {
-				return nil, errors.New("generator: no jwksuris for a given security scheme")
+			jwksUri, jwksUriErr := g.getSSJwksUri(ssn)
+			if jwksUriErr != nil {
+				return nil, jwksUriErr
 			}
 
-			issuer, issuerExists := (*g.AllowedIssuers)[ssn]
-			if !issuerExists {
-				return nil, errors.New("generator: no issuer for a given security scheme")
+			issuer, issuerErr := g.getSSIssuer(ssn)
+			if issuerErr != nil {
+				return nil, issuerErr
 			}
 
 			authenticators[ssn], err = NewAuthenticatorOAuth2(ss, jwksUri, issuer)
+		case string(AuthenticatorTypeHttp):
+			if ss.Value.Scheme != "bearer" {
+				return nil, errors.New("http security scheme must be bearer")
+			}
+
+			jwksUri, jwksUriErr := g.getSSJwksUri(ssn)
+			if jwksUriErr != nil {
+				return nil, jwksUriErr
+			}
+
+			issuer, issuerErr := g.getSSIssuer(ssn)
+			if issuerErr != nil {
+				return nil, issuerErr
+			}
+
+			authenticators[ssn], err = NewAuthenticatorHttpBearer(ss, jwksUri, issuer)
 
 		default:
-			return nil, errors.New("generator: unknown security scheme")
+			return nil, errors.New("unknown security scheme")
 		}
 	}
 
