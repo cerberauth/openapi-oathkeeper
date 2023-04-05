@@ -333,9 +333,6 @@
                 },
                 "security": [
                     {
-                        "api_key": []
-                    },
-                    {
                         "petstore_auth": [
                             "write:pets",
                             "read:pets"
@@ -400,15 +397,6 @@
                 "description": "",
                 "operationId": "deletePet",
                 "parameters": [
-                    {
-                        "name": "api_key",
-                        "in": "header",
-                        "description": "",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
                     {
                         "name": "petId",
                         "in": "path",
@@ -519,12 +507,7 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "api_key": []
-                    }
-                ]
+                }
             }
         },
         "/store/order": {
@@ -1214,11 +1197,6 @@
                         }
                     }
                 }
-            },
-            "api_key": {
-                "type": "apiKey",
-                "name": "api_key",
-                "in": "header"
             }
         }
     }
