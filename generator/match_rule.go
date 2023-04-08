@@ -52,7 +52,8 @@ func createMatchRule(serverUrls []string, v string, p string) (*rule.Match, erro
 	).MustCompile()
 
 	match := &rule.Match{
-		URL:     url.String(),
+		// URL Regexp is encapsulated in brackets: https://www.ory.sh/docs/oathkeeper/api-access-rules#access-rule-format
+		URL:     "<" + url.String() + ">",
 		Methods: []string{v},
 	}
 
