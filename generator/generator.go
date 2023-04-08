@@ -3,8 +3,6 @@ package generator
 import (
 	"context"
 	"errors"
-	"net/url"
-	"regexp"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/ory/oathkeeper/rule"
@@ -15,6 +13,7 @@ type Generator struct {
 	authenticators map[string]Authenticator
 	PrefixId       string
 
+	ServerUrls     []string
 	JwksUris       *map[string]string
 	AllowedIssuers *map[string]string
 }
@@ -28,8 +27,6 @@ const (
 	AuthenticatorTypeHttp          AuthenticatorType = "http"
 )
 
-var argre = regexp.MustCompile(`(?m)({(.*)})`)
-
 func (g *Generator) computeId(operationId string) string {
 	if g.PrefixId == "" {
 		return operationId
@@ -38,24 +35,16 @@ func (g *Generator) computeId(operationId string) string {
 	return g.PrefixId + ":" + operationId
 }
 
-func (g *Generator) createRule(verb string, path string, s *openapi3.Server, o *openapi3.Operation) (*rule.Rule, error) {
-	joinUrl, joinErr := url.JoinPath(s.URL, argre.ReplaceAllString(path, string("<.*>")))
-	if joinErr != nil {
-		return nil, joinErr
-	}
-
-	globalUrl, unescapedErr := url.PathUnescape(joinUrl)
-	if unescapedErr != nil {
-		return nil, unescapedErr
+func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) (*rule.Rule, error) {
+	match, matchRuleErr := createMatchRule(g.ServerUrls, verb, path)
+	if matchRuleErr != nil {
+		return nil, matchRuleErr
 	}
 
 	rule := rule.Rule{
-		ID:          g.computeId(o.OperationID),
-		Description: o.Description,
-		Match: &rule.Match{
-			URL:     globalUrl,
-			Methods: []string{verb},
-		},
+		ID:             g.computeId(o.OperationID),
+		Description:    o.Description,
+		Match:          match,
 		Authenticators: []rule.Handler{},
 		Authorizer: rule.Handler{
 			Handler: "allow",
@@ -113,6 +102,12 @@ func (g *Generator) LoadOpenAPI3Doc(ctx context.Context, d *openapi3.T) error {
 
 	if validateErr := g.doc.Validate(ctx); validateErr != nil {
 		return validateErr
+	}
+
+	if g.ServerUrls == nil {
+		for _, s := range g.doc.Servers {
+			g.ServerUrls = append(g.ServerUrls, s.URL)
+		}
 	}
 
 	authenticators, createAuthErr := g.createAuthenticators(g.doc)
@@ -190,16 +185,14 @@ func (g *Generator) createAuthenticators(doc *openapi3.T) (map[string]Authentica
 
 func (g *Generator) Generate() ([]rule.Rule, error) {
 	rules := []rule.Rule{}
-	for _, s := range g.doc.Servers {
-		for path, p := range g.doc.Paths {
-			for verb, o := range p.Operations() {
-				rule, createRuleErr := g.createRule(verb, path, s, o)
-				if createRuleErr != nil {
-					return nil, createRuleErr
-				}
-
-				rules = append(rules, *rule)
+	for path, p := range g.doc.Paths {
+		for verb, o := range p.Operations() {
+			rule, createRuleErr := g.createRule(verb, path, o)
+			if createRuleErr != nil {
+				return nil, createRuleErr
 			}
+
+			rules = append(rules, *rule)
 		}
 	}
 

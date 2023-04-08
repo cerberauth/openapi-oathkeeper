@@ -19,7 +19,10 @@
     },
     "servers": [
         {
-            "url": "/api/v3"
+            "url": "https://cerberauth.com/api/v3"
+        },
+        {
+            "url": "http://swagger.io/api/v3"
         }
     ],
     "tags": [
