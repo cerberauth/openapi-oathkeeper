@@ -13,7 +13,7 @@ type Generator struct {
 	authenticators map[string]Authenticator
 	PrefixId       string
 
-	ServerUrls     []string
+	ServerUrls     *[]string
 	JwksUris       *map[string]string
 	AllowedIssuers *map[string]string
 }
@@ -36,7 +36,7 @@ func (g *Generator) computeId(operationId string) string {
 }
 
 func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) (*rule.Rule, error) {
-	match, matchRuleErr := createMatchRule(g.ServerUrls, verb, path)
+	match, matchRuleErr := createMatchRule(*g.ServerUrls, verb, path)
 	if matchRuleErr != nil {
 		return nil, matchRuleErr
 	}
@@ -88,12 +88,13 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 	return &rule, nil
 }
 
-func NewGenerator(prefixId string, jwksUris *map[string]string, allowedIssuers *map[string]string) *Generator {
+func NewGenerator(prefixId string, jwksUris *map[string]string, allowedIssuers *map[string]string, serverUrls *[]string) *Generator {
 	return &Generator{
 		PrefixId: prefixId,
 
 		JwksUris:       jwksUris,
 		AllowedIssuers: allowedIssuers,
+		ServerUrls:     serverUrls,
 	}
 }
 
@@ -106,7 +107,7 @@ func (g *Generator) LoadOpenAPI3Doc(ctx context.Context, d *openapi3.T) error {
 
 	if g.ServerUrls == nil {
 		for _, s := range g.doc.Servers {
-			g.ServerUrls = append(g.ServerUrls, s.URL)
+			*g.ServerUrls = append(*g.ServerUrls, s.URL)
 		}
 	}
 
