@@ -156,7 +156,7 @@ Here is a Ory Oathkeeper rules output
 
 ### Command line documentation
 
-Run `openapi-oathkeeper -h` or `openapi-oathkeeper help`.
+The documentation is available as markdown files in the [docs](./docs/openapi-oathkeeper.md) directory or by running `openapi-oathkeeper help`.
 
 ## Roadmap
 
