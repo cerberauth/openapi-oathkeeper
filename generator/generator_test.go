@@ -11,6 +11,7 @@ import (
 
 	"github.com/bmizerany/assert"
 	"github.com/bradleyjkemp/cupaloy"
+	"github.com/cerberauth/openapi-oathkeeper/authenticator"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/ory/oathkeeper/rule"
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ var (
 )
 
 func newJWTConfig(jwksUrls []string, issuers []string, scopes []string, audiences []string) json.RawMessage {
-	c := JWTAuthenticatorConfig{
+	c := authenticator.JWTAuthenticatorConfig{
 		JwksUrls:       jwksUrls,
 		TrustedIssuers: issuers,
 		RequiredScope:  scopes,

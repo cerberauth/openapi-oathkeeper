@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 
+	"github.com/cerberauth/openapi-oathkeeper/authenticator"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/ory/oathkeeper/rule"
 )
 
 type Generator struct {
 	doc            *openapi3.T
-	authenticators map[string]Authenticator
+	authenticators map[string]authenticator.Authenticator
 	PrefixId       string
 
 	ServerUrls       []string
@@ -18,15 +19,6 @@ type Generator struct {
 	AllowedIssuers   map[string]string
 	AllowedAudiences map[string]string
 }
-
-type AuthenticatorType string
-
-const (
-	AuthenticatorTypeNoop          AuthenticatorType = "noop"
-	AuthenticatorTypeOpenIdConnect AuthenticatorType = "openIdConnect"
-	AuthenticatorTypeOAuth2        AuthenticatorType = "oauth2"
-	AuthenticatorTypeHttp          AuthenticatorType = "http"
-)
 
 func (g *Generator) computeId(operationId string) string {
 	if g.PrefixId == "" {
@@ -78,7 +70,7 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 	} else if g.doc.Security != nil {
 		appendAuthenticator(&g.doc.Security)
 	} else {
-		ar, arerror := g.authenticators[string(AuthenticatorTypeNoop)].CreateAuthenticator(nil)
+		ar, arerror := g.authenticators[string(authenticator.AuthenticatorTypeNoop)].CreateAuthenticator(nil)
 		if arerror != nil {
 			return nil, arerror
 		}
@@ -149,18 +141,18 @@ func (g *Generator) getSSAudience(ssn string) (string, error) {
 	return audience, nil
 }
 
-func (g *Generator) createAuthenticators(doc *openapi3.T) (map[string]Authenticator, error) {
-	authenticators := map[string]Authenticator{}
-	authenticators[string(AuthenticatorTypeNoop)] = &AuthenticatorNoop{}
+func (g *Generator) createAuthenticators(doc *openapi3.T) (map[string]authenticator.Authenticator, error) {
+	authenticators := map[string]authenticator.Authenticator{}
+	authenticators[string(authenticator.AuthenticatorTypeNoop)] = &authenticator.AuthenticatorNoop{}
 	var err error
 	for ssn, ss := range doc.Components.SecuritySchemes {
 		sstype := ss.Value.Type
 		switch sstype {
-		case string(AuthenticatorTypeOpenIdConnect):
+		case string(authenticator.AuthenticatorTypeOpenIdConnect):
 			audience, _ := g.getSSAudience(ssn)
 
-			authenticators[ssn], err = NewAuthenticatorOpenIdConnect(ss, audience)
-		case string(AuthenticatorTypeOAuth2):
+			authenticators[ssn], err = authenticator.NewAuthenticatorOpenIdConnect(ss, audience)
+		case string(authenticator.AuthenticatorTypeOAuth2):
 			jwksUri, jwksUriErr := g.getSSJwksUri(ssn)
 			if jwksUriErr != nil {
 				return nil, jwksUriErr
@@ -173,8 +165,8 @@ func (g *Generator) createAuthenticators(doc *openapi3.T) (map[string]Authentica
 
 			audience, _ := g.getSSAudience(ssn)
 
-			authenticators[ssn], err = NewAuthenticatorOAuth2(ss, jwksUri, issuer, audience)
-		case string(AuthenticatorTypeHttp):
+			authenticators[ssn], err = authenticator.NewAuthenticatorOAuth2(ss, jwksUri, issuer, audience)
+		case string(authenticator.AuthenticatorTypeHttp):
 			if ss.Value.Scheme != "bearer" {
 				return nil, errors.New("http security scheme must be bearer")
 			}
@@ -194,7 +186,7 @@ func (g *Generator) createAuthenticators(doc *openapi3.T) (map[string]Authentica
 				return nil, audienceErr
 			}
 
-			authenticators[ssn], err = NewAuthenticatorHttpBearer(ss, jwksUri, issuer, audience)
+			authenticators[ssn], err = authenticator.NewAuthenticatorHttpBearer(ss, jwksUri, issuer, audience)
 
 		default:
 			return nil, errors.New("unknown security scheme")

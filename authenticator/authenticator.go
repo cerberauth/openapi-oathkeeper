@@ -1,4 +1,4 @@
-package generator
+package authenticator
 
 import (
 	"github.com/getkin/kin-openapi/openapi3"
