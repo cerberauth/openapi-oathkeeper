@@ -10,15 +10,22 @@ import (
 var _ Authenticator = (*AuthenticatorOAuth2)(nil)
 
 type AuthenticatorOAuth2 struct {
-	JwksUri string
-	Issuer  string
+	JwksUri  string
+	Issuer   string
+	Audience string
 }
 
-func createRulesFromOAuth2SecurityRequirement(s *openapi3.SecurityRequirement, jwksUri string, issuer string) (*rule.Handler, error) {
+func createRulesFromOAuth2SecurityRequirement(s *openapi3.SecurityRequirement, jwksUri string, issuer string, audience string) (*rule.Handler, error) {
+	ta := []string{}
+	if audience != "" {
+		ta = append(ta, audience)
+	}
+
 	c := JWTAuthenticatorConfig{
 		JwksUrls:       []string{jwksUri},
 		TrustedIssuers: []string{issuer},
 		RequiredScope:  []string{},
+		TargetAudience: ta,
 	}
 
 	for _, scope := range *s {
@@ -36,13 +43,14 @@ func createRulesFromOAuth2SecurityRequirement(s *openapi3.SecurityRequirement, j
 	}, nil
 }
 
-func NewAuthenticatorOAuth2(s *openapi3.SecuritySchemeRef, jwksUri string, issuer string) (*AuthenticatorOAuth2, error) {
+func NewAuthenticatorOAuth2(s *openapi3.SecuritySchemeRef, jwksUri string, issuer string, audience string) (*AuthenticatorOAuth2, error) {
 	return &AuthenticatorOAuth2{
-		JwksUri: jwksUri,
-		Issuer:  issuer,
+		JwksUri:  jwksUri,
+		Issuer:   issuer,
+		Audience: audience,
 	}, nil
 }
 
 func (a *AuthenticatorOAuth2) CreateAuthenticator(s *openapi3.SecurityRequirement) (*rule.Handler, error) {
-	return createRulesFromOAuth2SecurityRequirement(s, a.JwksUri, a.Issuer)
+	return createRulesFromOAuth2SecurityRequirement(s, a.JwksUri, a.Issuer, a.Audience)
 }

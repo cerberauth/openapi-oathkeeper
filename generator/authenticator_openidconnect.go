@@ -16,10 +16,11 @@ type OpenIdConfiguration struct {
 }
 
 type AuthenticatorOpenIdConnect struct {
-	C *OpenIdConfiguration
+	C        *OpenIdConfiguration
+	Audience string
 }
 
-func NewAuthenticatorOpenIdConnect(s *openapi3.SecuritySchemeRef) (*AuthenticatorOpenIdConnect, error) {
+func NewAuthenticatorOpenIdConnect(s *openapi3.SecuritySchemeRef, audience string) (*AuthenticatorOpenIdConnect, error) {
 	res, err := httpClient.Get(s.Value.OpenIdConnectUrl)
 	if err != nil {
 		return nil, err
@@ -40,9 +41,13 @@ func NewAuthenticatorOpenIdConnect(s *openapi3.SecuritySchemeRef) (*Authenticato
 		return nil, jsonErr
 	}
 
-	return &AuthenticatorOpenIdConnect{C: &c}, nil
+	return &AuthenticatorOpenIdConnect{
+		C: &c,
+
+		Audience: audience,
+	}, nil
 }
 
 func (a *AuthenticatorOpenIdConnect) CreateAuthenticator(s *openapi3.SecurityRequirement) (*rule.Handler, error) {
-	return createRulesFromOAuth2SecurityRequirement(s, a.C.JwksUri, a.C.Issuer)
+	return createRulesFromOAuth2SecurityRequirement(s, a.C.JwksUri, a.C.Issuer, a.Audience)
 }

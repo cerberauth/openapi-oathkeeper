@@ -18,9 +18,10 @@ var (
 	prefixId   string
 	outputpath string
 
-	jwksUris       map[string]string
-	allowedIssuers map[string]string
-	serverUrls     []string
+	jwksUris         map[string]string
+	allowedIssuers   map[string]string
+	allowedAudiences map[string]string
+	serverUrls       []string
 )
 
 func NewGenerateCmd() (generateCmd *cobra.Command) {
@@ -50,7 +51,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 				panic(err)
 			}
 
-			g := generator.NewGenerator(prefixId, &jwksUris, &allowedIssuers, &serverUrls)
+			g := generator.NewGenerator(prefixId, jwksUris, allowedIssuers, allowedAudiences, serverUrls)
 			if loadErr := g.LoadOpenAPI3Doc(ctx, doc); loadErr != nil {
 				panic(loadErr)
 			}
@@ -81,6 +82,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 	generateCmd.PersistentFlags().StringVarP(&prefixId, "prefix", "p", "", "OpenAPI Prefix Id")
 	generateCmd.PersistentFlags().StringToStringVarP(&jwksUris, "jwks-uris", "", nil, "JWKS Uris")
 	generateCmd.PersistentFlags().StringToStringVarP(&allowedIssuers, "allowed-issuers", "", nil, "Allowed Issuers")
+	generateCmd.PersistentFlags().StringToStringVarP(&allowedAudiences, "allowed-audiences", "", nil, "Allowed Audiences")
 	generateCmd.PersistentFlags().StringArrayVarP(&serverUrls, "server-url", "", nil, "API Server Urls")
 	generateCmd.PersistentFlags().StringVarP(&fileurl, "url", "u", "", "OpenAPI URL")
 	generateCmd.PersistentFlags().StringVarP(&filepath, "file", "f", "", "OpenAPI File Path")

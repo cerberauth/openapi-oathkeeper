@@ -3,7 +3,6 @@ package generator
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"path"
 	"path/filepath"
 	"runtime"
@@ -22,15 +21,12 @@ var (
 	basepath   = filepath.Dir(b)
 )
 
-func newJWTConfig(scopes []string) json.RawMessage {
+func newJWTConfig(jwksUrls []string, issuers []string, scopes []string, audiences []string) json.RawMessage {
 	c := JWTAuthenticatorConfig{
-		JwksUrls: []string{
-			"https://console.ory.sh/.well-known/jwks.json",
-		},
-		TrustedIssuers: []string{
-			"https://console.ory.sh",
-		},
-		RequiredScope: scopes,
+		JwksUrls:       jwksUrls,
+		TrustedIssuers: issuers,
+		RequiredScope:  scopes,
+		TargetAudience: audiences,
 	}
 	jsonConfig, _ := json.Marshal(c)
 
@@ -47,17 +43,17 @@ func getRuleById(rules []rule.Rule, id string) *rule.Rule {
 	return nil
 }
 
-func newGenerator(docpath string, prefixId string, jwksUris *map[string]string, allowedIssuers *map[string]string, serverUrls *[]string) (*Generator, error) {
+func newGenerator(docpath string, prefixId string, jwksUris map[string]string, allowedIssuers map[string]string, allowedAudiences map[string]string, serverUrls []string) (*Generator, error) {
 	doc, err := openapi3.NewLoader().LoadFromFile(path.Join(basepath, docpath))
 	if err != nil {
 		return nil, err
 	}
 
-	g := NewGenerator(prefixId, jwksUris, allowedIssuers, serverUrls)
+	g := NewGenerator(prefixId, jwksUris, allowedIssuers, allowedAudiences, serverUrls)
 
 	ctx := context.Background()
 	if loadErr := g.LoadOpenAPI3Doc(ctx, doc); loadErr != nil {
-		return nil, errors.New("an error occurred loading the openapi doc")
+		return nil, loadErr
 	}
 
 	return g, nil
@@ -87,7 +83,7 @@ func TestGenerateFromSimpleOpenAPI(t *testing.T) {
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, nil)
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, nil, nil)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -122,7 +118,7 @@ func TestGenerateFromSimpleOpenAPIWithPrefixId(t *testing.T) {
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "prefix", nil, nil, nil)
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "prefix", nil, nil, nil, nil)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -158,7 +154,7 @@ func TestGenerateFromSimpleOpenAPIWithOneServerUrl(t *testing.T) {
 		},
 	}
 	serverUrls := []string{"https://www.cerberauth.com/api"}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, &serverUrls)
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, nil, serverUrls)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -197,7 +193,7 @@ func TestGenerateFromSimpleOpenAPIWithSeveralServerUrls(t *testing.T) {
 		"https://www.cerberauth.com/api",
 		"https://api.cerberauth.com/api",
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, &serverUrls)
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, nil, serverUrls)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -221,9 +217,13 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 				{
 					Handler: "jwt",
 					Config: newJWTConfig([]string{
+						"https://console.ory.sh/.well-known/jwks.json",
+					}, []string{
+						"https://console.ory.sh",
+					}, []string{
 						"write:pets",
 						"read:pets",
-					}),
+					}, []string{}),
 				},
 			},
 			Authorizer: rule.Handler{
@@ -236,7 +236,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect.openapi.json", "", nil, nil, nil)
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect.openapi.json", "", nil, nil, nil, nil)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -260,8 +260,14 @@ func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
 				{
 					Handler: "jwt",
 					Config: newJWTConfig([]string{
+						"https://oauth.cerberauth.com/.well-known/jwks.json",
+					}, []string{
+						"https://cerberauth.com",
+					}, []string{
 						"write:pets",
 						"read:pets",
+					}, []string{
+						"https://api.cerberauth.com",
 					}),
 				},
 			},
@@ -275,10 +281,12 @@ func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_oauth2.openapi.json", "", &map[string]string{
-		"petstore_auth": "https://console.ory.sh/.well-known/jwks.json",
-	}, &map[string]string{
-		"petstore_auth": "https://console.ory.sh",
+	g, newGeneratorErr := newGenerator("../test/stub/simple_oauth2.openapi.json", "", map[string]string{
+		"petstore_auth": "https://oauth.cerberauth.com/.well-known/jwks.json",
+	}, map[string]string{
+		"petstore_auth": "https://cerberauth.com",
+	}, map[string]string{
+		"petstore_auth": "https://api.cerberauth.com",
 	}, nil)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
@@ -302,7 +310,13 @@ func TestGenerateFromSimpleOpenAPIWithHttpBearer(t *testing.T) {
 			Authenticators: []rule.Handler{
 				{
 					Handler: "jwt",
-					Config:  newJWTConfig([]string{}),
+					Config: newJWTConfig([]string{
+						"https://oauth.cerberauth.com/.well-known/jwks.json",
+					}, []string{
+						"https://cerberauth.com",
+					}, []string{}, []string{
+						"https://api.cerberauth.com",
+					}),
 				},
 			},
 			Authorizer: rule.Handler{
@@ -315,10 +329,12 @@ func TestGenerateFromSimpleOpenAPIWithHttpBearer(t *testing.T) {
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_http_bearer_jwt.openapi.json", "", &map[string]string{
-		"petstore_auth": "https://console.ory.sh/.well-known/jwks.json",
-	}, &map[string]string{
-		"petstore_auth": "https://console.ory.sh",
+	g, newGeneratorErr := newGenerator("../test/stub/simple_http_bearer_jwt.openapi.json", "", map[string]string{
+		"petstore_auth": "https://oauth.cerberauth.com/.well-known/jwks.json",
+	}, map[string]string{
+		"petstore_auth": "https://cerberauth.com",
+	}, map[string]string{
+		"petstore_auth": "https://api.cerberauth.com",
 	}, nil)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
@@ -342,9 +358,13 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 			{
 				Handler: "jwt",
 				Config: newJWTConfig([]string{
+					"https://console.ory.sh/.well-known/jwks.json",
+				}, []string{
+					"https://console.ory.sh",
+				}, []string{
 					"write:pets",
 					"read:pets",
-				}),
+				}, []string{}),
 			},
 		},
 		Authorizer: rule.Handler{
@@ -356,7 +376,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "", nil, nil, nil)
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "", nil, nil, nil, nil)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -379,8 +399,12 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 			{
 				Handler: "jwt",
 				Config: newJWTConfig([]string{
+					"https://console.ory.sh/.well-known/jwks.json",
+				}, []string{
+					"https://console.ory.sh",
+				}, []string{
 					"read:pets",
-				}),
+				}, []string{}),
 			},
 		},
 		Authorizer: rule.Handler{
@@ -392,7 +416,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "", nil, nil, nil)
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "", nil, nil, nil, nil)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -404,10 +428,12 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 }
 
 func TestGenerateFromPetstoreWithOpenIdConnect(t *testing.T) {
-	g, newGeneratorErr := newGenerator("../test/stub/petstore.openapi.json", "", &map[string]string{
-		"petstore_auth": "https://console.ory.sh/.well-known/jwks.json",
-	}, &map[string]string{
-		"petstore_auth": "https://console.ory.sh",
+	g, newGeneratorErr := newGenerator("../test/stub/petstore.openapi.json", "", map[string]string{
+		"petstore_auth": "https://oauth.cerberauth.com/.well-known/jwks.json",
+	}, map[string]string{
+		"petstore_auth": "https://cerberauth.com",
+	}, map[string]string{
+		"petstore_auth": "https://api.cerberauth.com",
 	}, nil)
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
