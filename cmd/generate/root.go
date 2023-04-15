@@ -22,6 +22,9 @@ var (
 	allowedIssuers   map[string]string
 	allowedAudiences map[string]string
 	serverUrls       []string
+
+	upstreamUrl       string
+	upstreamStripPath string
 )
 
 func NewGenerateCmd() (generateCmd *cobra.Command) {
@@ -51,7 +54,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 				panic(err)
 			}
 
-			g := generator.NewGenerator(prefixId, jwksUris, allowedIssuers, allowedAudiences, serverUrls)
+			g := generator.NewGenerator(prefixId, jwksUris, allowedIssuers, allowedAudiences, serverUrls, upstreamUrl, upstreamStripPath)
 			if loadErr := g.LoadOpenAPI3Doc(ctx, doc); loadErr != nil {
 				panic(loadErr)
 			}
@@ -86,6 +89,8 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 	generateCmd.PersistentFlags().StringArrayVarP(&serverUrls, "server-url", "", nil, "API Server Urls")
 	generateCmd.PersistentFlags().StringVarP(&fileurl, "url", "u", "", "OpenAPI URL")
 	generateCmd.PersistentFlags().StringVarP(&filepath, "file", "f", "", "OpenAPI File Path")
+	generateCmd.PersistentFlags().StringVarP(&upstreamUrl, "upstream-url", "", "", "The Upstream URL the request will be forwarded to")
+	generateCmd.PersistentFlags().StringVarP(&upstreamStripPath, "upstream-strip-path", "", "", "Replaces the provided path prefix when forwarding the requested URL to the upstream URL")
 	generateCmd.PersistentFlags().StringVarP(&outputpath, "output", "o", "", "Oathkeeper Rules output path")
 
 	return generateCmd

@@ -44,13 +44,13 @@ func getRuleById(rules []rule.Rule, id string) *rule.Rule {
 	return nil
 }
 
-func newGenerator(docpath string, prefixId string, jwksUris map[string]string, allowedIssuers map[string]string, allowedAudiences map[string]string, serverUrls []string) (*Generator, error) {
+func newGenerator(docpath string, prefixId string, jwksUris map[string]string, allowedIssuers map[string]string, allowedAudiences map[string]string, serverUrls []string, upstreamUrl string, upstreamStripPath string) (*Generator, error) {
 	doc, err := openapi3.NewLoader().LoadFromFile(path.Join(basepath, docpath))
 	if err != nil {
 		return nil, err
 	}
 
-	g := NewGenerator(prefixId, jwksUris, allowedIssuers, allowedAudiences, serverUrls)
+	g := NewGenerator(prefixId, jwksUris, allowedIssuers, allowedAudiences, serverUrls, upstreamUrl, upstreamStripPath)
 
 	ctx := context.Background()
 	if loadErr := g.LoadOpenAPI3Doc(ctx, doc); loadErr != nil {
@@ -89,7 +89,7 @@ func TestGenerateFromSimpleOpenAPI(t *testing.T) {
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, nil, nil)
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, nil, nil, "", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -129,7 +129,7 @@ func TestGenerateFromSimpleOpenAPIWithPrefixId(t *testing.T) {
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "prefix", nil, nil, nil, nil)
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "prefix", nil, nil, nil, nil, "", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -170,7 +170,7 @@ func TestGenerateFromSimpleOpenAPIWithOneServerUrl(t *testing.T) {
 		},
 	}
 	serverUrls := []string{"https://www.cerberauth.com/api"}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, nil, serverUrls)
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, nil, serverUrls, "", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -214,7 +214,7 @@ func TestGenerateFromSimpleOpenAPIWithSeveralServerUrls(t *testing.T) {
 		"https://www.cerberauth.com/api",
 		"https://api.cerberauth.com/api",
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, nil, serverUrls)
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, nil, serverUrls, "", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -262,7 +262,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect.openapi.json", "", nil, nil, nil, nil)
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect.openapi.json", "", nil, nil, nil, nil, "", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -318,7 +318,7 @@ func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
 		"petstore_auth": "https://cerberauth.com",
 	}, map[string]string{
 		"petstore_auth": "https://api.cerberauth.com",
-	}, nil)
+	}, nil, "", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -371,7 +371,7 @@ func TestGenerateFromSimpleOpenAPIWithHttpBearer(t *testing.T) {
 		"petstore_auth": "https://cerberauth.com",
 	}, map[string]string{
 		"petstore_auth": "https://api.cerberauth.com",
-	}, nil)
+	}, nil, "", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -417,7 +417,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "", nil, nil, nil, nil)
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "", nil, nil, nil, nil, "", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -426,6 +426,50 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 
 	require.NoError(t, err)
 	assert.Equal(t, *getRuleById(rules, "updatePet"), expectedRule)
+}
+
+func TestGenerateFromSimpleOpenAPIWithUpstreamUrlAndPath(t *testing.T) {
+	expectedRules := []rule.Rule{
+		{
+			ID:          "prefix:findPetsByStatus",
+			Description: "Multiple status values can be provided with comma separated strings",
+			Match: &rule.Match{
+				URL:     "<^(https://petstore\\.swagger\\.io/api/v3)(/pet/findByStatus/?)$>",
+				Methods: []string{"GET"},
+			},
+			Upstream: rule.Upstream{
+				URL:       "https://petstore.com",
+				StripPath: "/api",
+			},
+			Authenticators: []rule.Handler{
+				{
+					Handler: "noop",
+				},
+			},
+			Authorizer: rule.Handler{
+				Handler: "allow",
+			},
+			Mutators: []rule.Handler{
+				{
+					Handler: "noop",
+				},
+			},
+			Errors: []rule.ErrorHandler{
+				{
+					Handler: "json",
+				},
+			},
+		},
+	}
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "prefix", nil, nil, nil, nil, "https://petstore.com", "/api")
+	if newGeneratorErr != nil {
+		t.Fatal(newGeneratorErr)
+	}
+
+	rules, err := g.Generate()
+
+	require.NoError(t, err)
+	assert.Equal(t, rules, expectedRules)
 }
 
 func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSecurityScheme(t *testing.T) {
@@ -462,7 +506,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "", nil, nil, nil, nil)
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "", nil, nil, nil, nil, "", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -480,7 +524,7 @@ func TestGenerateFromPetstoreWithOpenIdConnect(t *testing.T) {
 		"petstore_auth": "https://cerberauth.com",
 	}, map[string]string{
 		"petstore_auth": "https://api.cerberauth.com",
-	}, nil)
+	}, nil, "", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
