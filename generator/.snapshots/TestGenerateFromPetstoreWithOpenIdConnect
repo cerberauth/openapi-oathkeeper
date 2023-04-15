@@ -39,7 +39,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -73,7 +78,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -107,7 +117,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -141,7 +156,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -189,7 +209,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -223,7 +248,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -271,7 +301,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -319,7 +354,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -353,7 +393,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -387,7 +432,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -435,7 +485,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -469,7 +524,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -503,7 +563,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -537,7 +602,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -571,7 +641,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -619,7 +694,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -667,7 +747,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -701,7 +786,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
@@ -749,7 +839,12 @@
         Config: (json.RawMessage) <nil>
       }
     },
-    Errors: ([]rule.ErrorHandler) <nil>,
+    Errors: ([]rule.ErrorHandler) (len=1) {
+      (rule.ErrorHandler) {
+        Handler: (string) (len=4) "json",
+        Config: (json.RawMessage) <nil>
+      }
+    },
     Upstream: (rule.Upstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
