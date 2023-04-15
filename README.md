@@ -100,7 +100,7 @@ This contract defines a single endpoint at /users/{id} that returns a user objec
 To generate rules using the tool, simply run the command in your terminal with the appropriate arguments.
 
 ```shell
-openapi-oathkeeper -f test/stub/sample.openapi.json
+openapi-oathkeeper generate -f test/stub/sample.openapi.json --allowed-audiences "openidconnect=https://api.cerberauth.com/"
 ```
 
 Here is a Ory Oathkeeper rules output
@@ -115,7 +115,7 @@ Here is a Ory Oathkeeper rules output
             "methods": [
                 "GET"
             ],
-            "url": "https://api.example.com/users/<.*>"
+            "url": "<^(https://api\\.example\\.com)(/users/(.+)/?)$>"
         },
         "authenticators": [
             {
@@ -130,6 +130,9 @@ Here is a Ory Oathkeeper rules output
                     "required_scope": [
                         "read:user",
                         "write:user"
+                    ],
+                    "target_audience": [
+                        "https://api.cerberauth.com/"
                     ]
                 }
             }
@@ -144,7 +147,12 @@ Here is a Ory Oathkeeper rules output
                 "config": null
             }
         ],
-        "errors": null,
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
         "upstream": {
             "preserve_host": false,
             "strip_path": "",
