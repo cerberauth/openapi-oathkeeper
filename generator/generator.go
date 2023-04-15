@@ -47,6 +47,11 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 				Handler: "noop",
 			},
 		},
+		Errors: []rule.ErrorHandler{
+			{
+				Handler: "json",
+			},
+		},
 	}
 
 	appendAuthenticator := func(sr *openapi3.SecurityRequirements) error {

@@ -82,6 +82,11 @@ func TestGenerateFromSimpleOpenAPI(t *testing.T) {
 					Handler: "noop",
 				},
 			},
+			Errors: []rule.ErrorHandler{
+				{
+					Handler: "json",
+				},
+			},
 		},
 	}
 	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, nil, nil)
@@ -115,6 +120,11 @@ func TestGenerateFromSimpleOpenAPIWithPrefixId(t *testing.T) {
 			Mutators: []rule.Handler{
 				{
 					Handler: "noop",
+				},
+			},
+			Errors: []rule.ErrorHandler{
+				{
+					Handler: "json",
 				},
 			},
 		},
@@ -152,6 +162,11 @@ func TestGenerateFromSimpleOpenAPIWithOneServerUrl(t *testing.T) {
 					Handler: "noop",
 				},
 			},
+			Errors: []rule.ErrorHandler{
+				{
+					Handler: "json",
+				},
+			},
 		},
 	}
 	serverUrls := []string{"https://www.cerberauth.com/api"}
@@ -186,6 +201,11 @@ func TestGenerateFromSimpleOpenAPIWithSeveralServerUrls(t *testing.T) {
 			Mutators: []rule.Handler{
 				{
 					Handler: "noop",
+				},
+			},
+			Errors: []rule.ErrorHandler{
+				{
+					Handler: "json",
 				},
 			},
 		},
@@ -235,6 +255,11 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 					Handler: "noop",
 				},
 			},
+			Errors: []rule.ErrorHandler{
+				{
+					Handler: "json",
+				},
+			},
 		},
 	}
 	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect.openapi.json", "", nil, nil, nil, nil)
@@ -278,6 +303,11 @@ func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
 			Mutators: []rule.Handler{
 				{
 					Handler: "noop",
+				},
+			},
+			Errors: []rule.ErrorHandler{
+				{
+					Handler: "json",
 				},
 			},
 		},
@@ -328,6 +358,11 @@ func TestGenerateFromSimpleOpenAPIWithHttpBearer(t *testing.T) {
 					Handler: "noop",
 				},
 			},
+			Errors: []rule.ErrorHandler{
+				{
+					Handler: "json",
+				},
+			},
 		},
 	}
 	g, newGeneratorErr := newGenerator("../test/stub/simple_http_bearer_jwt.openapi.json", "", map[string]string{
@@ -376,6 +411,11 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 				Handler: "noop",
 			},
 		},
+		Errors: []rule.ErrorHandler{
+			{
+				Handler: "json",
+			},
+		},
 	}
 	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "", nil, nil, nil, nil)
 	if newGeneratorErr != nil {
@@ -414,6 +454,11 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 		Mutators: []rule.Handler{
 			{
 				Handler: "noop",
+			},
+		},
+		Errors: []rule.ErrorHandler{
+			{
+				Handler: "json",
 			},
 		},
 	}
