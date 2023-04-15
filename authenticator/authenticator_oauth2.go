@@ -10,9 +10,9 @@ import (
 var _ Authenticator = (*AuthenticatorOAuth2)(nil)
 
 type AuthenticatorOAuth2 struct {
-	JwksUri  string
-	Issuer   string
-	Audience string
+	jwksUri  string
+	issuer   string
+	audience string
 }
 
 func createRulesFromOAuth2SecurityRequirement(s *openapi3.SecurityRequirement, jwksUri string, issuer string, audience string) (*rule.Handler, error) {
@@ -45,12 +45,12 @@ func createRulesFromOAuth2SecurityRequirement(s *openapi3.SecurityRequirement, j
 
 func NewAuthenticatorOAuth2(s *openapi3.SecuritySchemeRef, jwksUri string, issuer string, audience string) (*AuthenticatorOAuth2, error) {
 	return &AuthenticatorOAuth2{
-		JwksUri:  jwksUri,
-		Issuer:   issuer,
-		Audience: audience,
+		jwksUri:  jwksUri,
+		issuer:   issuer,
+		audience: audience,
 	}, nil
 }
 
 func (a *AuthenticatorOAuth2) CreateAuthenticator(s *openapi3.SecurityRequirement) (*rule.Handler, error) {
-	return createRulesFromOAuth2SecurityRequirement(s, a.JwksUri, a.Issuer, a.Audience)
+	return createRulesFromOAuth2SecurityRequirement(s, a.jwksUri, a.issuer, a.audience)
 }

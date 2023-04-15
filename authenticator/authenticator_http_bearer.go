@@ -11,9 +11,9 @@ import (
 var _ Authenticator = (*AuthenticatorHttpBearer)(nil)
 
 type AuthenticatorHttpBearer struct {
-	JwksUri  string
-	Issuer   string
-	Audience string
+	jwksUri  string
+	issuer   string
+	audience string
 }
 
 func NewAuthenticatorHttpBearer(s *openapi3.SecuritySchemeRef, jwksUri string, issuer string, audience string) (*AuthenticatorHttpBearer, error) {
@@ -22,21 +22,21 @@ func NewAuthenticatorHttpBearer(s *openapi3.SecuritySchemeRef, jwksUri string, i
 	}
 
 	return &AuthenticatorHttpBearer{
-		JwksUri:  jwksUri,
-		Issuer:   issuer,
-		Audience: audience,
+		jwksUri:  jwksUri,
+		issuer:   issuer,
+		audience: audience,
 	}, nil
 }
 
 func (a *AuthenticatorHttpBearer) CreateAuthenticator(s *openapi3.SecurityRequirement) (*rule.Handler, error) {
 	ta := []string{}
-	if a.Audience != "" {
-		ta = append(ta, a.Audience)
+	if a.audience != "" {
+		ta = append(ta, a.audience)
 	}
 
 	c := JWTAuthenticatorConfig{
-		JwksUrls:       []string{a.JwksUri},
-		TrustedIssuers: []string{a.Issuer},
+		JwksUrls:       []string{a.jwksUri},
+		TrustedIssuers: []string{a.issuer},
 		RequiredScope:  []string{},
 		TargetAudience: ta,
 	}

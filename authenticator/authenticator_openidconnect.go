@@ -16,8 +16,8 @@ type OpenIdConfiguration struct {
 }
 
 type AuthenticatorOpenIdConnect struct {
-	C        *OpenIdConfiguration
-	Audience string
+	config   *OpenIdConfiguration
+	audience string
 }
 
 func NewAuthenticatorOpenIdConnect(s *openapi3.SecuritySchemeRef, audience string) (*AuthenticatorOpenIdConnect, error) {
@@ -42,12 +42,11 @@ func NewAuthenticatorOpenIdConnect(s *openapi3.SecuritySchemeRef, audience strin
 	}
 
 	return &AuthenticatorOpenIdConnect{
-		C: &c,
-
-		Audience: audience,
+		config:   &c,
+		audience: audience,
 	}, nil
 }
 
 func (a *AuthenticatorOpenIdConnect) CreateAuthenticator(s *openapi3.SecurityRequirement) (*rule.Handler, error) {
-	return createRulesFromOAuth2SecurityRequirement(s, a.C.JwksUri, a.C.Issuer, a.Audience)
+	return createRulesFromOAuth2SecurityRequirement(s, a.config.JwksUri, a.config.Issuer, a.audience)
 }

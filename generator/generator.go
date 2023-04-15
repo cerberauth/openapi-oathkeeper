@@ -14,10 +14,10 @@ type Generator struct {
 	authenticators map[string]authenticator.Authenticator
 	PrefixId       string
 
-	ServerUrls       []string
-	JwksUris         map[string]string
-	AllowedIssuers   map[string]string
-	AllowedAudiences map[string]string
+	serverUrls       []string
+	jwksUris         map[string]string
+	allowedIssuers   map[string]string
+	allowedAudiences map[string]string
 }
 
 func (g *Generator) computeId(operationId string) string {
@@ -29,7 +29,7 @@ func (g *Generator) computeId(operationId string) string {
 }
 
 func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) (*rule.Rule, error) {
-	match, matchRuleErr := createMatchRule(g.ServerUrls, verb, path)
+	match, matchRuleErr := createMatchRule(g.serverUrls, verb, path)
 	if matchRuleErr != nil {
 		return nil, matchRuleErr
 	}
@@ -85,10 +85,10 @@ func NewGenerator(prefixId string, jwksUris map[string]string, allowedIssuers ma
 	return &Generator{
 		PrefixId: prefixId,
 
-		JwksUris:         jwksUris,
-		AllowedIssuers:   allowedIssuers,
-		AllowedAudiences: allowedAudiences,
-		ServerUrls:       serverUrls,
+		jwksUris:         jwksUris,
+		allowedIssuers:   allowedIssuers,
+		allowedAudiences: allowedAudiences,
+		serverUrls:       serverUrls,
 	}
 }
 
@@ -99,9 +99,9 @@ func (g *Generator) LoadOpenAPI3Doc(ctx context.Context, d *openapi3.T) error {
 		return validateErr
 	}
 
-	if g.ServerUrls == nil {
+	if g.serverUrls == nil {
 		for _, s := range g.doc.Servers {
-			g.ServerUrls = append(g.ServerUrls, s.URL)
+			g.serverUrls = append(g.serverUrls, s.URL)
 		}
 	}
 
@@ -115,7 +115,7 @@ func (g *Generator) LoadOpenAPI3Doc(ctx context.Context, d *openapi3.T) error {
 }
 
 func (g *Generator) getSSJwksUri(ssn string) (string, error) {
-	jwksUri, jwksUriExists := (g.JwksUris)[ssn]
+	jwksUri, jwksUriExists := (g.jwksUris)[ssn]
 	if !jwksUriExists {
 		return "", errors.New("no jwksUris found for a given security scheme")
 	}
@@ -124,7 +124,7 @@ func (g *Generator) getSSJwksUri(ssn string) (string, error) {
 }
 
 func (g *Generator) getSSIssuer(ssn string) (string, error) {
-	issuer, issuerExists := (g.AllowedIssuers)[ssn]
+	issuer, issuerExists := (g.allowedIssuers)[ssn]
 	if !issuerExists {
 		return "", errors.New("no issuer found for a given security scheme")
 	}
@@ -133,7 +133,7 @@ func (g *Generator) getSSIssuer(ssn string) (string, error) {
 }
 
 func (g *Generator) getSSAudience(ssn string) (string, error) {
-	audience, audienceExist := (g.AllowedAudiences)[ssn]
+	audience, audienceExist := (g.allowedAudiences)[ssn]
 	if !audienceExist || audience == "" {
 		return "", errors.New("no audience found for a given security scheme")
 	}

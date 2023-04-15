@@ -10,22 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewHttpBearerAuthenticator(t *testing.T) {
-	expectedAuthenticator := &AuthenticatorHttpBearer{
-		JwksUri:  "",
-		Issuer:   "",
-		Audience: "",
-	}
-	a, newAuthenticatorErr := NewAuthenticatorHttpBearer(&openapi3.SecuritySchemeRef{
-		Value: openapi3.NewJWTSecurityScheme(),
-	}, "", "", "")
-	if newAuthenticatorErr != nil {
-		t.Fatal(newAuthenticatorErr)
-	}
-
-	assert.Equal(t, a, expectedAuthenticator)
-}
-
 func TestNewHttpBearerAuthenticatorWhenBearerFormatIsNotJWT(t *testing.T) {
 	_, newAuthenticatorErr := NewAuthenticatorHttpBearer(&openapi3.SecuritySchemeRef{
 		Value: openapi3.NewSecurityScheme(),

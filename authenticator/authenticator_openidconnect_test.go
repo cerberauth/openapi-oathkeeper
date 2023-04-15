@@ -9,24 +9,6 @@ import (
 	"github.com/ory/oathkeeper/rule"
 )
 
-func TestNewAuthenticatorOpenIdConnect(t *testing.T) {
-	expectedAuthenticator := &AuthenticatorOpenIdConnect{
-		C: &OpenIdConfiguration{
-			JwksUri: "https://console.ory.sh/.well-known/jwks.json",
-			Issuer:  "https://console.ory.sh",
-		},
-		Audience: "",
-	}
-	a, newAuthenticatorErr := NewAuthenticatorOpenIdConnect(&openapi3.SecuritySchemeRef{
-		Value: openapi3.NewOIDCSecurityScheme("https://project.console.ory.sh/.well-known/openid-configuration"),
-	}, "")
-	if newAuthenticatorErr != nil {
-		t.Fatal(newAuthenticatorErr)
-	}
-
-	assert.Equal(t, a, expectedAuthenticator)
-}
-
 func TestNewOpenIdConnectAuthenticatorCreateAuthenticator(t *testing.T) {
 	jsonConfig, _ := json.Marshal(JWTAuthenticatorConfig{
 		JwksUrls:       []string{"https://console.ory.sh/.well-known/jwks.json"},

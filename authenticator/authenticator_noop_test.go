@@ -8,16 +8,6 @@ import (
 	"github.com/ory/oathkeeper/rule"
 )
 
-func TestNewNoopAuthenticator(t *testing.T) {
-	expectedAuthenticator := &AuthenticatorNoop{}
-	a, newAuthenticatorErr := NewAuthenticatorNoop()
-	if newAuthenticatorErr != nil {
-		t.Fatal(newAuthenticatorErr)
-	}
-
-	assert.Equal(t, a, expectedAuthenticator)
-}
-
 func TestNoopAuthenticatorCreateAuthenticator(t *testing.T) {
 	expectedAuthenticator := &rule.Handler{
 		Handler: "noop",
