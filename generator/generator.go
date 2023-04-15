@@ -18,6 +18,8 @@ type Generator struct {
 	jwksUris         map[string]string
 	allowedIssuers   map[string]string
 	allowedAudiences map[string]string
+
+	upstream *rule.Upstream
 }
 
 func (g *Generator) computeId(operationId string) string {
@@ -38,6 +40,7 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 		ID:             g.computeId(o.OperationID),
 		Description:    o.Description,
 		Match:          match,
+		Upstream:       *g.upstream,
 		Authenticators: []rule.Handler{},
 		Authorizer: rule.Handler{
 			Handler: "allow",
@@ -86,7 +89,16 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 	return &rule, nil
 }
 
-func NewGenerator(prefixId string, jwksUris map[string]string, allowedIssuers map[string]string, allowedAudiences map[string]string, serverUrls []string) *Generator {
+func NewGenerator(prefixId string, jwksUris map[string]string, allowedIssuers map[string]string, allowedAudiences map[string]string, serverUrls []string, upstreamUrl string, upstreamStripPath string) *Generator {
+	var upstream = rule.Upstream{}
+	if upstreamUrl != "" {
+		upstream.URL = upstreamUrl
+	}
+
+	if upstreamStripPath != "" {
+		upstream.StripPath = upstreamStripPath
+	}
+
 	return &Generator{
 		PrefixId: prefixId,
 
@@ -94,6 +106,8 @@ func NewGenerator(prefixId string, jwksUris map[string]string, allowedIssuers ma
 		allowedIssuers:   allowedIssuers,
 		allowedAudiences: allowedAudiences,
 		serverUrls:       serverUrls,
+
+		upstream: &upstream,
 	}
 }
 
