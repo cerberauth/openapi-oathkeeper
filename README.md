@@ -1,10 +1,17 @@
 # OpenAPI to Ory Oathkeeper rules
 
+<p align="left">
+    <a href="https://github.com/cerberauth/openapi-oathkeeper/actions/workflows/ci.yml"><img src="https://github.com/cerberauth/openapi-oathkeeper/actions/workflows/ci.yml/badge.svg?branch=main&event=push" alt="CI Tasks for Ory Hydra"></a>
+    <a href="https://codecov.io/gh/cerberauth/openapi-oathkeeper"><img src="https://codecov.io/gh/cerberauth/openapi-oathkeeper/branch/main/graph/badge.svg?token=BD1WPXJDAW"/></a>
+    <a href="https://goreportcard.com/report/github.com/cerberauth/openapi-oathkeeper"><img src="https://goreportcard.com/badge/github.com/cerberauth/openapi-oathkeeper" alt="Go Report Card"></a>
+    <a href="https://pkg.go.dev/github.com/cerberauth/openapi-oathkeeper"><img src="https://pkg.go.dev/badge/www.github.com/cerberauth/openapi-oathkeeper" alt="PkgGoDev"></a>
+</p>
+
 This project aims to automating the generation of OathKeeper rules from an OpenAPI 3 contract and save a lot of time and effort, especially for larger projects with many endpoints or many services. By leveraging the information in the OpenAPI 3 contract, your tool can generate secure and consistent OathKeeper rules that enforce authentication and authorization policies for each API endpoint. This can improve the overall security of the API and ensure that access is granted only to authorized parties. Additionally, this tool can simplify the development process by reducing the amount of manual work required to write and maintain OathKeeper rules.
 
 ## Ory Oathkeeper
 
-if you're not yet familiar with Ory Oathkeeper, I highly recommend checking it out as a powerful and flexible Identity & Access Proxy. You can find more information and get started with [Ory Oathkeeper](https://github.com/ory/oathkeeper).
+If you're not yet familiar with Ory Oathkeeper, I highly recommend checking it out as a powerful and flexible Identity & Access Proxy. You can find more information and get started with [Ory Oathkeeper](https://github.com/ory/oathkeeper).
 
 > ORY Oathkeeper is an Identity & Access Proxy (IAP) and Access Control Decision API that authorizes HTTP requests based on sets of Access Rules. The BeyondCorp Model is designed by Google and secures applications in Zero-Trust networks.
 
