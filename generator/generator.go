@@ -31,7 +31,7 @@ func (g *Generator) computeId(operationId string) string {
 }
 
 func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) (*rule.Rule, error) {
-	match, matchRuleErr := createMatchRule(g.serverUrls, verb, path)
+	match, matchRuleErr := createMatchRule(g.serverUrls, verb, path, &o.Parameters)
 	if matchRuleErr != nil {
 		return nil, matchRuleErr
 	}

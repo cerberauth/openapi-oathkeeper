@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/hedhyw/rex/pkg/dialect"
 	"github.com/hedhyw/rex/pkg/rex"
 	"github.com/ory/oathkeeper/rule"
@@ -12,9 +13,18 @@ import (
 
 var argre = regexp.MustCompile(`(?m)({(.*)})`)
 
-func createMatchRule(serverUrls []string, v string, p string) (*rule.Match, error) {
+func createMatchRule(serverUrls []string, v string, p string, params *openapi3.Parameters) (*rule.Match, error) {
 	if len(serverUrls) == 0 {
 		return nil, errors.New("a matching rule must has at least one server url")
+	}
+
+	var hasFilterParam = false
+	if params != nil {
+		for _, param := range *params {
+			if param.Value.In == "query" {
+				hasFilterParam = true
+			}
+		}
 	}
 
 	var serverUrlsTokens []dialect.Token
@@ -42,6 +52,13 @@ func createMatchRule(serverUrls []string, v string, p string) (*rule.Match, erro
 
 	if len(pathTokens) > 1 {
 		pathTokens[len(pathTokens)-1] = rex.Chars.Single('/').Repeat().ZeroOrOne()
+	}
+
+	if hasFilterParam {
+		pathTokens = append(pathTokens, rex.Group.Define(
+			rex.Chars.Single('?'),
+			rex.Chars.Any().Repeat().OneOrMore(),
+		).Repeat().ZeroOrOne())
 	}
 
 	url := rex.New(

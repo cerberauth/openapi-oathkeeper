@@ -269,7 +269,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
-      URL: (string) (len=83) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/findByStatus/?)$>"
+      URL: (string) (len=90) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/findByStatus/?(\\?.+)?)$>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -322,7 +322,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
-      URL: (string) (len=81) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/findByTags/?)$>"
+      URL: (string) (len=88) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/findByTags/?(\\?.+)?)$>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -545,7 +545,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
-      URL: (string) (len=77) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/login/?)$>"
+      URL: (string) (len=84) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/login/?(\\?.+)?)$>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -715,7 +715,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
-      URL: (string) (len=75) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(.+)/?)$>"
+      URL: (string) (len=82) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(.+)/?(\\?.+)?)$>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -807,7 +807,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
-      URL: (string) (len=87) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(.+)/uploadImage/?)$>"
+      URL: (string) (len=94) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(.+)/uploadImage/?(\\?.+)?)$>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {

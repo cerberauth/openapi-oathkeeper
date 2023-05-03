@@ -477,7 +477,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 		ID:          "findPetsByStatus",
 		Description: "Multiple status values can be provided with comma separated strings",
 		Match: &rule.Match{
-			URL:     "<^(https://petstore\\.swagger\\.io/api/v3)(/pet/findByStatus/?)$>",
+			URL:     "<^(https://petstore\\.swagger\\.io/api/v3)(/pet/findByStatus/?(\\?.+)?)$>",
 			Methods: []string{"GET"},
 		},
 		Authenticators: []rule.Handler{
