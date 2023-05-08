@@ -13,18 +13,23 @@ import (
 
 var argre = regexp.MustCompile(`(?m)({(.*)})`)
 
+func _hasQueryParam(p *openapi3.Parameters) bool {
+	if p == nil {
+		return false
+	}
+
+	for _, param := range *p {
+		if param.Value.In == "query" {
+			return true
+		}
+	}
+
+	return false
+}
+
 func createMatchRule(serverUrls []string, v string, p string, params *openapi3.Parameters) (*rule.Match, error) {
 	if len(serverUrls) == 0 {
 		return nil, errors.New("a matching rule must has at least one server url")
-	}
-
-	var hasFilterParam = false
-	if params != nil {
-		for _, param := range *params {
-			if param.Value.In == "query" {
-				hasFilterParam = true
-			}
-		}
 	}
 
 	var serverUrlsTokens []dialect.Token
@@ -42,7 +47,7 @@ func createMatchRule(serverUrls []string, v string, p string, params *openapi3.P
 		dirToken := rex.Common.Text(dir)
 		if argre.Match([]byte(dir)) {
 			dirToken = rex.Group.Define(
-				rex.Chars.Any().Repeat().OneOrMore(),
+				rex.Chars.Alphanumeric().Repeat().OneOrMore(),
 			)
 		}
 
@@ -54,7 +59,7 @@ func createMatchRule(serverUrls []string, v string, p string, params *openapi3.P
 		pathTokens[len(pathTokens)-1] = rex.Chars.Single('/').Repeat().ZeroOrOne()
 	}
 
-	if hasFilterParam {
+	if _hasQueryParam(params) {
 		pathTokens = append(pathTokens, rex.Group.Define(
 			rex.Chars.Single('?'),
 			rex.Chars.Any().Repeat().OneOrMore(),
