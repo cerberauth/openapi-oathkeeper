@@ -122,7 +122,7 @@ Here is a Ory Oathkeeper rules output
             "methods": [
                 "GET"
             ],
-            "url": "<^(https://api\\.example\\.com)(/users/(.+)/?)$>"
+            "url": "<^(https://api\\.example\\.com)(/users/(?:[[:alnum:]]\\x2D=\\?&)+/?)$>"
         },
         "authenticators": [
             {
