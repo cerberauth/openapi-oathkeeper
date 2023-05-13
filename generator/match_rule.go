@@ -11,7 +11,18 @@ import (
 	"github.com/ory/oathkeeper/rule"
 )
 
-var argre = regexp.MustCompile(`(?m)({(.*)})`)
+var (
+	argre = regexp.MustCompile(`(?m)({(.*)})`)
+
+	separatorToken = rex.Chars.Single('/')
+	stringToken    = rex.Group.NonCaptured(
+		rex.Chars.Alphanumeric(),
+		rex.Chars.Single('-'),
+		rex.Chars.Single('='),
+		rex.Chars.Single('?'),
+		rex.Chars.Single('&'),
+	)
+)
 
 func _hasQueryParam(p *openapi3.Parameters) bool {
 	if p == nil {
@@ -38,7 +49,7 @@ func createMatchRule(serverUrls []string, v string, p string, params *openapi3.P
 	}
 
 	var pathTokens []dialect.Token
-	pathTokens = append(pathTokens, rex.Chars.Single('/'))
+	pathTokens = append(pathTokens, separatorToken)
 	for _, dir := range strings.Split(p, "/") {
 		if dir == "" {
 			continue
@@ -46,17 +57,15 @@ func createMatchRule(serverUrls []string, v string, p string, params *openapi3.P
 
 		dirToken := rex.Common.Text(dir)
 		if argre.Match([]byte(dir)) {
-			dirToken = rex.Group.Define(
-				rex.Chars.Alphanumeric().Repeat().OneOrMore(),
-			)
+			dirToken = stringToken.Repeat().OneOrMore()
 		}
 
 		pathTokens = append(pathTokens, dirToken)
-		pathTokens = append(pathTokens, rex.Chars.Single('/'))
+		pathTokens = append(pathTokens, separatorToken)
 	}
 
 	if len(pathTokens) > 1 {
-		pathTokens[len(pathTokens)-1] = rex.Chars.Single('/').Repeat().ZeroOrOne()
+		pathTokens[len(pathTokens)-1] = separatorToken.Repeat().ZeroOrOne()
 	}
 
 	if _hasQueryParam(params) {

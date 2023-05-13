@@ -207,7 +207,7 @@
             "methods": [
                 "DELETE"
             ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(.+)/?)$>"
+            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
         },
         "authenticators": [
             {
@@ -257,7 +257,7 @@
             "methods": [
                 "GET"
             ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(.+)/?)$>"
+            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
         },
         "authenticators": [
             {
@@ -307,7 +307,7 @@
             "methods": [
                 "POST"
             ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(.+)/?)$>"
+            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
         },
         "authenticators": [
             {
@@ -433,7 +433,7 @@
             "methods": [
                 "DELETE"
             ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/(.+)/?)$>"
+            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
         },
         "authenticators": [
             {
@@ -471,7 +471,7 @@
             "methods": [
                 "GET"
             ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/(.+)/?)$>"
+            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
         },
         "authenticators": [
             {
@@ -509,7 +509,7 @@
             "methods": [
                 "PUT"
             ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/(.+)/?)$>"
+            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
         },
         "authenticators": [
             {
@@ -547,7 +547,7 @@
             "methods": [
                 "POST"
             ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(.+)/uploadImage/?)$>"
+            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/([[:alnum:]]|\\x2D|=|\\?|&)+/uploadImage/?)$>"
         },
         "authenticators": [
             {
@@ -635,7 +635,7 @@
             "methods": [
                 "DELETE"
             ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/order/(.+)/?)$>"
+            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/order/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
         },
         "authenticators": [
             {
@@ -673,7 +673,7 @@
             "methods": [
                 "GET"
             ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/order/(.+)/?)$>"
+            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/order/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
         },
         "authenticators": [
             {
