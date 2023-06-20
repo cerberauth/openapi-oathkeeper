@@ -138,7 +138,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=6) "DELETE"
       },
-      URL: (string) (len=103) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/order/(?:[[:alnum:]]\\x2D=\\?&)+/?)$>"
+      URL: (string) (len=108) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/order/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/?)$>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -177,7 +177,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=6) "DELETE"
       },
-      URL: (string) (len=95) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(?:[[:alnum:]]\\x2D=\\?&)+/?)$>"
+      URL: (string) (len=100) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/?)$>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -230,7 +230,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=6) "DELETE"
       },
-      URL: (string) (len=96) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/(?:[[:alnum:]]\\x2D=\\?&)+/?)$>"
+      URL: (string) (len=101) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/?)$>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -414,7 +414,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
-      URL: (string) (len=103) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/order/(?:[[:alnum:]]\\x2D=\\?&)+/?)$>"
+      URL: (string) (len=108) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/order/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/?)$>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -453,7 +453,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
-      URL: (string) (len=95) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(?:[[:alnum:]]\\x2D=\\?&)+/?)$>"
+      URL: (string) (len=100) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/?)$>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -506,7 +506,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
-      URL: (string) (len=96) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/(?:[[:alnum:]]\\x2D=\\?&)+/?)$>"
+      URL: (string) (len=101) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/?)$>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -715,7 +715,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
-      URL: (string) (len=102) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(?:[[:alnum:]]\\x2D=\\?&)+/?(\\?.+)?)$>"
+      URL: (string) (len=107) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/?(\\?.+)?)$>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -768,7 +768,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "PUT"
       },
-      URL: (string) (len=96) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/(?:[[:alnum:]]\\x2D=\\?&)+/?)$>"
+      URL: (string) (len=101) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/?)$>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -807,7 +807,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
-      URL: (string) (len=114) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(?:[[:alnum:]]\\x2D=\\?&)+/uploadImage/?(\\?.+)?)$>"
+      URL: (string) (len=119) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/uploadImage/?(\\?.+)?)$>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
