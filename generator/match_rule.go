@@ -16,11 +16,11 @@ var (
 
 	separatorToken = rex.Chars.Single('/')
 	stringToken    = rex.Group.NonCaptured(
-		rex.Chars.Alphanumeric(),
-		rex.Chars.Single('-'),
-		rex.Chars.Single('='),
-		rex.Chars.Single('?'),
-		rex.Chars.Single('&'),
+		rex.Chars.Alphanumeric().Repeat().ZeroOrOne(),
+		rex.Chars.Single('-').Repeat().ZeroOrOne(),
+		rex.Chars.Single('=').Repeat().ZeroOrOne(),
+		rex.Chars.Single('?').Repeat().ZeroOrOne(),
+		rex.Chars.Single('&').Repeat().ZeroOrOne(),
 	)
 )
 
