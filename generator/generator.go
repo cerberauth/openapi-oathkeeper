@@ -3,6 +3,7 @@ package generator
 import (
 	"context"
 	"errors"
+	"sort"
 
 	"github.com/cerberauth/openapi-oathkeeper/authenticator"
 	"github.com/getkin/kin-openapi/openapi3"
@@ -21,6 +22,12 @@ type Generator struct {
 
 	upstream *rule.Upstream
 }
+
+type RulesById []rule.Rule
+
+func (r RulesById) Len() int           { return len(r) }
+func (r RulesById) Swap(i, j int)      { r[i], r[j] = r[j], r[i] }
+func (r RulesById) Less(i, j int) bool { return r[i].ID < r[j].ID }
 
 func (g *Generator) computeId(operationId string) string {
 	if g.PrefixId == "" {
@@ -228,5 +235,6 @@ func (g *Generator) Generate() ([]rule.Rule, error) {
 		}
 	}
 
+	sort.Sort(RulesById(rules))
 	return rules, nil
 }
