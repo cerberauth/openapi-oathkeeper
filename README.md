@@ -122,7 +122,7 @@ Here is a Ory Oathkeeper rules output
             "methods": [
                 "GET"
             ],
-            "url": "<^(https://api\\.example\\.com)(/users/(?:[[:alnum:]]\\x2D=\\?&)+/?)$>"
+            "url": "<^(https://api\\.example\\.com)(/users/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/?)$>"
         },
         "authenticators": [
             {
@@ -142,6 +142,44 @@ Here is a Ory Oathkeeper rules output
                         "https://api.cerberauth.com/"
                     ]
                 }
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "updateUser",
+        "version": "",
+        "description": "This can only be done by the logged in user.",
+        "match": {
+            "methods": [
+                "PUT"
+            ],
+            "url": "<^(https://api\\.example\\.com)(/users/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/?)$>"
+        },
+        "authenticators": [
+            {
+                "handler": "noop",
+                "config": null
             }
         ],
         "authorizer": {
