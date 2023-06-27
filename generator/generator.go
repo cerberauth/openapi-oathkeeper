@@ -37,10 +37,47 @@ func (g *Generator) computeId(operationId string) string {
 	return g.PrefixId + ":" + operationId
 }
 
+func (g *Generator) createAuthenticatorFromSecurityRequirement(sr *openapi3.SecurityRequirements) ([]rule.Handler, error) {
+	var authenticators []rule.Handler
+	for _, s := range *sr {
+		for k := range s {
+			if a, ok := g.authenticators[k]; ok {
+				ar, arerror := a.CreateAuthenticator(&s)
+				if arerror != nil {
+					return nil, arerror
+				}
+				authenticators = append(authenticators, *ar)
+			}
+		}
+	}
+
+	return authenticators, nil
+}
+
+func (g *Generator) createAuthenticator(o *openapi3.Operation) ([]rule.Handler, error) {
+	if o.Security != nil {
+		return g.createAuthenticatorFromSecurityRequirement(o.Security)
+	} else if g.doc.Security != nil {
+		return g.createAuthenticatorFromSecurityRequirement(&g.doc.Security)
+	} else {
+		ar, arerror := g.authenticators[string(authenticator.AuthenticatorTypeNoop)].CreateAuthenticator(nil)
+		if arerror != nil {
+			return nil, arerror
+		}
+
+		return []rule.Handler{*ar}, nil
+	}
+}
+
 func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) (*rule.Rule, error) {
 	match, matchRuleErr := createMatchRule(g.serverUrls, verb, path, &o.Parameters)
 	if matchRuleErr != nil {
 		return nil, matchRuleErr
+	}
+
+	authenticators, err := g.createAuthenticator(o)
+	if err != nil {
+		return nil, err
 	}
 
 	rule := rule.Rule{
@@ -48,7 +85,7 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 		Description:    o.Description,
 		Match:          match,
 		Upstream:       *g.upstream,
-		Authenticators: []rule.Handler{},
+		Authenticators: authenticators,
 		Authorizer: rule.Handler{
 			Handler: "allow",
 		},
@@ -62,35 +99,6 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 				Handler: "json",
 			},
 		},
-	}
-
-	appendAuthenticator := func(sr *openapi3.SecurityRequirements) error {
-		for _, s := range *sr {
-			for k := range s {
-				if a, ok := g.authenticators[k]; ok {
-					ar, arerror := a.CreateAuthenticator(&s)
-					if arerror != nil {
-						return arerror
-					}
-					rule.Authenticators = append(rule.Authenticators, *ar)
-				}
-			}
-		}
-
-		return nil
-	}
-
-	if o.Security != nil {
-		appendAuthenticator(o.Security)
-	} else if g.doc.Security != nil {
-		appendAuthenticator(&g.doc.Security)
-	} else {
-		ar, arerror := g.authenticators[string(authenticator.AuthenticatorTypeNoop)].CreateAuthenticator(nil)
-		if arerror != nil {
-			return nil, arerror
-		}
-
-		rule.Authenticators = append(rule.Authenticators, *ar)
 	}
 
 	return &rule, nil
@@ -224,16 +232,21 @@ func (g *Generator) createAuthenticators(doc *openapi3.T) (map[string]authentica
 
 func (g *Generator) Generate() ([]rule.Rule, error) {
 	rules := []rule.Rule{}
-	for path, p := range g.doc.Paths {
-		for verb, o := range p.Operations() {
-			rule, createRuleErr := g.createRule(verb, path, o)
-			if createRuleErr != nil {
-				return nil, createRuleErr
-			}
+	// First create every authenticator from security requirements
+	// for path, p := range g.doc.Paths {
+	// 	for verb, o := range p.Operations() {
+	// 		rule, createRuleErr := g.createRule(verb, path, o)
+	// 		if createRuleErr != nil {
+	// 			return nil, createRuleErr
+	// 		}
 
-			rules = append(rules, *rule)
-		}
-	}
+	// 		rules = append(rules, *rule)
+	// 	}
+	// }
+
+	// Then group by common authenticator
+
+	// Finally create matching rules
 
 	sort.Sort(RulesById(rules))
 	return rules, nil

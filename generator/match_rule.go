@@ -38,7 +38,7 @@ func _hasQueryParam(p *openapi3.Parameters) bool {
 	return false
 }
 
-func createMatchRule(serverUrls []string, v string, p string, params *openapi3.Parameters) (*rule.Match, error) {
+func createMatchRule(serverUrls []string, verbs []string, paths []string, params *openapi3.Parameters) (*rule.Match, error) {
 	if len(serverUrls) == 0 {
 		return nil, errors.New("a matching rule must has at least one server url")
 	}
@@ -85,7 +85,7 @@ func createMatchRule(serverUrls []string, v string, p string, params *openapi3.P
 	match := &rule.Match{
 		// URL Regexp is encapsulated in brackets: https://www.ory.sh/docs/oathkeeper/api-access-rules#access-rule-format
 		URL:     "<" + url.String() + ">",
-		Methods: []string{v},
+		Methods: verbs,
 	}
 
 	return match, nil
