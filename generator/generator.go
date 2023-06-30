@@ -121,7 +121,7 @@ func NewGenerator(prefixId string, jwksUris map[string]string, allowedIssuers ma
 func (g *Generator) LoadOpenAPI3Doc(ctx context.Context, d *openapi3.T) error {
 	g.doc = d
 
-	if validateErr := g.doc.Validate(ctx); validateErr != nil {
+	if validateErr := g.doc.Validate(ctx, openapi3.DisableExamplesValidation(), openapi3.DisableSchemaDefaultsValidation()); validateErr != nil {
 		return validateErr
 	}
 
