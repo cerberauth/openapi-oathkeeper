@@ -22,7 +22,7 @@ func TestNewOauth2AuthenticatorCreateAuthenticator(t *testing.T) {
 	}
 	a, newAuthenticatorErr := NewAuthenticatorOAuth2(&openapi3.SecuritySchemeRef{
 		Value: openapi3.NewJWTSecurityScheme(),
-	}, "https://oauth.cerberauth.com/.well-known/jwks.json", "https://oauth.cerberauth.com", "")
+	}, "https://oauth.cerberauth.com/.well-known/jwks.json", "https://oauth.cerberauth.com", nil)
 	if newAuthenticatorErr != nil {
 		t.Fatal(newAuthenticatorErr)
 	}
@@ -46,9 +46,10 @@ func TestNewOauth2AuthenticatorCreateAuthenticatorWithNonEmptyAudience(t *testin
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}
+	var audience string = "https://api.cerberauth.com"
 	a, newAuthenticatorErr := NewAuthenticatorOAuth2(&openapi3.SecuritySchemeRef{
 		Value: openapi3.NewJWTSecurityScheme(),
-	}, "https://oauth.cerberauth.com/.well-known/jwks.json", "https://oauth.cerberauth.com", "https://api.cerberauth.com")
+	}, "https://oauth.cerberauth.com/.well-known/jwks.json", "https://oauth.cerberauth.com", &audience)
 	if newAuthenticatorErr != nil {
 		t.Fatal(newAuthenticatorErr)
 	}
@@ -72,9 +73,10 @@ func TestNewOauth2AuthenticatorCreateAuthenticatorWithScopes(t *testing.T) {
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}
+	var audience string = "https://api.cerberauth.com"
 	a, newAuthenticatorErr := NewAuthenticatorOAuth2(&openapi3.SecuritySchemeRef{
 		Value: openapi3.NewJWTSecurityScheme(),
-	}, "https://oauth.cerberauth.com/.well-known/jwks.json", "https://oauth.cerberauth.com", "https://api.cerberauth.com")
+	}, "https://oauth.cerberauth.com/.well-known/jwks.json", "https://oauth.cerberauth.com", &audience)
 	if newAuthenticatorErr != nil {
 		t.Fatal(newAuthenticatorErr)
 	}

@@ -17,10 +17,10 @@ type OpenIdConfiguration struct {
 
 type AuthenticatorOpenIdConnect struct {
 	config   *OpenIdConfiguration
-	audience string
+	audience *string
 }
 
-func NewAuthenticatorOpenIdConnect(s *openapi3.SecuritySchemeRef, audience string) (*AuthenticatorOpenIdConnect, error) {
+func NewAuthenticatorOpenIdConnect(s *openapi3.SecuritySchemeRef, audience *string) (*AuthenticatorOpenIdConnect, error) {
 	res, err := httpClient.Get(s.Value.OpenIdConnectUrl)
 	if err != nil {
 		return nil, err

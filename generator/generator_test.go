@@ -50,14 +50,8 @@ func newGenerator(docpath string, prefixId string, jwksUris map[string]string, a
 		return nil, err
 	}
 
-	g := NewGenerator(prefixId, jwksUris, allowedIssuers, allowedAudiences, serverUrls, upstreamUrl, upstreamStripPath)
-
 	ctx := context.Background()
-	if loadErr := g.LoadOpenAPI3Doc(ctx, doc); loadErr != nil {
-		return nil, loadErr
-	}
-
-	return g, nil
+	return NewGenerator(ctx, doc, prefixId, jwksUris, allowedIssuers, allowedAudiences, serverUrls, upstreamUrl, upstreamStripPath)
 }
 
 func TestGenerateFromSimpleOpenAPI(t *testing.T) {
@@ -319,6 +313,56 @@ func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
 	}, map[string]string{
 		"petstore_auth": "https://api.cerberauth.com",
 	}, nil, "", "")
+	if newGeneratorErr != nil {
+		t.Fatal(newGeneratorErr)
+	}
+
+	rules, err := g.Generate()
+
+	require.NoError(t, err)
+	assert.Equal(t, rules, expectedRules)
+}
+
+func TestGenerateFromSimpleOpenAPIWithOAuth2AndExtensions(t *testing.T) {
+	expectedRules := []rule.Rule{
+		{
+			ID:          "findPetsByStatus",
+			Description: "Multiple status values can be provided with comma separated strings",
+			Match: &rule.Match{
+				URL:     "<^(https://petstore\\.swagger\\.io/api/v3)(/pet/findByStatus/?)$>",
+				Methods: []string{"GET"},
+			},
+			Authenticators: []rule.Handler{
+				{
+					Handler: "jwt",
+					Config: newJWTConfig([]string{
+						"https://oauth.cerberauth.com/.well-known/jwks.json",
+					}, []string{
+						"https://cerberauth.com",
+					}, []string{
+						"write:pets",
+						"read:pets",
+					}, []string{
+						"https://api.cerberauth.com",
+					}),
+				},
+			},
+			Authorizer: rule.Handler{
+				Handler: "allow",
+			},
+			Mutators: []rule.Handler{
+				{
+					Handler: "noop",
+				},
+			},
+			Errors: []rule.ErrorHandler{
+				{
+					Handler: "json",
+				},
+			},
+		},
+	}
+	g, newGeneratorErr := newGenerator("../test/stub/simple_oauth2_and_extensions.openapi.json", "", map[string]string{}, map[string]string{}, map[string]string{}, nil, "", "")
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}

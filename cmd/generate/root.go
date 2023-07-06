@@ -54,9 +54,9 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 				panic(err)
 			}
 
-			g := generator.NewGenerator(prefixId, jwksUris, allowedIssuers, allowedAudiences, serverUrls, upstreamUrl, upstreamStripPath)
-			if loadErr := g.LoadOpenAPI3Doc(ctx, doc); loadErr != nil {
-				panic(loadErr)
+			g, err := generator.NewGenerator(ctx, doc, prefixId, jwksUris, allowedIssuers, allowedAudiences, serverUrls, upstreamUrl, upstreamStripPath)
+			if err != nil {
+				panic(err)
 			}
 
 			rules, err := g.Generate()
