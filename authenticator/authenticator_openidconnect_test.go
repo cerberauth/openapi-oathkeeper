@@ -22,7 +22,7 @@ func TestNewOpenIdConnectAuthenticatorCreateAuthenticator(t *testing.T) {
 	}
 	a, newAuthenticatorErr := NewAuthenticatorOpenIdConnect(&openapi3.SecuritySchemeRef{
 		Value: openapi3.NewOIDCSecurityScheme("https://project.console.ory.sh/.well-known/openid-configuration"),
-	}, "")
+	}, nil)
 	if newAuthenticatorErr != nil {
 		t.Fatal(newAuthenticatorErr)
 	}
@@ -46,9 +46,10 @@ func TestNewOpenIdConnectAuthenticatorCreateAuthenticatorWithNonEmptyAudience(t 
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}
+	var audience string = "https://api.cerberauth.com"
 	a, newAuthenticatorErr := NewAuthenticatorOpenIdConnect(&openapi3.SecuritySchemeRef{
 		Value: openapi3.NewOIDCSecurityScheme("https://project.console.ory.sh/.well-known/openid-configuration"),
-	}, "https://api.cerberauth.com")
+	}, &audience)
 	if newAuthenticatorErr != nil {
 		t.Fatal(newAuthenticatorErr)
 	}
@@ -72,9 +73,10 @@ func TestNewOpenIdConnectAuthenticatorCreateAuthenticatorWithScopes(t *testing.T
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}
+	var audience string = "https://api.cerberauth.com"
 	a, newAuthenticatorErr := NewAuthenticatorOpenIdConnect(&openapi3.SecuritySchemeRef{
 		Value: openapi3.NewOIDCSecurityScheme("https://project.console.ory.sh/.well-known/openid-configuration"),
-	}, "https://api.cerberauth.com")
+	}, &audience)
 	if newAuthenticatorErr != nil {
 		t.Fatal(newAuthenticatorErr)
 	}

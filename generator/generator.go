@@ -2,7 +2,6 @@ package generator
 
 import (
 	"context"
-	"errors"
 	"sort"
 
 	"github.com/cerberauth/openapi-oathkeeper/authenticator"
@@ -11,16 +10,12 @@ import (
 )
 
 type Generator struct {
-	doc            *openapi3.T
+	doc *openapi3.T
+
 	authenticators map[string]authenticator.Authenticator
 	PrefixId       string
-
-	serverUrls       []string
-	jwksUris         map[string]string
-	allowedIssuers   map[string]string
-	allowedAudiences map[string]string
-
-	upstream *rule.Upstream
+	serverUrls     []string
+	upstream       *rule.Upstream
 }
 
 type RulesById []rule.Rule
@@ -96,7 +91,7 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 	return &rule, nil
 }
 
-func NewGenerator(prefixId string, jwksUris map[string]string, allowedIssuers map[string]string, allowedAudiences map[string]string, serverUrls []string, upstreamUrl string, upstreamStripPath string) *Generator {
+func NewGenerator(ctx context.Context, d *openapi3.T, prefixId string, jwksUris map[string]string, allowedIssuers map[string]string, allowedAudiences map[string]string, serverUrls []string, upstreamUrl string, upstreamStripPath string) (*Generator, error) {
 	var upstream = rule.Upstream{}
 	if upstreamUrl != "" {
 		upstream.URL = upstreamUrl
@@ -106,120 +101,50 @@ func NewGenerator(prefixId string, jwksUris map[string]string, allowedIssuers ma
 		upstream.StripPath = upstreamStripPath
 	}
 
-	return &Generator{
-		PrefixId: prefixId,
-
-		jwksUris:         jwksUris,
-		allowedIssuers:   allowedIssuers,
-		allowedAudiences: allowedAudiences,
-		serverUrls:       serverUrls,
-
-		upstream: &upstream,
-	}
-}
-
-func (g *Generator) LoadOpenAPI3Doc(ctx context.Context, d *openapi3.T) error {
-	g.doc = d
-
-	if validateErr := g.doc.Validate(ctx, openapi3.DisableExamplesValidation(), openapi3.DisableSchemaDefaultsValidation()); validateErr != nil {
-		return validateErr
+	if validateErr := d.Validate(ctx, openapi3.DisableExamplesValidation(), openapi3.DisableSchemaDefaultsValidation()); validateErr != nil {
+		return nil, validateErr
 	}
 
-	if g.serverUrls == nil {
-		for _, s := range g.doc.Servers {
-			g.serverUrls = append(g.serverUrls, s.URL)
+	if serverUrls == nil {
+		for _, s := range d.Servers {
+			serverUrls = append(serverUrls, s.URL)
 		}
 	}
 
-	authenticators, createAuthErr := g.createAuthenticators(g.doc)
-	if createAuthErr != nil {
-		return createAuthErr
-	}
-
-	g.authenticators = authenticators
-	return nil
-}
-
-func (g *Generator) getSSJwksUri(ssn string) (string, error) {
-	jwksUri, jwksUriExists := (g.jwksUris)[ssn]
-	if !jwksUriExists {
-		return "", errors.New("no jwksUris found for a given security scheme")
-	}
-
-	return jwksUri, nil
-}
-
-func (g *Generator) getSSIssuer(ssn string) (string, error) {
-	issuer, issuerExists := (g.allowedIssuers)[ssn]
-	if !issuerExists {
-		return "", errors.New("no issuer found for a given security scheme")
-	}
-
-	return issuer, nil
-}
-
-func (g *Generator) getSSAudience(ssn string) (string, error) {
-	audience, audienceExist := (g.allowedAudiences)[ssn]
-	if !audienceExist || audience == "" {
-		return "", errors.New("no audience found for a given security scheme")
-	}
-
-	return audience, nil
-}
-
-func (g *Generator) createAuthenticators(doc *openapi3.T) (map[string]authenticator.Authenticator, error) {
 	authenticators := map[string]authenticator.Authenticator{}
 	authenticators[string(authenticator.AuthenticatorTypeNoop)] = &authenticator.AuthenticatorNoop{}
-	var err error
-	for ssn, ss := range doc.Components.SecuritySchemes {
-		sstype := ss.Value.Type
-		switch sstype {
-		case string(authenticator.AuthenticatorTypeOpenIdConnect):
-			audience, _ := g.getSSAudience(ssn)
+	if d.Components.SecuritySchemes != nil {
+		for ssn, ss := range d.Components.SecuritySchemes {
+			var jwksUri, allowedIssuer, allowedAudience *string = nil, nil, nil
 
-			authenticators[ssn], err = authenticator.NewAuthenticatorOpenIdConnect(ss, audience)
-		case string(authenticator.AuthenticatorTypeOAuth2):
-			jwksUri, jwksUriErr := g.getSSJwksUri(ssn)
-			if jwksUriErr != nil {
-				return nil, jwksUriErr
+			if uri, ok := jwksUris[ssn]; ok {
+				jwksUri = &uri
 			}
 
-			issuer, issuerErr := g.getSSIssuer(ssn)
-			if issuerErr != nil {
-				return nil, issuerErr
+			if iss, ok := allowedIssuers[ssn]; ok {
+				allowedIssuer = &iss
 			}
 
-			audience, _ := g.getSSAudience(ssn)
-
-			authenticators[ssn], err = authenticator.NewAuthenticatorOAuth2(ss, jwksUri, issuer, audience)
-		case string(authenticator.AuthenticatorTypeHttp):
-			if ss.Value.Scheme != "bearer" {
-				return nil, errors.New("http security scheme must be bearer")
+			if aud, ok := allowedAudiences[ssn]; ok {
+				allowedAudience = &aud
 			}
 
-			jwksUri, jwksUriErr := g.getSSJwksUri(ssn)
-			if jwksUriErr != nil {
-				return nil, jwksUriErr
+			a, err := NewAuthenticatorFromSecurityScheme(ss, jwksUri, allowedIssuer, allowedAudience)
+			if err != nil {
+				return nil, err
 			}
-
-			issuer, issuerErr := g.getSSIssuer(ssn)
-			if issuerErr != nil {
-				return nil, issuerErr
-			}
-
-			audience, audienceErr := g.getSSAudience(ssn)
-			if audienceErr != nil {
-				return nil, audienceErr
-			}
-
-			authenticators[ssn], err = authenticator.NewAuthenticatorHttpBearer(ss, jwksUri, issuer, audience)
-
-		default:
-			return nil, errors.New("unknown security scheme")
+			authenticators[ssn] = a
 		}
 	}
 
-	return authenticators, err
+	return &Generator{
+		doc: d,
+
+		authenticators: authenticators,
+		PrefixId:       prefixId,
+		serverUrls:     serverUrls,
+		upstream:       &upstream,
+	}, nil
 }
 
 func (g *Generator) Generate() ([]rule.Rule, error) {
