@@ -19,11 +19,24 @@ If you're not yet familiar with Ory Oathkeeper, I highly recommend checking it o
 
 ## Get Started
 
-To use this tool, you need to provide the path to your OpenAPI 3 contract file, as well as some configuration options. Once you have specified these options, the tool will analyze your contract and generate OathKeeper rules that enforce the specified access policies. You can then save these rules to a file.
+To use this tool, you need to provide the path to your OpenAPI 3 contract file. Once you have specified these options, the tool will analyze your contract and generate OathKeeper rules that enforce the specified access policies. You can then save these rules to a file to make it read by Oathkeeper.
 
-### Disclaimer
+## Features
 
-Please note that this tool only generates Oathkeeper rules based on OpenAPI 3 contracts that use OpenId Connect for authentication and authorization. It may not be suitable for other use cases or contract formats. Additionally, the generated rules should be reviewed and tested thoroughly before being used in a production environment.
+The OpenAPI to Oathkeeper CLI supports following security scheme type:
+* `openIdConnect`
+* `oauth2`
+* `http` with scheme `bearer`
+
+As the authenticator rule may require additional information in order to make authorization and authentication properly, additional information can be passed either by OpenAPI 3 Extensions or CLI arguments.
+
+### Available authenticator options
+
+| Name     | Security Schemes                  | OpenAPI Extension Name     | CLI Argument                                     |
+|----------|-----------------------------------|----------------------------|--------------------------------------------------|
+| JWKS URI | `oauth2`, `http`                  | `x-authenticator-jwks-uri` | --jwks-uris "securitySchemeName=<value>"         |
+| Issuer   | `oauth2`, `http`                  | `x-authenticator-issuer`   | --allowed-issuers "securitySchemeName=<value>"   |
+| Audience | `openIdConnect`, `oauth2`, `http` | `x-authenticator-audience` | --allowed-audiences "securitySchemeName=<value>" |
 
 ### Example
 
@@ -51,9 +64,10 @@ Here's an example of the same OpenAPI contract but in JSON format
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "The user id. ",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -68,9 +82,6 @@ Here's an example of the same OpenAPI contract but in JSON format
                                         "id": {
                                             "type": "integer"
                                         },
-                                        "name": {
-                                            "type": "string"
-                                        },
                                         "email": {
                                             "type": "string"
                                         }
@@ -83,8 +94,48 @@ Here's an example of the same OpenAPI contract but in JSON format
                 "security": [
                     {
                         "openidconnect": [
-                            "read:user",
-                            "write:user"
+                            "user:read"
+                        ]
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update user",
+                "description": "This can only be done by the logged in user.",
+                "operationId": "updateUser",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "user id that need to be updated",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update an existent user in the store",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/User"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "default": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "openidconnect": [
+                            "user:write"
                         ]
                     }
                 ]
@@ -92,10 +143,27 @@ Here's an example of the same OpenAPI contract but in JSON format
         }
     },
     "components": {
+        "schemas": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 10
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "john@email.com"
+                    }
+                }
+            }
+        },
         "securitySchemes": {
             "openidconnect": {
                 "type": "openIdConnect",
-                "openIdConnectUrl": "https://project.console.ory.sh/.well-known/openid-configuration"
+                "openIdConnectUrl": "https://project.console.ory.sh/.well-known/openid-configuration",
+                "x-authenticator-audience": "https://api.cerberauth.com"
             }
         }
     }
@@ -107,7 +175,7 @@ This contract defines a single endpoint at /users/{id} that returns a user objec
 To generate rules using the tool, simply run the command in your terminal with the appropriate arguments.
 
 ```shell
-openapi-oathkeeper generate -f test/stub/sample.openapi.json --allowed-audiences "openidconnect=https://api.cerberauth.com/"
+openapi-oathkeeper generate -f test/stub/sample.openapi.json
 ```
 
 Here is a Ory Oathkeeper rules output
@@ -135,11 +203,10 @@ Here is a Ory Oathkeeper rules output
                         "https://console.ory.sh"
                     ],
                     "required_scope": [
-                        "read:user",
-                        "write:user"
+                        "user:read"
                     ],
                     "target_audience": [
-                        "https://api.cerberauth.com/"
+                        "https://api.cerberauth.com"
                     ]
                 }
             }
@@ -178,8 +245,21 @@ Here is a Ory Oathkeeper rules output
         },
         "authenticators": [
             {
-                "handler": "noop",
-                "config": null
+                "handler": "jwt",
+                "config": {
+                    "jwks_urls": [
+                        "https://console.ory.sh/.well-known/jwks.json"
+                    ],
+                    "trusted_issuers": [
+                        "https://console.ory.sh"
+                    ],
+                    "required_scope": [
+                        "user:write"
+                    ],
+                    "target_audience": [
+                        "https://api.cerberauth.com"
+                    ]
+                }
             }
         ],
         "authorizer": {
@@ -213,7 +293,7 @@ The documentation is available as markdown files in the [docs](./docs/openapi-oa
 
 ## Roadmap
 
-Please note that this tool is currently in alpha stage and there may be limitations and bugs. Improvements and new features should come to make it more powerful and useful for developers. Any feedback or suggestions are greatly appreciated!
+Please note that this tool is currently in beta stage and there may be limitations and bugs. Improvements and new features should come to make it more powerful and useful for developers. Any feedback or suggestions are greatly appreciated!
 
 You can find the milestones and future enhancements planned for this tool on the project's [GitHub milestones page]((https://github.com/cerberauth/openapi-oathkeeper/milestones)).
 

@@ -37,9 +37,6 @@
                                         "id": {
                                             "type": "integer"
                                         },
-                                        "name": {
-                                            "type": "string"
-                                        },
                                         "email": {
                                             "type": "string"
                                         }
@@ -52,8 +49,7 @@
                 "security": [
                     {
                         "openidconnect": [
-                            "read:user",
-                            "write:user"
+                            "user:read"
                         ]
                     }
                 ]
@@ -83,16 +79,6 @@
                             "schema": {
                                 "$ref": "#/components/schemas/User"
                             }
-                        },
-                        "application/xml": {
-                            "schema": {
-                                "$ref": "#/components/schemas/User"
-                            }
-                        },
-                        "application/x-www-form-urlencoded": {
-                            "schema": {
-                                "$ref": "#/components/schemas/User"
-                            }
                         }
                     }
                 },
@@ -100,7 +86,14 @@
                     "default": {
                         "description": "successful operation"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "openidconnect": [
+                            "user:write"
+                        ]
+                    }
+                ]
             }
         }
     },
@@ -114,46 +107,18 @@
                         "format": "int64",
                         "example": 10
                     },
-                    "username": {
-                        "type": "string",
-                        "example": "theUser"
-                    },
-                    "firstName": {
-                        "type": "string",
-                        "example": "John"
-                    },
-                    "lastName": {
-                        "type": "string",
-                        "example": "James"
-                    },
                     "email": {
                         "type": "string",
                         "example": "john@email.com"
-                    },
-                    "password": {
-                        "type": "string",
-                        "example": "12345"
-                    },
-                    "phone": {
-                        "type": "string",
-                        "example": "12345"
-                    },
-                    "userStatus": {
-                        "type": "integer",
-                        "description": "User Status",
-                        "format": "int32",
-                        "example": 1
                     }
-                },
-                "xml": {
-                    "name": "user"
                 }
             }
         },
         "securitySchemes": {
             "openidconnect": {
                 "type": "openIdConnect",
-                "openIdConnectUrl": "https://project.console.ory.sh/.well-known/openid-configuration"
+                "openIdConnectUrl": "https://project.console.ory.sh/.well-known/openid-configuration",
+                "x-authenticator-audience": "https://api.cerberauth.com"
             }
         }
     }
