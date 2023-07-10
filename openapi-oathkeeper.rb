@@ -5,21 +5,21 @@
 class OpenapiOathkeeper < Formula
   desc "This project aims to automating the generation of Ory Oathkeeper rules from an OpenAPI 3 contract and save a lot of time and effort, especially for larger projects with many endpoints or many services."
   homepage "https://github.com/cerberauth/openapi-oathkeeper"
-  version "0.7-test-1"
+  version "0.7-test-2"
   license "MIT"
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/cerberauth/openapi-oathkeeper/releases/download/v0.7-test-1/openapi-oathkeeper_Darwin_arm64.tar.gz"
-      sha256 "1e49e08f7a47b902b56b08a632f7b087c591c0579f90c3e88d53aa9539b99768"
+      url "https://github.com/cerberauth/openapi-oathkeeper/releases/download/v0.7-test-2/openapi-oathkeeper_Darwin_arm64.tar.gz"
+      sha256 "7fd8b91e6e0cc56f5074f9a880393afb45d14a9ae3943e4642bc7e14c0ea0450"
 
       def install
         bin.install "openapi-oathkeeper"
       end
     end
     if Hardware::CPU.intel?
-      url "https://github.com/cerberauth/openapi-oathkeeper/releases/download/v0.7-test-1/openapi-oathkeeper_Darwin_x86_64.tar.gz"
-      sha256 "0a0f6316f134cdef8a7803ae4c9b14fd5144d617a04930e32371e3f6f824232f"
+      url "https://github.com/cerberauth/openapi-oathkeeper/releases/download/v0.7-test-2/openapi-oathkeeper_Darwin_x86_64.tar.gz"
+      sha256 "9098027df83f27e8445a1cf848c4ef5c7dfff18cb026823c0c9d03c40b6cbcb1"
 
       def install
         bin.install "openapi-oathkeeper"
@@ -29,16 +29,16 @@ class OpenapiOathkeeper < Formula
 
   on_linux do
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/cerberauth/openapi-oathkeeper/releases/download/v0.7-test-1/openapi-oathkeeper_Linux_arm64.tar.gz"
-      sha256 "98bf2c0a51575031e218fc999bdfccaef2651b31b643f9053bf59e451f486065"
+      url "https://github.com/cerberauth/openapi-oathkeeper/releases/download/v0.7-test-2/openapi-oathkeeper_Linux_arm64.tar.gz"
+      sha256 "2fa3448d8c0302b0ac69f136d47e7214c53ff51055625fe1f1762709cdf0bbb1"
 
       def install
         bin.install "openapi-oathkeeper"
       end
     end
     if Hardware::CPU.intel?
-      url "https://github.com/cerberauth/openapi-oathkeeper/releases/download/v0.7-test-1/openapi-oathkeeper_Linux_x86_64.tar.gz"
-      sha256 "d56b1dd851e35a5032c9eb8eb856f099c9712df281cd9f608cefdbe7898d1ead"
+      url "https://github.com/cerberauth/openapi-oathkeeper/releases/download/v0.7-test-2/openapi-oathkeeper_Linux_x86_64.tar.gz"
+      sha256 "d07fc6b40173a8ab07aba5e13e10c632565fbdcf5670a997646127de58e8ee70"
 
       def install
         bin.install "openapi-oathkeeper"
