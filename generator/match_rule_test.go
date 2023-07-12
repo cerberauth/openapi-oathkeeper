@@ -39,7 +39,7 @@ func TestGenerateMatchRuleWithMultipleServerUrls(t *testing.T) {
 
 func TestGenerateMatchRuleWithPathParams(t *testing.T) {
 	expectedMatchingRule := rule.Match{
-		URL:     "<^(https://cerberauth\\.com/api/v3)(/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/resource/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/?)$>",
+		URL:     "<^(https://cerberauth\\.com/api/v3)(/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/resource/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/?)$>",
 		Methods: []string{"GET"},
 	}
 	matchRule, err := createMatchRule([]string{"https://cerberauth.com/api/v3"}, "GET", "/{param}/resource/{otherParam}", nil)
@@ -50,7 +50,7 @@ func TestGenerateMatchRuleWithPathParams(t *testing.T) {
 
 func TestGenerateMatchRuleWithQueryParams(t *testing.T) {
 	expectedMatchingRule := rule.Match{
-		URL:     "<^(https://cerberauth\\.com/api/v3)(/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/resource/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/?(\\?.+)?)$>",
+		URL:     "<^(https://cerberauth\\.com/api/v3)(/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/resource/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/?(\\?.+)?)$>",
 		Methods: []string{"GET"},
 	}
 	params := openapi3.NewParameters()
