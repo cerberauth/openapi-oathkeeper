@@ -21,6 +21,7 @@ var (
 		rex.Chars.Single('=').Repeat().ZeroOrOne(),
 		rex.Chars.Single('?').Repeat().ZeroOrOne(),
 		rex.Chars.Single('&').Repeat().ZeroOrOne(),
+		rex.Chars.Single('_').Repeat().ZeroOrOne(),
 	)
 )
 
