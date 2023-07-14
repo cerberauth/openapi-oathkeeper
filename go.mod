@@ -4,13 +4,13 @@ go 1.19
 
 require (
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869
-	github.com/bradleyjkemp/cupaloy v2.3.0+incompatible
-	github.com/getkin/kin-openapi v0.116.0
+	github.com/bradleyjkemp/cupaloy v2.8.0+incompatible
+	github.com/getkin/kin-openapi v0.118.0
 	github.com/hedhyw/rex v0.6.0
 	github.com/knadh/koanf v1.4.4
-	github.com/ory/oathkeeper v0.40.3
+	github.com/ory/oathkeeper v0.40.6
 	github.com/spf13/cobra v1.7.0
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.8.4
 )
 
 require (
