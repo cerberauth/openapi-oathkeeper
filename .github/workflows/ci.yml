@@ -16,6 +16,7 @@ concurrency:
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
   build:
@@ -45,17 +46,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - run: git fetch --force --tags
 
       - name: Setup Go environment
         uses: actions/setup-go@v4
         with:
           go-version: 1.19
 
-      - name: Build
-        run: go build -o openapi-oathkeeper
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
+      - uses: goreleaser/goreleaser-action@v4
         with:
-          files: |
-            openapi-oathkeeper
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

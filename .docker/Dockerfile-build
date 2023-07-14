@@ -1,0 +1,22 @@
+FROM golang:1.19-bullseye AS builder
+
+WORKDIR /go/src/github.com/cerberauth/openapi-oathkeeper
+
+COPY go.mod go.mod
+COPY go.sum go.sum
+
+ENV CGO_ENABLED 0
+ENV GO111MODULE on
+
+RUN go mod download
+
+COPY . .
+
+RUN go build -o /usr/bin/openapi-oathkeeper .
+
+FROM gcr.io/distroless/static-debian11:nonroot AS runner
+
+COPY --from=builder --chown=nonroot:nonroot /usr/bin/openapi-oathkeeper /usr/bin/openapi-oathkeeper
+
+ENTRYPOINT ["openapi-oathkeeper"]
+CMD ["openapi-oathkeeper"]
