@@ -19,7 +19,7 @@ If you're not yet familiar with Ory Oathkeeper, I highly recommend checking it o
 
 ## Get Started
 
-To use this tool, you need to provide the path to your OpenAPI 3 contract file. Once you have specified these options, the tool will analyze your contract and generate OathKeeper rules that enforce the specified access policies. You can then save these rules to a file to make it read by Oathkeeper.
+To use this tool, first you have to download the binary from the latest [release](https://github.com/cerberauth/openapi-oathkeeper/releases). Then provide the path to your OpenAPI 3 contract file. Once you have specified these options, the tool will analyze your contract and generate OathKeeper rules that enforce the specified access policies. You can then save these rules to a file to make it read by Oathkeeper.
 
 ## Features
 
