@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869
-	github.com/bradleyjkemp/cupaloy v2.8.0+incompatible
+	github.com/bradleyjkemp/cupaloy v2.3.0+incompatible
 	github.com/getkin/kin-openapi v0.118.0
 	github.com/hedhyw/rex v0.6.0
 	github.com/knadh/koanf v1.4.4
