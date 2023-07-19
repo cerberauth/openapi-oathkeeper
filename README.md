@@ -32,11 +32,11 @@ As the authenticator rule may require additional information in order to make au
 
 ### Available authenticator options
 
-| Name     | Security Schemes                  | OpenAPI Extension Name     | CLI Argument                                     |
-|----------|-----------------------------------|----------------------------|--------------------------------------------------|
-| JWKS URI | `oauth2`, `http`                  | `x-authenticator-jwks-uri` | --jwks-uris "securitySchemeName=<value>"         |
-| Issuer   | `oauth2`, `http`                  | `x-authenticator-issuer`   | --allowed-issuers "securitySchemeName=<value>"   |
-| Audience | `openIdConnect`, `oauth2`, `http` | `x-authenticator-audience` | --allowed-audiences "securitySchemeName=<value>" |
+| Name     | Security Schemes                  | OpenAPI Extension Name     |
+|----------|-----------------------------------|----------------------------|
+| JWKS URI | `oauth2`, `http`                  | `x-authenticator-jwks-uri` |
+| Issuer   | `oauth2`, `http`                  | `x-authenticator-issuer`   |
+| Audience | `openIdConnect`, `oauth2`, `http` | `x-authenticator-audience` |
 
 ### Example
 

@@ -7,24 +7,22 @@ import (
 	"net/url"
 	"os"
 
+	"github.com/cerberauth/openapi-oathkeeper/config"
 	"github.com/cerberauth/openapi-oathkeeper/generator"
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/ory/oathkeeper/rule"
 	"github.com/spf13/cobra"
 )
 
 var (
-	filepath   string
-	fileurl    string
-	prefixId   string
-	outputpath string
+	configFilePath string
+	filepath       string
+	fileurl        string
 
-	jwksUris         map[string]string
-	allowedIssuers   map[string]string
-	allowedAudiences map[string]string
-	serverUrls       []string
-
-	upstreamUrl       string
-	upstreamStripPath string
+	prefix      string
+	outputpath  string
+	upstreamUrl string
+	serverUrls  []string
 )
 
 func NewGenerateCmd() (generateCmd *cobra.Command) {
@@ -34,8 +32,24 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := context.Background()
 
+			var cfg *config.Config
 			var doc *openapi3.T
 			var err error
+
+			if configFilePath != "" {
+				cfg, err = config.New(configFilePath)
+				if err != nil {
+					panic(err)
+				}
+			} else {
+				cfg = &config.Config{
+					Prefix:     prefix,
+					ServerUrls: serverUrls,
+					Upstream: rule.Upstream{
+						URL: upstreamUrl,
+					},
+				}
+			}
 
 			if fileurl != "" {
 				uri, urlerr := url.Parse(fileurl)
@@ -54,7 +68,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 				panic(err)
 			}
 
-			g, err := generator.NewGenerator(ctx, doc, prefixId, jwksUris, allowedIssuers, allowedAudiences, serverUrls, upstreamUrl, upstreamStripPath)
+			g, err := generator.NewGenerator(ctx, doc, cfg)
 			if err != nil {
 				panic(err)
 			}
@@ -82,16 +96,14 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 		},
 	}
 
-	generateCmd.PersistentFlags().StringVarP(&prefixId, "prefix", "p", "", "OpenAPI Prefix Id")
-	generateCmd.PersistentFlags().StringToStringVarP(&jwksUris, "jwks-uris", "", nil, "JWKS Uris")
-	generateCmd.PersistentFlags().StringToStringVarP(&allowedIssuers, "allowed-issuers", "", nil, "Allowed Issuers")
-	generateCmd.PersistentFlags().StringToStringVarP(&allowedAudiences, "allowed-audiences", "", nil, "Allowed Audiences")
-	generateCmd.PersistentFlags().StringArrayVarP(&serverUrls, "server-url", "", nil, "API Server Urls")
+	generateCmd.PersistentFlags().StringVarP(&configFilePath, "config", "c", "", "Path to one .yaml, .yml, config file.")
 	generateCmd.PersistentFlags().StringVarP(&fileurl, "url", "u", "", "OpenAPI URL")
 	generateCmd.PersistentFlags().StringVarP(&filepath, "file", "f", "", "OpenAPI File Path")
-	generateCmd.PersistentFlags().StringVarP(&upstreamUrl, "upstream-url", "", "", "The Upstream URL the request will be forwarded to")
-	generateCmd.PersistentFlags().StringVarP(&upstreamStripPath, "upstream-strip-path", "", "", "Replaces the provided path prefix when forwarding the requested URL to the upstream URL")
 	generateCmd.PersistentFlags().StringVarP(&outputpath, "output", "o", "", "Oathkeeper Rules output path")
+
+	generateCmd.PersistentFlags().StringVarP(&prefix, "prefix", "p", "", "OpenAPI Prefix Id")
+	generateCmd.PersistentFlags().StringArrayVarP(&serverUrls, "server-url", "", nil, "API Server Urls")
+	generateCmd.PersistentFlags().StringVarP(&upstreamUrl, "upstream-url", "", "", "The Upstream URL the request will be forwarded to")
 
 	return generateCmd
 }
