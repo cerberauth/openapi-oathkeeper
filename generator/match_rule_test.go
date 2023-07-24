@@ -17,7 +17,7 @@ func TestGenerateMatchRule(t *testing.T) {
 	matchRule, err := createMatchRule([]string{"/api/v3"}, "GET", "/", nil)
 
 	require.NoError(t, err)
-	assert.Equal(t, matchRule, &expectedMatchingRule)
+	assert.Equal(t, &expectedMatchingRule, matchRule)
 }
 
 func TestGenerateMatchRuleWhenThereIsNoServerUrl(t *testing.T) {
@@ -34,7 +34,7 @@ func TestGenerateMatchRuleWithMultipleServerUrls(t *testing.T) {
 	matchRule, err := createMatchRule([]string{"/api/v3", "https://cerberauth.com/api/v3"}, "GET", "/", nil)
 
 	require.NoError(t, err)
-	assert.Equal(t, matchRule, &expectedMatchingRule)
+	assert.Equal(t, &expectedMatchingRule, matchRule)
 }
 
 func TestGenerateMatchRuleWithPathParams(t *testing.T) {
@@ -45,7 +45,7 @@ func TestGenerateMatchRuleWithPathParams(t *testing.T) {
 	matchRule, err := createMatchRule([]string{"https://cerberauth.com/api/v3"}, "GET", "/{param}/resource/{otherParam}", nil)
 
 	require.NoError(t, err)
-	assert.Equal(t, matchRule, &expectedMatchingRule)
+	assert.Equal(t, &expectedMatchingRule, matchRule)
 }
 
 func TestGenerateMatchRuleWithQueryParams(t *testing.T) {
@@ -60,5 +60,5 @@ func TestGenerateMatchRuleWithQueryParams(t *testing.T) {
 	matchRule, err := createMatchRule([]string{"https://cerberauth.com/api/v3"}, "GET", "/{param}/resource/{otherParam}", &params)
 
 	require.NoError(t, err)
-	assert.Equal(t, matchRule, &expectedMatchingRule)
+	assert.Equal(t, &expectedMatchingRule, matchRule)
 }

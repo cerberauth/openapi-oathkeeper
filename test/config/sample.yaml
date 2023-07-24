@@ -1,0 +1,12 @@
+prefix: cerberauth
+
+server_urls:
+  - https://www.cerberauth.com/api
+  - https://api.cerberauth.com/api
+
+authenticators:
+  openidconnect:
+    handler: "jwt"
+    config:
+      target_audience:
+      - https://api.cerberauth.com

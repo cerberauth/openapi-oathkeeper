@@ -117,8 +117,7 @@
         "securitySchemes": {
             "openidconnect": {
                 "type": "openIdConnect",
-                "openIdConnectUrl": "https://project.console.ory.sh/.well-known/openid-configuration",
-                "x-authenticator-audience": "https://api.cerberauth.com"
+                "openIdConnectUrl": "https://project.console.ory.sh/.well-known/openid-configuration"
             }
         }
     }

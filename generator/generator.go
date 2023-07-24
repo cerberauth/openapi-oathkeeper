@@ -5,60 +5,39 @@ import (
 	"sort"
 
 	"github.com/cerberauth/openapi-oathkeeper/authenticator"
+	"github.com/cerberauth/openapi-oathkeeper/config"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/ory/oathkeeper/rule"
 )
 
 type Generator struct {
 	doc *openapi3.T
+	cfg *config.Config
 
 	authenticators map[string]authenticator.Authenticator
-	PrefixId       string
-	serverUrls     []string
-	upstream       *rule.Upstream
 }
 
 type RulesById []rule.Rule
 
 func (r RulesById) Len() int           { return len(r) }
 func (r RulesById) Swap(i, j int)      { r[i], r[j] = r[j], r[i] }
-func (r RulesById) Less(i, j int) bool { return r[i].ID < r[j].ID }
+func (r RulesById) Less(i, j int) bool { return r[i].GetID() < r[j].GetID() }
 
 func (g *Generator) computeId(operationId string) string {
-	if g.PrefixId == "" {
+	if g.cfg.Prefix == "" {
 		return operationId
 	}
 
-	return g.PrefixId + ":" + operationId
+	return g.cfg.Prefix + ":" + operationId
 }
 
 func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) (*rule.Rule, error) {
-	match, matchRuleErr := createMatchRule(g.serverUrls, verb, path, &o.Parameters)
+	match, matchRuleErr := createMatchRule(g.cfg.ServerUrls, verb, path, &o.Parameters)
 	if matchRuleErr != nil {
 		return nil, matchRuleErr
 	}
 
-	rule := rule.Rule{
-		ID:             g.computeId(o.OperationID),
-		Description:    o.Description,
-		Match:          match,
-		Upstream:       *g.upstream,
-		Authenticators: []rule.Handler{},
-		Authorizer: rule.Handler{
-			Handler: "allow",
-		},
-		Mutators: []rule.Handler{
-			{
-				Handler: "noop",
-			},
-		},
-		Errors: []rule.ErrorHandler{
-			{
-				Handler: "json",
-			},
-		},
-	}
-
+	var authenticators = []rule.Handler{}
 	appendAuthenticator := func(sr *openapi3.SecurityRequirements) error {
 		for _, s := range *sr {
 			for k := range s {
@@ -67,7 +46,7 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 					if arerror != nil {
 						return arerror
 					}
-					rule.Authenticators = append(rule.Authenticators, *ar)
+					authenticators = append(authenticators, *ar)
 				}
 			}
 		}
@@ -85,65 +64,73 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 			return nil, arerror
 		}
 
-		rule.Authenticators = append(rule.Authenticators, *ar)
+		authenticators = append(authenticators, *ar)
 	}
 
-	return &rule, nil
+	return &rule.Rule{
+		ID:             g.computeId(o.OperationID),
+		Description:    o.Description,
+		Match:          match,
+		Upstream:       g.cfg.Upstream,
+		Authenticators: authenticators,
+		Authorizer: rule.Handler{
+			Handler: "allow",
+		},
+		Mutators: g.cfg.Mutators,
+		Errors:   g.cfg.Errors,
+	}, nil
 }
 
-func NewGenerator(ctx context.Context, d *openapi3.T, prefixId string, jwksUris map[string]string, allowedIssuers map[string]string, allowedAudiences map[string]string, serverUrls []string, upstreamUrl string, upstreamStripPath string) (*Generator, error) {
-	var upstream = rule.Upstream{}
-	if upstreamUrl != "" {
-		upstream.URL = upstreamUrl
+func createAuthenticators(d *openapi3.T, cfg *config.Config) (map[string]authenticator.Authenticator, error) {
+	authenticators := make(map[string]authenticator.Authenticator)
+
+	// Create a first authenticator for operations without security configured
+	authenticators[string(authenticator.AuthenticatorTypeNoop)] = &authenticator.AuthenticatorNoop{}
+
+	newAuthenticator := func(name string) (authenticator.Authenticator, error) {
+		s := d.Components.SecuritySchemes[name]
+		v, ok := cfg.Authenticators[name]
+		if !ok {
+			return authenticator.NewAuthenticatorFromSecurityScheme(s, nil)
+		}
+
+		return authenticator.NewAuthenticatorFromSecurityScheme(s, &v)
 	}
 
-	if upstreamStripPath != "" {
-		upstream.StripPath = upstreamStripPath
+	if d.Components.SecuritySchemes != nil {
+		for name := range d.Components.SecuritySchemes {
+			a, err := newAuthenticator(name)
+			if err != nil {
+				return nil, err
+			}
+			authenticators[name] = a
+		}
 	}
 
+	return authenticators, nil
+}
+
+func NewGenerator(ctx context.Context, d *openapi3.T, cfg *config.Config) (*Generator, error) {
 	if validateErr := d.Validate(ctx, openapi3.DisableExamplesValidation(), openapi3.DisableSchemaDefaultsValidation()); validateErr != nil {
 		return nil, validateErr
 	}
 
-	if serverUrls == nil {
+	if cfg.ServerUrls == nil {
 		for _, s := range d.Servers {
-			serverUrls = append(serverUrls, s.URL)
+			cfg.ServerUrls = append(cfg.ServerUrls, s.URL)
 		}
 	}
 
-	authenticators := map[string]authenticator.Authenticator{}
-	authenticators[string(authenticator.AuthenticatorTypeNoop)] = &authenticator.AuthenticatorNoop{}
-	if d.Components.SecuritySchemes != nil {
-		for ssn, ss := range d.Components.SecuritySchemes {
-			var jwksUri, allowedIssuer, allowedAudience *string = nil, nil, nil
-
-			if uri, ok := jwksUris[ssn]; ok {
-				jwksUri = &uri
-			}
-
-			if iss, ok := allowedIssuers[ssn]; ok {
-				allowedIssuer = &iss
-			}
-
-			if aud, ok := allowedAudiences[ssn]; ok {
-				allowedAudience = &aud
-			}
-
-			a, err := NewAuthenticatorFromSecurityScheme(ss, jwksUri, allowedIssuer, allowedAudience)
-			if err != nil {
-				return nil, err
-			}
-			authenticators[ssn] = a
-		}
+	authenticators, err := createAuthenticators(d, cfg)
+	if err != nil {
+		return nil, err
 	}
 
 	return &Generator{
 		doc: d,
+		cfg: cfg,
 
 		authenticators: authenticators,
-		PrefixId:       prefixId,
-		serverUrls:     serverUrls,
-		upstream:       &upstream,
 	}, nil
 }
 

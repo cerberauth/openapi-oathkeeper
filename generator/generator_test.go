@@ -6,12 +6,11 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
-	"sort"
 	"testing"
 
 	"github.com/bmizerany/assert"
 	"github.com/bradleyjkemp/cupaloy"
-	"github.com/cerberauth/openapi-oathkeeper/authenticator"
+	"github.com/cerberauth/openapi-oathkeeper/config"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/ory/oathkeeper/rule"
 	"github.com/stretchr/testify/require"
@@ -21,18 +20,6 @@ var (
 	_, b, _, _ = runtime.Caller(0)
 	basepath   = filepath.Dir(b)
 )
-
-func newJWTConfig(jwksUrls []string, issuers []string, scopes []string, audiences []string) json.RawMessage {
-	c := authenticator.JWTAuthenticatorConfig{
-		JwksUrls:       jwksUrls,
-		TrustedIssuers: issuers,
-		RequiredScope:  scopes,
-		TargetAudience: audiences,
-	}
-	jsonConfig, _ := json.Marshal(c)
-
-	return jsonConfig
-}
 
 func getRuleById(rules []rule.Rule, id string) *rule.Rule {
 	for _, r := range rules {
@@ -44,14 +31,14 @@ func getRuleById(rules []rule.Rule, id string) *rule.Rule {
 	return nil
 }
 
-func newGenerator(docpath string, prefixId string, jwksUris map[string]string, allowedIssuers map[string]string, allowedAudiences map[string]string, serverUrls []string, upstreamUrl string, upstreamStripPath string) (*Generator, error) {
+func newGenerator(docpath string, cfg *config.Config) (*Generator, error) {
 	doc, err := openapi3.NewLoader().LoadFromFile(path.Join(basepath, docpath))
 	if err != nil {
 		return nil, err
 	}
 
 	ctx := context.Background()
-	return NewGenerator(ctx, doc, prefixId, jwksUris, allowedIssuers, allowedAudiences, serverUrls, upstreamUrl, upstreamStripPath)
+	return NewGenerator(ctx, doc, cfg)
 }
 
 func TestGenerateFromSimpleOpenAPI(t *testing.T) {
@@ -71,19 +58,9 @@ func TestGenerateFromSimpleOpenAPI(t *testing.T) {
 			Authorizer: rule.Handler{
 				Handler: "allow",
 			},
-			Mutators: []rule.Handler{
-				{
-					Handler: "noop",
-				},
-			},
-			Errors: []rule.ErrorHandler{
-				{
-					Handler: "json",
-				},
-			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, nil, nil, "", "")
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", &config.Config{})
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -91,7 +68,7 @@ func TestGenerateFromSimpleOpenAPI(t *testing.T) {
 	rules, err := g.Generate()
 
 	require.NoError(t, err)
-	assert.Equal(t, rules, expectedRules)
+	assert.Equal(t, expectedRules, rules)
 }
 
 func TestGenerateFromSimpleOpenAPIWithPrefixId(t *testing.T) {
@@ -111,19 +88,11 @@ func TestGenerateFromSimpleOpenAPIWithPrefixId(t *testing.T) {
 			Authorizer: rule.Handler{
 				Handler: "allow",
 			},
-			Mutators: []rule.Handler{
-				{
-					Handler: "noop",
-				},
-			},
-			Errors: []rule.ErrorHandler{
-				{
-					Handler: "json",
-				},
-			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "prefix", nil, nil, nil, nil, "", "")
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", &config.Config{
+		Prefix: "prefix",
+	})
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -131,7 +100,7 @@ func TestGenerateFromSimpleOpenAPIWithPrefixId(t *testing.T) {
 	rules, err := g.Generate()
 
 	require.NoError(t, err)
-	assert.Equal(t, rules, expectedRules)
+	assert.Equal(t, expectedRules, rules)
 }
 
 func TestGenerateFromSimpleOpenAPIWithOneServerUrl(t *testing.T) {
@@ -151,20 +120,11 @@ func TestGenerateFromSimpleOpenAPIWithOneServerUrl(t *testing.T) {
 			Authorizer: rule.Handler{
 				Handler: "allow",
 			},
-			Mutators: []rule.Handler{
-				{
-					Handler: "noop",
-				},
-			},
-			Errors: []rule.ErrorHandler{
-				{
-					Handler: "json",
-				},
-			},
 		},
 	}
-	serverUrls := []string{"https://www.cerberauth.com/api"}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, nil, serverUrls, "", "")
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", &config.Config{
+		ServerUrls: []string{"https://www.cerberauth.com/api"},
+	})
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -172,7 +132,7 @@ func TestGenerateFromSimpleOpenAPIWithOneServerUrl(t *testing.T) {
 	rules, err := g.Generate()
 
 	require.NoError(t, err)
-	assert.Equal(t, rules, expectedRules)
+	assert.Equal(t, expectedRules, rules)
 }
 
 func TestGenerateFromSimpleOpenAPIWithSeveralServerUrls(t *testing.T) {
@@ -192,23 +152,14 @@ func TestGenerateFromSimpleOpenAPIWithSeveralServerUrls(t *testing.T) {
 			Authorizer: rule.Handler{
 				Handler: "allow",
 			},
-			Mutators: []rule.Handler{
-				{
-					Handler: "noop",
-				},
-			},
-			Errors: []rule.ErrorHandler{
-				{
-					Handler: "json",
-				},
-			},
 		},
 	}
-	serverUrls := []string{
-		"https://www.cerberauth.com/api",
-		"https://api.cerberauth.com/api",
-	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "", nil, nil, nil, serverUrls, "", "")
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", &config.Config{
+		ServerUrls: []string{
+			"https://www.cerberauth.com/api",
+			"https://api.cerberauth.com/api",
+		},
+	})
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -216,10 +167,22 @@ func TestGenerateFromSimpleOpenAPIWithSeveralServerUrls(t *testing.T) {
 	rules, err := g.Generate()
 
 	require.NoError(t, err)
-	assert.Equal(t, rules, expectedRules)
+	assert.Equal(t, expectedRules, rules)
 }
 
 func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
+	c, _ := json.Marshal(map[string]interface{}{
+		"jwks_urls": []string{
+			"https://console.ory.sh/.well-known/jwks.json",
+		},
+		"trusted_issuers": []string{
+			"https://console.ory.sh",
+		},
+		"required_scope": []string{
+			"write:pets",
+			"read:pets",
+		},
+	})
 	expectedRules := []rule.Rule{
 		{
 			ID:          "findPetsByStatus",
@@ -231,32 +194,15 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 			Authenticators: []rule.Handler{
 				{
 					Handler: "jwt",
-					Config: newJWTConfig([]string{
-						"https://console.ory.sh/.well-known/jwks.json",
-					}, []string{
-						"https://console.ory.sh",
-					}, []string{
-						"write:pets",
-						"read:pets",
-					}, []string{}),
+					Config:  c,
 				},
 			},
 			Authorizer: rule.Handler{
 				Handler: "allow",
 			},
-			Mutators: []rule.Handler{
-				{
-					Handler: "noop",
-				},
-			},
-			Errors: []rule.ErrorHandler{
-				{
-					Handler: "json",
-				},
-			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect.openapi.json", "", nil, nil, nil, nil, "", "")
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect.openapi.json", &config.Config{})
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -264,10 +210,25 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 	rules, err := g.Generate()
 
 	require.NoError(t, err)
-	assert.Equal(t, rules, expectedRules)
+	assert.Equal(t, expectedRules, rules)
 }
 
 func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
+	c, _ := json.Marshal(map[string]interface{}{
+		"jwks_urls": []string{
+			"https://oauth.cerberauth.com/.well-known/jwks.json",
+		},
+		"trusted_issuers": []string{
+			"https://cerberauth.com",
+		},
+		"required_scope": []string{
+			"write:pets",
+			"read:pets",
+		},
+		"target_audience": []string{
+			"https://api.cerberauth.com",
+		},
+	})
 	expectedRules := []rule.Rule{
 		{
 			ID:          "findPetsByStatus",
@@ -279,40 +240,15 @@ func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
 			Authenticators: []rule.Handler{
 				{
 					Handler: "jwt",
-					Config: newJWTConfig([]string{
-						"https://oauth.cerberauth.com/.well-known/jwks.json",
-					}, []string{
-						"https://cerberauth.com",
-					}, []string{
-						"write:pets",
-						"read:pets",
-					}, []string{
-						"https://api.cerberauth.com",
-					}),
+					Config:  c,
 				},
 			},
 			Authorizer: rule.Handler{
 				Handler: "allow",
 			},
-			Mutators: []rule.Handler{
-				{
-					Handler: "noop",
-				},
-			},
-			Errors: []rule.ErrorHandler{
-				{
-					Handler: "json",
-				},
-			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_oauth2.openapi.json", "", map[string]string{
-		"petstore_auth": "https://oauth.cerberauth.com/.well-known/jwks.json",
-	}, map[string]string{
-		"petstore_auth": "https://cerberauth.com",
-	}, map[string]string{
-		"petstore_auth": "https://api.cerberauth.com",
-	}, nil, "", "")
+	g, newGeneratorErr := newGenerator("../test/stub/simple_oauth2.openapi.json", &config.Config{})
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -320,60 +256,22 @@ func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
 	rules, err := g.Generate()
 
 	require.NoError(t, err)
-	assert.Equal(t, rules, expectedRules)
-}
-
-func TestGenerateFromSimpleOpenAPIWithOAuth2AndExtensions(t *testing.T) {
-	expectedRules := []rule.Rule{
-		{
-			ID:          "findPetsByStatus",
-			Description: "Multiple status values can be provided with comma separated strings",
-			Match: &rule.Match{
-				URL:     "<^(https://petstore\\.swagger\\.io/api/v3)(/pet/findByStatus/?)$>",
-				Methods: []string{"GET"},
-			},
-			Authenticators: []rule.Handler{
-				{
-					Handler: "jwt",
-					Config: newJWTConfig([]string{
-						"https://oauth.cerberauth.com/.well-known/jwks.json",
-					}, []string{
-						"https://cerberauth.com",
-					}, []string{
-						"write:pets",
-						"read:pets",
-					}, []string{
-						"https://api.cerberauth.com",
-					}),
-				},
-			},
-			Authorizer: rule.Handler{
-				Handler: "allow",
-			},
-			Mutators: []rule.Handler{
-				{
-					Handler: "noop",
-				},
-			},
-			Errors: []rule.ErrorHandler{
-				{
-					Handler: "json",
-				},
-			},
-		},
-	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_oauth2_and_extensions.openapi.json", "", map[string]string{}, map[string]string{}, map[string]string{}, nil, "", "")
-	if newGeneratorErr != nil {
-		t.Fatal(newGeneratorErr)
-	}
-
-	rules, err := g.Generate()
-
-	require.NoError(t, err)
-	assert.Equal(t, rules, expectedRules)
+	assert.Equal(t, expectedRules, rules)
 }
 
 func TestGenerateFromSimpleOpenAPIWithHttpBearer(t *testing.T) {
+	c, _ := json.Marshal(map[string]interface{}{
+		"jwks_urls": []string{
+			"https://oauth.cerberauth.com/.well-known/jwks.json",
+		},
+		"trusted_issuers": []string{
+			"https://cerberauth.com",
+		},
+		"required_scope": []string{},
+		"target_audience": []string{
+			"https://api.cerberauth.com",
+		},
+	})
 	expectedRules := []rule.Rule{
 		{
 			ID:          "findPetsByStatus",
@@ -385,37 +283,15 @@ func TestGenerateFromSimpleOpenAPIWithHttpBearer(t *testing.T) {
 			Authenticators: []rule.Handler{
 				{
 					Handler: "jwt",
-					Config: newJWTConfig([]string{
-						"https://oauth.cerberauth.com/.well-known/jwks.json",
-					}, []string{
-						"https://cerberauth.com",
-					}, []string{}, []string{
-						"https://api.cerberauth.com",
-					}),
+					Config:  c,
 				},
 			},
 			Authorizer: rule.Handler{
 				Handler: "allow",
 			},
-			Mutators: []rule.Handler{
-				{
-					Handler: "noop",
-				},
-			},
-			Errors: []rule.ErrorHandler{
-				{
-					Handler: "json",
-				},
-			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_http_bearer_jwt.openapi.json", "", map[string]string{
-		"petstore_auth": "https://oauth.cerberauth.com/.well-known/jwks.json",
-	}, map[string]string{
-		"petstore_auth": "https://cerberauth.com",
-	}, map[string]string{
-		"petstore_auth": "https://api.cerberauth.com",
-	}, nil, "", "")
+	g, newGeneratorErr := newGenerator("../test/stub/simple_http_bearer_jwt.openapi.json", &config.Config{})
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -423,10 +299,22 @@ func TestGenerateFromSimpleOpenAPIWithHttpBearer(t *testing.T) {
 	rules, err := g.Generate()
 
 	require.NoError(t, err)
-	assert.Equal(t, rules, expectedRules)
+	assert.Equal(t, expectedRules, rules)
 }
 
 func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *testing.T) {
+	c, _ := json.Marshal(map[string]interface{}{
+		"jwks_urls": []string{
+			"https://console.ory.sh/.well-known/jwks.json",
+		},
+		"trusted_issuers": []string{
+			"https://console.ory.sh",
+		},
+		"required_scope": []string{
+			"write:pets",
+			"read:pets",
+		},
+	})
 	expectedRule := rule.Rule{
 		ID:          "updatePet",
 		Description: "Update an existing pet by Id",
@@ -437,31 +325,14 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 		Authenticators: []rule.Handler{
 			{
 				Handler: "jwt",
-				Config: newJWTConfig([]string{
-					"https://console.ory.sh/.well-known/jwks.json",
-				}, []string{
-					"https://console.ory.sh",
-				}, []string{
-					"write:pets",
-					"read:pets",
-				}, []string{}),
+				Config:  c,
 			},
 		},
 		Authorizer: rule.Handler{
 			Handler: "allow",
 		},
-		Mutators: []rule.Handler{
-			{
-				Handler: "noop",
-			},
-		},
-		Errors: []rule.ErrorHandler{
-			{
-				Handler: "json",
-			},
-		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "", nil, nil, nil, nil, "", "")
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", &config.Config{})
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -469,7 +340,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 	rules, err := g.Generate()
 
 	require.NoError(t, err)
-	assert.Equal(t, *getRuleById(rules, "updatePet"), expectedRule)
+	assert.Equal(t, expectedRule, *getRuleById(rules, "updatePet"))
 }
 
 func TestGenerateFromSimpleOpenAPIWithUpstreamUrlAndPath(t *testing.T) {
@@ -493,19 +364,15 @@ func TestGenerateFromSimpleOpenAPIWithUpstreamUrlAndPath(t *testing.T) {
 			Authorizer: rule.Handler{
 				Handler: "allow",
 			},
-			Mutators: []rule.Handler{
-				{
-					Handler: "noop",
-				},
-			},
-			Errors: []rule.ErrorHandler{
-				{
-					Handler: "json",
-				},
-			},
 		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", "prefix", nil, nil, nil, nil, "https://petstore.com", "/api")
+	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", &config.Config{
+		Prefix: "prefix",
+		Upstream: rule.Upstream{
+			URL:       "https://petstore.com",
+			StripPath: "/api",
+		},
+	})
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -513,10 +380,21 @@ func TestGenerateFromSimpleOpenAPIWithUpstreamUrlAndPath(t *testing.T) {
 	rules, err := g.Generate()
 
 	require.NoError(t, err)
-	assert.Equal(t, rules, expectedRules)
+	assert.Equal(t, expectedRules, rules)
 }
 
 func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSecurityScheme(t *testing.T) {
+	c, _ := json.Marshal(map[string]interface{}{
+		"jwks_urls": []string{
+			"https://console.ory.sh/.well-known/jwks.json",
+		},
+		"trusted_issuers": []string{
+			"https://console.ory.sh",
+		},
+		"required_scope": []string{
+			"read:pets",
+		},
+	})
 	expectedRule := rule.Rule{
 		ID:          "findPetsByStatus",
 		Description: "Multiple status values can be provided with comma separated strings",
@@ -527,30 +405,14 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 		Authenticators: []rule.Handler{
 			{
 				Handler: "jwt",
-				Config: newJWTConfig([]string{
-					"https://console.ory.sh/.well-known/jwks.json",
-				}, []string{
-					"https://console.ory.sh",
-				}, []string{
-					"read:pets",
-				}, []string{}),
+				Config:  c,
 			},
 		},
 		Authorizer: rule.Handler{
 			Handler: "allow",
 		},
-		Mutators: []rule.Handler{
-			{
-				Handler: "noop",
-			},
-		},
-		Errors: []rule.ErrorHandler{
-			{
-				Handler: "json",
-			},
-		},
 	}
-	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", "", nil, nil, nil, nil, "", "")
+	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", &config.Config{})
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
@@ -558,23 +420,28 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 	rules, err := g.Generate()
 
 	require.NoError(t, err)
-	assert.Equal(t, *getRuleById(rules, "findPetsByStatus"), expectedRule)
+	got := *getRuleById(rules, "findPetsByStatus")
+	assert.Equal(t, expectedRule, got)
 }
 
 func TestGenerateFromPetstoreWithOpenIdConnect(t *testing.T) {
-	g, newGeneratorErr := newGenerator("../test/stub/petstore.openapi.json", "", map[string]string{
-		"petstore_auth": "https://oauth.cerberauth.com/.well-known/jwks.json",
-	}, map[string]string{
-		"petstore_auth": "https://cerberauth.com",
-	}, map[string]string{
-		"petstore_auth": "https://api.cerberauth.com",
-	}, nil, "", "")
+	var authenticators = make(map[string]config.AuthenticatorRuleConfig)
+	authenticators["petstore_auth"] = config.AuthenticatorRuleConfig{
+		Handler: "jwt",
+		Config: map[string]interface{}{
+			"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
+			"trusted_issuers": []string{"https://cerberauth.com"},
+			"target_audience": []string{"https://api.cerberauth.com"},
+		},
+	}
+	g, newGeneratorErr := newGenerator("../test/stub/petstore.openapi.json", &config.Config{
+		Authenticators: authenticators,
+	})
 	if newGeneratorErr != nil {
 		t.Fatal(newGeneratorErr)
 	}
 
 	rules, err := g.Generate()
-	sort.SliceStable(rules, func(i, j int) bool { return rules[i].GetID() < rules[j].GetID() })
 
 	require.NoError(t, err)
 	cupaloy.SnapshotT(t, rules)

@@ -22,5 +22,5 @@ func TestNoopAuthenticatorCreateAuthenticator(t *testing.T) {
 		t.Fatal(createAuthenticatorErr)
 	}
 
-	assert.Equal(t, auth, expectedAuthenticator)
+	assert.Equal(t, expectedAuthenticator, auth)
 }
