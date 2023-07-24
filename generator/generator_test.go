@@ -47,7 +47,7 @@ func TestGenerateFromSimpleOpenAPI(t *testing.T) {
 			ID:          "findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
 			Match: &rule.Match{
-				URL:     "<^(https://petstore\\.swagger\\.io/api/v3)(/pet/findByStatus/?)$>",
+				URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
 			Authenticators: []rule.Handler{
@@ -77,7 +77,7 @@ func TestGenerateFromSimpleOpenAPIWithPrefixId(t *testing.T) {
 			ID:          "prefix:findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
 			Match: &rule.Match{
-				URL:     "<^(https://petstore\\.swagger\\.io/api/v3)(/pet/findByStatus/?)$>",
+				URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
 			Authenticators: []rule.Handler{
@@ -109,7 +109,7 @@ func TestGenerateFromSimpleOpenAPIWithOneServerUrl(t *testing.T) {
 			ID:          "findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
 			Match: &rule.Match{
-				URL:     "<^(https://www\\.cerberauth\\.com/api)(/pet/findByStatus/?)$>",
+				URL:     "https://www.cerberauth.com/api/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
 			Authenticators: []rule.Handler{
@@ -141,7 +141,7 @@ func TestGenerateFromSimpleOpenAPIWithSeveralServerUrls(t *testing.T) {
 			ID:          "findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
 			Match: &rule.Match{
-				URL:     "<^(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)(/pet/findByStatus/?)$>",
+				URL:     "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
 			Authenticators: []rule.Handler{
@@ -176,7 +176,7 @@ func TestGenerateOpenAPIWithoutSecurity(t *testing.T) {
 			ID:          "withEmptySecurity",
 			Description: "",
 			Match: &rule.Match{
-				URL:     "<^(https://api\\.cerberauth\\.com/v1)(/withEmptySecurity/?)$>",
+				URL:     "https://api.cerberauth.com/v1/withEmptySecurity",
 				Methods: []string{"GET"},
 			},
 			Authenticators: []rule.Handler{
@@ -194,7 +194,7 @@ func TestGenerateOpenAPIWithoutSecurity(t *testing.T) {
 			ID:          "withSecurity",
 			Description: "",
 			Match: &rule.Match{
-				URL:     "<^(https://api\\.cerberauth\\.com/v1)(/withSecurity/?)$>",
+				URL:     "https://api.cerberauth.com/v1/withSecurity",
 				Methods: []string{"GET"},
 			},
 			Authenticators: []rule.Handler{
@@ -237,7 +237,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 			ID:          "findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
 			Match: &rule.Match{
-				URL:     "<^(https://petstore\\.swagger\\.io/api/v3)(/pet/findByStatus/?)$>",
+				URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
 			Authenticators: []rule.Handler{
@@ -283,7 +283,7 @@ func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
 			ID:          "findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
 			Match: &rule.Match{
-				URL:     "<^(https://petstore\\.swagger\\.io/api/v3)(/pet/findByStatus/?)$>",
+				URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
 			Authenticators: []rule.Handler{
@@ -326,7 +326,7 @@ func TestGenerateFromSimpleOpenAPIWithHttpBearer(t *testing.T) {
 			ID:          "findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
 			Match: &rule.Match{
-				URL:     "<^(https://petstore\\.swagger\\.io/api/v3)(/pet/findByStatus/?)$>",
+				URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
 			Authenticators: []rule.Handler{
@@ -368,7 +368,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 		ID:          "updatePet",
 		Description: "Update an existing pet by Id",
 		Match: &rule.Match{
-			URL:     "<^(https://petstore\\.swagger\\.io/api/v3)(/pet/?)$>",
+			URL:     "https://petstore.swagger.io/api/v3/pet",
 			Methods: []string{"PUT"},
 		},
 		Authenticators: []rule.Handler{
@@ -398,7 +398,7 @@ func TestGenerateFromSimpleOpenAPIWithUpstreamUrlAndPath(t *testing.T) {
 			ID:          "prefix:findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
 			Match: &rule.Match{
-				URL:     "<^(https://petstore\\.swagger\\.io/api/v3)(/pet/findByStatus/?)$>",
+				URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
 			Upstream: rule.Upstream{
@@ -448,7 +448,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 		ID:          "findPetsByStatus",
 		Description: "Multiple status values can be provided with comma separated strings",
 		Match: &rule.Match{
-			URL:     "<^(https://petstore\\.swagger\\.io/api/v3)(/pet/findByStatus/?(\\?.+)?)$>",
+			URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
 			Methods: []string{"GET"},
 		},
 		Authenticators: []rule.Handler{

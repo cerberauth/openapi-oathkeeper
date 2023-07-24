@@ -7,7 +7,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
-      URL: (string) (len=70) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/?)$>"
+      URL: (string) (len=64) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -50,7 +50,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
-      URL: (string) (len=71) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/?)$>"
+      URL: (string) (len=65) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -79,7 +79,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
-      URL: (string) (len=86) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/createWithList/?)$>"
+      URL: (string) (len=80) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/createWithList"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -108,7 +108,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=6) "DELETE"
       },
-      URL: (string) (len=110) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/order/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/?)$>"
+      URL: (string) (len=78) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/store/order/<\\d+>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -137,7 +137,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=6) "DELETE"
       },
-      URL: (string) (len=102) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/?)$>"
+      URL: (string) (len=70) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet/<\\d+>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -180,7 +180,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=6) "DELETE"
       },
-      URL: (string) (len=103) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/?)$>"
+      URL: (string) (len=70) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/<.+>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -209,7 +209,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
-      URL: (string) (len=90) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/findByStatus/?(\\?.+)?)$>"
+      URL: (string) (len=77) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet/findByStatus"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -252,7 +252,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
-      URL: (string) (len=88) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/findByTags/?(\\?.+)?)$>"
+      URL: (string) (len=75) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet/findByTags"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -295,7 +295,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
-      URL: (string) (len=82) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/inventory/?)$>"
+      URL: (string) (len=76) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/store/inventory"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -324,7 +324,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
-      URL: (string) (len=110) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/order/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/?)$>"
+      URL: (string) (len=78) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/store/order/<\\d+>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -353,7 +353,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
-      URL: (string) (len=102) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/?)$>"
+      URL: (string) (len=70) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet/<\\d+>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -396,7 +396,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
-      URL: (string) (len=103) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/?)$>"
+      URL: (string) (len=70) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/<.+>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -425,7 +425,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
-      URL: (string) (len=84) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/login/?(\\?.+)?)$>"
+      URL: (string) (len=71) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/login"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -454,7 +454,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
-      URL: (string) (len=78) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/logout/?)$>"
+      URL: (string) (len=72) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/logout"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -483,7 +483,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
-      URL: (string) (len=78) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/order/?)$>"
+      URL: (string) (len=72) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/store/order"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -512,7 +512,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "PUT"
       },
-      URL: (string) (len=70) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/?)$>"
+      URL: (string) (len=64) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -555,7 +555,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
-      URL: (string) (len=109) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/?(\\?.+)?)$>"
+      URL: (string) (len=70) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet/<\\d+>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -598,7 +598,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=3) "PUT"
       },
-      URL: (string) (len=103) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/?)$>"
+      URL: (string) (len=70) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/<.+>"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
@@ -627,7 +627,7 @@
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
-      URL: (string) (len=121) "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/uploadImage/?(\\?.+)?)$>"
+      URL: (string) (len=82) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet/<\\d+>/uploadImage"
     }),
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
