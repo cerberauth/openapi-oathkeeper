@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"log"
 	"net/url"
 	"os"
 
@@ -39,7 +40,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			if configFilePath != "" {
 				cfg, err = config.New(configFilePath)
 				if err != nil {
-					panic(err)
+					log.Fatal(err)
 				}
 			} else {
 				cfg = &config.Config{
@@ -54,28 +55,32 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			if fileurl != "" {
 				uri, urlerr := url.Parse(fileurl)
 				if urlerr != nil {
-					panic(urlerr)
+					log.Fatal(urlerr)
 				}
 
 				doc, err = openapi3.NewLoader().LoadFromURI(uri)
 			}
 
 			if filepath != "" {
+				if _, err := os.Stat(filepath); err != nil {
+					log.Fatalf("the openapi file has not been found on %s", filepath)
+				}
+
 				doc, err = openapi3.NewLoader().LoadFromFile(filepath)
 			}
 
 			if err != nil {
-				panic(err)
+				log.Fatal(err)
 			}
 
 			g, err := generator.NewGenerator(ctx, doc, cfg)
 			if err != nil {
-				panic(err)
+				log.Fatal(err)
 			}
 
 			rules, err := g.Generate()
 			if err != nil {
-				panic(err)
+				log.Fatal(err)
 			}
 
 			jsonBuf := new(bytes.Buffer)
@@ -84,7 +89,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			enc.SetIndent("", "    ")
 
 			if encodeErr := enc.Encode(rules); encodeErr != nil {
-				panic(encodeErr)
+				log.Fatal(encodeErr)
 			}
 
 			if outputpath != "" {
