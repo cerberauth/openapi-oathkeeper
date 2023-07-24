@@ -1,8 +1,8 @@
-prefix: "cerberauth"
+prefix: cerberauth
 
 server_urls:
-- "https://www.cerberauth.com/api"
-- "https://api.cerberauth.com/api"
+  - https://www.cerberauth.com/api
+  - https://api.cerberauth.com/api
 
 authenticators:
   openidconnect:

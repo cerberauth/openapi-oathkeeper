@@ -21,16 +21,48 @@ If you're not yet familiar with Ory Oathkeeper, I highly recommend checking it o
 
 To use this tool, first you have to download the binary from the latest [release](https://github.com/cerberauth/openapi-oathkeeper/releases). Then provide the path to your OpenAPI 3 contract file. Once you have specified these options, the tool will analyze your contract and generate OathKeeper rules that enforce the specified access policies. You can then save these rules to a file to make it read by Oathkeeper.
 
-## Features
+## Configuration
 
-The OpenAPI to Oathkeeper CLI supports following security scheme type:
-* `openIdConnect`
-* `oauth2`
-* `http` with scheme `bearer`
+As the authenticator rule may require additional information in order to make authorization and authentication working properly, additional information can be passed either by OpenAPI 3 Extensions or configuration file.
 
-As the authenticator rule may require additional information in order to make authorization and authentication properly, additional information can be passed either by OpenAPI 3 Extensions or CLI arguments.
+### Configuration File
 
-### Available authenticator options
+The recommended approach involves using dedicated configuration files for your Oathkeeper rules. These configuration files provide a more flexible and user-friendly way of managing your security settings.
+
+Every Oathkeeper rule property can be configured this way. Here are the available properties:
+
+| Field          | Type                                                                               | Key              |
+|----------------|------------------------------------------------------------------------------------|------------------|
+| Prefix         | string                                                                             | "prefix"         |
+| ServerUrls     | []string                                                                           | "server_urls"    |
+| Upstream       | [Upstream](https://www.ory.sh/docs/oathkeeper/api-access-rules#access-rule-format) | "upstream"       |
+| Authenticators | Map of [Authenticators](https://www.ory.sh/docs/oathkeeper/pipeline/authn)         | "authenticators" |
+| Authorizer     | [Authorization Handler](https://www.ory.sh/docs/oathkeeper/pipeline/authz)         | "authorizer"     |
+| Mutators       | Array [of Mutator Handlers](https://www.ory.sh/docs/oathkeeper/pipeline/mutator)   | "mutators"       |
+| Errors         | Array of [Error Handlers](https://www.ory.sh/docs/oathkeeper/pipeline/error)       | "errors"         |
+
+Below is an example of a configuration file in YAML format:
+
+```yaml
+prefix: cerberauth
+
+server_urls:
+  - https://www.cerberauth.com/api
+  - https://api.cerberauth.com/api
+
+authenticators:
+  openidconnect:
+    handler: "jwt"
+    config:
+      target_audience:
+      - https://api.cerberauth.com
+```
+
+### OpenAPI Extension
+
+OpenAPI Extensions serve as an extension mechanism for the OpenAPI Specification (OAS). When using Oathkeeper with OpenAPI Extensions, you can embed Oathkeeper-specific rules directly within your API documentation. This integration can be beneficial when you desire a unified source of truth for both API specifications and security rules.
+
+Here the available configurations:
 
 | Name     | Security Schemes                  | OpenAPI Extension Name     |
 |----------|-----------------------------------|----------------------------|
@@ -162,8 +194,7 @@ Here's an example of the same OpenAPI contract but in JSON format
         "securitySchemes": {
             "openidconnect": {
                 "type": "openIdConnect",
-                "openIdConnectUrl": "https://project.console.ory.sh/.well-known/openid-configuration",
-                "x-authenticator-audience": "https://api.cerberauth.com"
+                "openIdConnectUrl": "https://project.console.ory.sh/.well-known/openid-configuration"
             }
         }
     }
@@ -175,7 +206,7 @@ This contract defines a single endpoint at /users/{id} that returns a user objec
 To generate rules using the tool, simply run the command in your terminal with the appropriate arguments.
 
 ```shell
-openapi-oathkeeper generate -f test/stub/sample.openapi.json
+openapi-oathkeeper generate -c ./test/config/sample.yaml -f ./test/stub/sample.openapi.json
 ```
 
 Here is a Ory Oathkeeper rules output
@@ -183,14 +214,14 @@ Here is a Ory Oathkeeper rules output
 ```json
 [
     {
-        "id": "getUserById",
+        "id": "cerberauth:getUserById",
         "version": "",
         "description": "",
         "match": {
             "methods": [
                 "GET"
             ],
-            "url": "<^(https://api\\.example\\.com)(/users/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/?)$>"
+            "url": "<^(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)(/users/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/?)$>"
         },
         "authenticators": [
             {
@@ -199,14 +230,14 @@ Here is a Ory Oathkeeper rules output
                     "jwks_urls": [
                         "https://console.ory.sh/.well-known/jwks.json"
                     ],
-                    "trusted_issuers": [
-                        "https://console.ory.sh"
-                    ],
                     "required_scope": [
                         "user:read"
                     ],
                     "target_audience": [
                         "https://api.cerberauth.com"
+                    ],
+                    "trusted_issuers": [
+                        "https://console.ory.sh"
                     ]
                 }
             }
@@ -215,18 +246,8 @@ Here is a Ory Oathkeeper rules output
             "handler": "allow",
             "config": null
         },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
+        "mutators": null,
+        "errors": null,
         "upstream": {
             "preserve_host": false,
             "strip_path": "",
@@ -234,14 +255,14 @@ Here is a Ory Oathkeeper rules output
         }
     },
     {
-        "id": "updateUser",
+        "id": "cerberauth:updateUser",
         "version": "",
         "description": "This can only be done by the logged in user.",
         "match": {
             "methods": [
                 "PUT"
             ],
-            "url": "<^(https://api\\.example\\.com)(/users/(?:[[:alnum:]]?\\x2D?=?\\??&?)+/?)$>"
+            "url": "<^(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)(/users/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/?)$>"
         },
         "authenticators": [
             {
@@ -250,14 +271,14 @@ Here is a Ory Oathkeeper rules output
                     "jwks_urls": [
                         "https://console.ory.sh/.well-known/jwks.json"
                     ],
-                    "trusted_issuers": [
-                        "https://console.ory.sh"
-                    ],
                     "required_scope": [
                         "user:write"
                     ],
                     "target_audience": [
                         "https://api.cerberauth.com"
+                    ],
+                    "trusted_issuers": [
+                        "https://console.ory.sh"
                     ]
                 }
             }
@@ -266,18 +287,8 @@ Here is a Ory Oathkeeper rules output
             "handler": "allow",
             "config": null
         },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
+        "mutators": null,
+        "errors": null,
         "upstream": {
             "preserve_host": false,
             "strip_path": "",
