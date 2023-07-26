@@ -246,8 +246,18 @@ Here is a Ory Oathkeeper rules output
             "handler": "allow",
             "config": null
         },
-        "mutators": null,
-        "errors": null,
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
         "upstream": {
             "preserve_host": false,
             "strip_path": "",
@@ -287,8 +297,18 @@ Here is a Ory Oathkeeper rules output
             "handler": "allow",
             "config": null
         },
-        "mutators": null,
-        "errors": null,
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
         "upstream": {
             "preserve_host": false,
             "strip_path": "",
