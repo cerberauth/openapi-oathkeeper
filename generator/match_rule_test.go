@@ -11,7 +11,7 @@ import (
 
 func TestGenerateMatchRule(t *testing.T) {
 	expectedMatchingRule := rule.Match{
-		URL:     "<^(/api/v3)(/)$>",
+		URL:     "/api/v3",
 		Methods: []string{"GET"},
 	}
 	matchRule, err := createMatchRule([]string{"/api/v3"}, "GET", "/", nil)
@@ -20,15 +20,20 @@ func TestGenerateMatchRule(t *testing.T) {
 	assert.Equal(t, &expectedMatchingRule, matchRule)
 }
 
-func TestGenerateMatchRuleWhenThereIsNoServerUrl(t *testing.T) {
-	_, err := createMatchRule([]string{}, "GET", "/", nil)
+func TestGenerateMatchRuleWithServerUrlEndingSlash(t *testing.T) {
+	expectedMatchingRule := rule.Match{
+		URL:     "/api/v3",
+		Methods: []string{"GET"},
+	}
+	matchRule, err := createMatchRule([]string{"/api/v3/"}, "GET", "/", nil)
 
-	require.Error(t, err)
+	require.NoError(t, err)
+	assert.Equal(t, &expectedMatchingRule, matchRule)
 }
 
 func TestGenerateMatchRuleWithMultipleServerUrls(t *testing.T) {
 	expectedMatchingRule := rule.Match{
-		URL:     "<^(/api/v3|https://cerberauth\\.com/api/v3)(/)$>",
+		URL:     "<(/api/v3|https://cerberauth\\.com/api/v3)>",
 		Methods: []string{"GET"},
 	}
 	matchRule, err := createMatchRule([]string{"/api/v3", "https://cerberauth.com/api/v3"}, "GET", "/", nil)
@@ -37,27 +42,113 @@ func TestGenerateMatchRuleWithMultipleServerUrls(t *testing.T) {
 	assert.Equal(t, &expectedMatchingRule, matchRule)
 }
 
-func TestGenerateMatchRuleWithPathParams(t *testing.T) {
+func TestGenerateMatchRuleWithNoPathParams(t *testing.T) {
 	expectedMatchingRule := rule.Match{
-		URL:     "<^(https://cerberauth\\.com/api/v3)(/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/resource/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/?)$>",
+		URL:     "/<.+>/resource/<.+>",
 		Methods: []string{"GET"},
 	}
-	matchRule, err := createMatchRule([]string{"https://cerberauth.com/api/v3"}, "GET", "/{param}/resource/{otherParam}", nil)
+	matchRule, err := createMatchRule([]string{}, "GET", "/{param}/resource/{otherParam}", nil)
 
 	require.NoError(t, err)
 	assert.Equal(t, &expectedMatchingRule, matchRule)
 }
 
-func TestGenerateMatchRuleWithQueryParams(t *testing.T) {
+func TestGenerateMatchRuleWithUnknownPathParams(t *testing.T) {
 	expectedMatchingRule := rule.Match{
-		URL:     "<^(https://cerberauth\\.com/api/v3)(/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/resource/(?:[[:alnum:]]?\\x2D?=?\\??&?_?)+/?(\\?.+)?)$>",
+		URL:     "/<.+>/resource/<.+>",
 		Methods: []string{"GET"},
 	}
-	params := openapi3.NewParameters()
-	params = append(params, &openapi3.ParameterRef{
-		Value: openapi3.NewQueryParameter("test"),
-	})
-	matchRule, err := createMatchRule([]string{"https://cerberauth.com/api/v3"}, "GET", "/{param}/resource/{otherParam}", &params)
+	matchRule, err := createMatchRule([]string{}, "GET", "/{param}/resource/{otherParam}", &openapi3.Parameters{})
+
+	require.NoError(t, err)
+	assert.Equal(t, &expectedMatchingRule, matchRule)
+}
+
+func TestGenerateMatchRuleWithStringPathParams(t *testing.T) {
+	expectedMatchingRule := rule.Match{
+		URL:     "/resource/<.+>",
+		Methods: []string{"GET"},
+	}
+	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: "string"})
+	matchRule, err := createMatchRule([]string{}, "GET", "/resource/{param}", &openapi3.Parameters{&openapi3.ParameterRef{
+		Ref:   "param",
+		Value: param,
+	}})
+
+	require.NoError(t, err)
+	assert.Equal(t, &expectedMatchingRule, matchRule)
+}
+
+func TestGenerateMatchRuleWithNumberPathParams(t *testing.T) {
+	expectedMatchingRule := rule.Match{
+		URL:     "/resource/<((\\x2D|\\+)?\\d+(?:\\.\\d+)?)>",
+		Methods: []string{"GET"},
+	}
+	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: "number"})
+	matchRule, err := createMatchRule([]string{}, "GET", "/resource/{param}", &openapi3.Parameters{&openapi3.ParameterRef{
+		Ref:   "param",
+		Value: param,
+	}})
+
+	require.NoError(t, err)
+	assert.Equal(t, &expectedMatchingRule, matchRule)
+}
+
+func TestGenerateMatchRuleWithIntegerPathParams(t *testing.T) {
+	expectedMatchingRule := rule.Match{
+		URL:     "/resource/<\\d+>",
+		Methods: []string{"GET"},
+	}
+	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: "integer"})
+	matchRule, err := createMatchRule([]string{}, "GET", "/resource/{param}", &openapi3.Parameters{&openapi3.ParameterRef{
+		Ref:   "param",
+		Value: param,
+	}})
+
+	require.NoError(t, err)
+	assert.Equal(t, &expectedMatchingRule, matchRule)
+}
+
+func TestGenerateMatchRuleWithBooleanPathParams(t *testing.T) {
+	expectedMatchingRule := rule.Match{
+		URL:     "/resource/<.+>",
+		Methods: []string{"GET"},
+	}
+	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: "boolean"})
+	matchRule, err := createMatchRule([]string{}, "GET", "/resource/{param}", &openapi3.Parameters{&openapi3.ParameterRef{
+		Ref:   "param",
+		Value: param,
+	}})
+
+	require.NoError(t, err)
+	assert.Equal(t, &expectedMatchingRule, matchRule)
+}
+
+func TestGenerateMatchRuleWithArrayPathParams(t *testing.T) {
+	expectedMatchingRule := rule.Match{
+		URL:     "/resource/<.+>",
+		Methods: []string{"GET"},
+	}
+	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: "array"})
+	matchRule, err := createMatchRule([]string{}, "GET", "/resource/{param}", &openapi3.Parameters{&openapi3.ParameterRef{
+		Ref:   "param",
+		Value: param,
+	}})
+
+	require.NoError(t, err)
+	assert.Equal(t, &expectedMatchingRule, matchRule)
+}
+
+func TestGenerateMatchRuleWithObjectPathParams(t *testing.T) {
+	expectedMatchingRule := rule.Match{
+		URL:     "/resource/<.+>",
+		Methods: []string{"GET"},
+	}
+	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: "object"})
+	matchRule, err := createMatchRule([]string{}, "GET", "/resource/{param}", &openapi3.Parameters{&openapi3.ParameterRef{
+		Ref:   "param",
+		Value: param,
+	}})
 
 	require.NoError(t, err)
 	assert.Equal(t, &expectedMatchingRule, matchRule)

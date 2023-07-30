@@ -1,13 +1,13 @@
 [
     {
-        "id": "addPet",
+        "id": "cerberauth:addPet",
         "version": "",
         "description": "Add a new pet to the store",
         "match": {
             "methods": [
                 "POST"
             ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/?)$>"
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/pet"
         },
         "authenticators": [
             {
@@ -16,14 +16,13 @@
                     "jwks_urls": [
                         "https://console.ory.sh/.well-known/jwks.json"
                     ],
-                    "trusted_issuers": [
-                        "https://console.ory.sh/"
-                    ],
                     "required_scope": [
                         "write:pets",
                         "read:pets"
                     ],
-                    "target_audience": []
+                    "trusted_issuers": [
+                        "https://console.ory.sh"
+                    ]
                 }
             }
         ],
@@ -50,668 +49,14 @@
         }
     },
     {
-        "id": "updatePet",
-        "version": "",
-        "description": "Update an existing pet by Id",
-        "match": {
-            "methods": [
-                "PUT"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "jwt",
-                "config": {
-                    "jwks_urls": [
-                        "https://console.ory.sh/.well-known/jwks.json"
-                    ],
-                    "trusted_issuers": [
-                        "https://console.ory.sh/"
-                    ],
-                    "required_scope": [
-                        "write:pets",
-                        "read:pets"
-                    ],
-                    "target_audience": []
-                }
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "findPetsByStatus",
-        "version": "",
-        "description": "Multiple status values can be provided with comma separated strings",
-        "match": {
-            "methods": [
-                "GET"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/findByStatus/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "jwt",
-                "config": {
-                    "jwks_urls": [
-                        "https://console.ory.sh/.well-known/jwks.json"
-                    ],
-                    "trusted_issuers": [
-                        "https://console.ory.sh/"
-                    ],
-                    "required_scope": [
-                        "write:pets",
-                        "read:pets"
-                    ],
-                    "target_audience": []
-                }
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "findPetsByTags",
-        "version": "",
-        "description": "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
-        "match": {
-            "methods": [
-                "GET"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/findByTags/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "jwt",
-                "config": {
-                    "jwks_urls": [
-                        "https://console.ory.sh/.well-known/jwks.json"
-                    ],
-                    "trusted_issuers": [
-                        "https://console.ory.sh/"
-                    ],
-                    "required_scope": [
-                        "write:pets",
-                        "read:pets"
-                    ],
-                    "target_audience": []
-                }
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "deletePet",
-        "version": "",
-        "description": "",
-        "match": {
-            "methods": [
-                "DELETE"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "jwt",
-                "config": {
-                    "jwks_urls": [
-                        "https://console.ory.sh/.well-known/jwks.json"
-                    ],
-                    "trusted_issuers": [
-                        "https://console.ory.sh/"
-                    ],
-                    "required_scope": [
-                        "write:pets",
-                        "read:pets"
-                    ],
-                    "target_audience": []
-                }
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "getPetById",
-        "version": "",
-        "description": "Returns a single pet",
-        "match": {
-            "methods": [
-                "GET"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "jwt",
-                "config": {
-                    "jwks_urls": [
-                        "https://console.ory.sh/.well-known/jwks.json"
-                    ],
-                    "trusted_issuers": [
-                        "https://console.ory.sh/"
-                    ],
-                    "required_scope": [
-                        "write:pets",
-                        "read:pets"
-                    ],
-                    "target_audience": []
-                }
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "updatePetWithForm",
-        "version": "",
-        "description": "",
-        "match": {
-            "methods": [
-                "POST"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "jwt",
-                "config": {
-                    "jwks_urls": [
-                        "https://console.ory.sh/.well-known/jwks.json"
-                    ],
-                    "trusted_issuers": [
-                        "https://console.ory.sh/"
-                    ],
-                    "required_scope": [
-                        "write:pets",
-                        "read:pets"
-                    ],
-                    "target_audience": []
-                }
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "placeOrder",
-        "version": "",
-        "description": "Place a new order in the store",
-        "match": {
-            "methods": [
-                "POST"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/order/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "loginUser",
-        "version": "",
-        "description": "",
-        "match": {
-            "methods": [
-                "GET"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/login/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "deleteUser",
-        "version": "",
-        "description": "This can only be done by the logged in user.",
-        "match": {
-            "methods": [
-                "DELETE"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "getUserByName",
-        "version": "",
-        "description": "",
-        "match": {
-            "methods": [
-                "GET"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "updateUser",
-        "version": "",
-        "description": "This can only be done by the logged in user.",
-        "match": {
-            "methods": [
-                "PUT"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "uploadFile",
-        "version": "",
-        "description": "",
-        "match": {
-            "methods": [
-                "POST"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/pet/([[:alnum:]]|\\x2D|=|\\?|&)+/uploadImage/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "jwt",
-                "config": {
-                    "jwks_urls": [
-                        "https://console.ory.sh/.well-known/jwks.json"
-                    ],
-                    "trusted_issuers": [
-                        "https://console.ory.sh/"
-                    ],
-                    "required_scope": [
-                        "write:pets",
-                        "read:pets"
-                    ],
-                    "target_audience": []
-                }
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "getInventory",
-        "version": "",
-        "description": "Returns a map of status codes to quantities",
-        "match": {
-            "methods": [
-                "GET"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/inventory/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "deleteOrder",
-        "version": "",
-        "description": "For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors",
-        "match": {
-            "methods": [
-                "DELETE"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/order/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "getOrderById",
-        "version": "",
-        "description": "For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.",
-        "match": {
-            "methods": [
-                "GET"
-            ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/store/order/([[:alnum:]]|\\x2D|=|\\?|&)+/?)$>"
-        },
-        "authenticators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "authorizer": {
-            "handler": "allow",
-            "config": null
-        },
-        "mutators": [
-            {
-                "handler": "noop",
-                "config": null
-            }
-        ],
-        "errors": [
-            {
-                "handler": "json",
-                "config": null
-            }
-        ],
-        "upstream": {
-            "preserve_host": false,
-            "strip_path": "",
-            "url": ""
-        }
-    },
-    {
-        "id": "createUser",
+        "id": "cerberauth:createUser",
         "version": "",
         "description": "This can only be done by the logged in user.",
         "match": {
             "methods": [
                 "POST"
             ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/?)$>"
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/user"
         },
         "authenticators": [
             {
@@ -742,14 +87,14 @@
         }
     },
     {
-        "id": "createUsersWithListInput",
+        "id": "cerberauth:createUsersWithListInput",
         "version": "",
         "description": "Creates list of users with given input array",
         "match": {
             "methods": [
                 "POST"
             ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/createWithList/?)$>"
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/user/createWithList"
         },
         "authenticators": [
             {
@@ -780,19 +125,666 @@
         }
     },
     {
-        "id": "logoutUser",
+        "id": "cerberauth:deleteOrder",
+        "version": "",
+        "description": "For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors",
+        "match": {
+            "methods": [
+                "DELETE"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/store/order/<\\d+>"
+        },
+        "authenticators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:deletePet",
+        "version": "",
+        "description": "",
+        "match": {
+            "methods": [
+                "DELETE"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/pet/<\\d+>"
+        },
+        "authenticators": [
+            {
+                "handler": "jwt",
+                "config": {
+                    "jwks_urls": [
+                        "https://console.ory.sh/.well-known/jwks.json"
+                    ],
+                    "required_scope": [
+                        "write:pets",
+                        "read:pets"
+                    ],
+                    "trusted_issuers": [
+                        "https://console.ory.sh"
+                    ]
+                }
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:deleteUser",
+        "version": "",
+        "description": "This can only be done by the logged in user.",
+        "match": {
+            "methods": [
+                "DELETE"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/user/<.+>"
+        },
+        "authenticators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:findPetsByStatus",
+        "version": "",
+        "description": "Multiple status values can be provided with comma separated strings",
+        "match": {
+            "methods": [
+                "GET"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/pet/findByStatus"
+        },
+        "authenticators": [
+            {
+                "handler": "jwt",
+                "config": {
+                    "jwks_urls": [
+                        "https://console.ory.sh/.well-known/jwks.json"
+                    ],
+                    "required_scope": [
+                        "write:pets",
+                        "read:pets"
+                    ],
+                    "trusted_issuers": [
+                        "https://console.ory.sh"
+                    ]
+                }
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:findPetsByTags",
+        "version": "",
+        "description": "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
+        "match": {
+            "methods": [
+                "GET"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/pet/findByTags"
+        },
+        "authenticators": [
+            {
+                "handler": "jwt",
+                "config": {
+                    "jwks_urls": [
+                        "https://console.ory.sh/.well-known/jwks.json"
+                    ],
+                    "required_scope": [
+                        "write:pets",
+                        "read:pets"
+                    ],
+                    "trusted_issuers": [
+                        "https://console.ory.sh"
+                    ]
+                }
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:getInventory",
+        "version": "",
+        "description": "Returns a map of status codes to quantities",
+        "match": {
+            "methods": [
+                "GET"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/store/inventory"
+        },
+        "authenticators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:getOrderById",
+        "version": "",
+        "description": "For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.",
+        "match": {
+            "methods": [
+                "GET"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/store/order/<\\d+>"
+        },
+        "authenticators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:getPetById",
+        "version": "",
+        "description": "Returns a single pet",
+        "match": {
+            "methods": [
+                "GET"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/pet/<\\d+>"
+        },
+        "authenticators": [
+            {
+                "handler": "jwt",
+                "config": {
+                    "jwks_urls": [
+                        "https://console.ory.sh/.well-known/jwks.json"
+                    ],
+                    "required_scope": [
+                        "write:pets",
+                        "read:pets"
+                    ],
+                    "trusted_issuers": [
+                        "https://console.ory.sh"
+                    ]
+                }
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:getUserByName",
         "version": "",
         "description": "",
         "match": {
             "methods": [
                 "GET"
             ],
-            "url": "<^(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)(/user/logout/?)$>"
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/user/<.+>"
         },
         "authenticators": [
             {
                 "handler": "noop",
                 "config": null
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:loginUser",
+        "version": "",
+        "description": "",
+        "match": {
+            "methods": [
+                "GET"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/user/login"
+        },
+        "authenticators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:logoutUser",
+        "version": "",
+        "description": "",
+        "match": {
+            "methods": [
+                "GET"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/user/logout"
+        },
+        "authenticators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:placeOrder",
+        "version": "",
+        "description": "Place a new order in the store",
+        "match": {
+            "methods": [
+                "POST"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/store/order"
+        },
+        "authenticators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:updatePet",
+        "version": "",
+        "description": "Update an existing pet by Id",
+        "match": {
+            "methods": [
+                "PUT"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/pet"
+        },
+        "authenticators": [
+            {
+                "handler": "jwt",
+                "config": {
+                    "jwks_urls": [
+                        "https://console.ory.sh/.well-known/jwks.json"
+                    ],
+                    "required_scope": [
+                        "write:pets",
+                        "read:pets"
+                    ],
+                    "trusted_issuers": [
+                        "https://console.ory.sh"
+                    ]
+                }
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:updatePetWithForm",
+        "version": "",
+        "description": "",
+        "match": {
+            "methods": [
+                "POST"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/pet/<\\d+>"
+        },
+        "authenticators": [
+            {
+                "handler": "jwt",
+                "config": {
+                    "jwks_urls": [
+                        "https://console.ory.sh/.well-known/jwks.json"
+                    ],
+                    "required_scope": [
+                        "write:pets",
+                        "read:pets"
+                    ],
+                    "trusted_issuers": [
+                        "https://console.ory.sh"
+                    ]
+                }
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:updateUser",
+        "version": "",
+        "description": "This can only be done by the logged in user.",
+        "match": {
+            "methods": [
+                "PUT"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/user/<.+>"
+        },
+        "authenticators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "authorizer": {
+            "handler": "allow",
+            "config": null
+        },
+        "mutators": [
+            {
+                "handler": "noop",
+                "config": null
+            }
+        ],
+        "errors": [
+            {
+                "handler": "json",
+                "config": null
+            }
+        ],
+        "upstream": {
+            "preserve_host": false,
+            "strip_path": "",
+            "url": ""
+        }
+    },
+    {
+        "id": "cerberauth:uploadFile",
+        "version": "",
+        "description": "",
+        "match": {
+            "methods": [
+                "POST"
+            ],
+            "url": "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/pet/<\\d+>/uploadImage"
+        },
+        "authenticators": [
+            {
+                "handler": "jwt",
+                "config": {
+                    "jwks_urls": [
+                        "https://console.ory.sh/.well-known/jwks.json"
+                    ],
+                    "required_scope": [
+                        "write:pets",
+                        "read:pets"
+                    ],
+                    "trusted_issuers": [
+                        "https://console.ory.sh"
+                    ]
+                }
             }
         ],
         "authorizer": {

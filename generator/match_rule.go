@@ -1,7 +1,7 @@
 package generator
 
 import (
-	"errors"
+	"log"
 	"regexp"
 	"strings"
 
@@ -14,34 +14,38 @@ import (
 var (
 	argre = regexp.MustCompile(`(?m)({(.*)})`)
 
-	separatorToken = rex.Chars.Single('/')
-	stringToken    = rex.Group.NonCaptured(
-		rex.Chars.Alphanumeric().Repeat().ZeroOrOne(),
-		rex.Chars.Single('-').Repeat().ZeroOrOne(),
-		rex.Chars.Single('=').Repeat().ZeroOrOne(),
-		rex.Chars.Single('?').Repeat().ZeroOrOne(),
-		rex.Chars.Single('&').Repeat().ZeroOrOne(),
-		rex.Chars.Single('_').Repeat().ZeroOrOne(),
+	numberToken = rex.Group.Define(
+		rex.Group.Composite(
+			rex.Chars.Single('-'),
+			rex.Chars.Single('+'),
+		).Repeat().ZeroOrOne(),
+		rex.Chars.Digits().Repeat().OneOrMore(),
+		rex.Group.NonCaptured(
+			rex.Chars.Single('.'),
+			rex.Chars.Digits().Repeat().OneOrMore(),
+		).Repeat().ZeroOrOne(),
 	)
+	integerToken = rex.Chars.Digits().Repeat().OneOrMore()
+	stringToken  = rex.Chars.Any().Repeat().OneOrMore()
+	defaultToken = stringToken
 )
 
-func _hasQueryParam(p *openapi3.Parameters) bool {
-	if p == nil {
-		return false
-	}
-
-	for _, param := range *p {
-		if param.Value.In == "query" {
-			return true
-		}
-	}
-
-	return false
+func encapsulateRegex(r *regexp.Regexp) string {
+	// URL Regexp is encapsulated in brackets: https://www.ory.sh/docs/oathkeeper/api-access-rules#access-rule-format
+	return "<" + r.String() + ">"
 }
 
-func createMatchRule(serverUrls []string, v string, p string, params *openapi3.Parameters) (*rule.Match, error) {
+func encapsulateRegexToken(t dialect.Token) string {
+	return encapsulateRegex(rex.New(t).MustCompile())
+}
+
+func createServerUrlMatchingGroup(serverUrls []string) string {
 	if len(serverUrls) == 0 {
-		return nil, errors.New("a matching rule must has at least one server url")
+		return ""
+	}
+
+	if len(serverUrls) == 1 {
+		return strings.TrimSuffix(serverUrls[0], "/")
 	}
 
 	var serverUrlsTokens []dialect.Token
@@ -49,43 +53,57 @@ func createMatchRule(serverUrls []string, v string, p string, params *openapi3.P
 		serverUrlsTokens = append(serverUrlsTokens, rex.Common.Text(serverUrl))
 	}
 
-	var pathTokens []dialect.Token
-	pathTokens = append(pathTokens, separatorToken)
+	return encapsulateRegexToken(rex.Group.Composite(serverUrlsTokens...))
+}
+
+func getPathParamType(name string, params *openapi3.Parameters) string {
+	if params == nil {
+		log.Default().Print("no path parameters has been defined")
+		return ""
+	}
+
+	p := params.GetByInAndName(openapi3.ParameterInPath, name)
+	if p == nil {
+		log.Default().Printf("path param %s is not defined", name)
+		return ""
+	}
+
+	return p.Schema.Value.Type
+}
+
+func createParamsMatchingGroup(name string, params *openapi3.Parameters) string {
+	var t dialect.Token
+	switch getPathParamType(name, params) {
+	case "string":
+		t = stringToken
+	case "number":
+		t = numberToken
+	case "integer":
+		t = integerToken
+	default:
+		t = defaultToken
+	}
+
+	return encapsulateRegexToken(t)
+}
+
+func createMatchRule(serverUrls []string, v string, p string, params *openapi3.Parameters) (*rule.Match, error) {
+	pathTokens := []string{createServerUrlMatchingGroup(serverUrls)}
 	for _, dir := range strings.Split(p, "/") {
 		if dir == "" {
 			continue
 		}
 
-		dirToken := rex.Common.Text(dir)
-		if argre.Match([]byte(dir)) {
-			dirToken = stringToken.Repeat().OneOrMore()
+		if matches := argre.FindStringSubmatch(dir); len(matches) > 0 {
+			pathTokens = append(pathTokens, createParamsMatchingGroup(string(matches[2]), params))
+		} else {
+			pathTokens = append(pathTokens, dir)
 		}
-
-		pathTokens = append(pathTokens, dirToken)
-		pathTokens = append(pathTokens, separatorToken)
 	}
 
-	if len(pathTokens) > 1 {
-		pathTokens[len(pathTokens)-1] = separatorToken.Repeat().ZeroOrOne()
-	}
-
-	if _hasQueryParam(params) {
-		pathTokens = append(pathTokens, rex.Group.Define(
-			rex.Chars.Single('?'),
-			rex.Chars.Any().Repeat().OneOrMore(),
-		).Repeat().ZeroOrOne())
-	}
-
-	url := rex.New(
-		rex.Chars.Begin(),
-		rex.Group.Composite(serverUrlsTokens...),
-		rex.Group.Define(pathTokens...),
-		rex.Chars.End(),
-	).MustCompile()
-
+	u := strings.Join(pathTokens, "/")
 	match := &rule.Match{
-		// URL Regexp is encapsulated in brackets: https://www.ory.sh/docs/oathkeeper/api-access-rules#access-rule-format
-		URL:     "<" + url.String() + ">",
+		URL:     u,
 		Methods: []string{v},
 	}
 
