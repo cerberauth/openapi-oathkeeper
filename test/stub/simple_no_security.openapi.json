@@ -1,0 +1,35 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://api.cerberauth.com/v1"
+        }
+    ],
+    "paths": {
+        "/withEmptySecurity": {
+            "get": {
+                "operationId": "withEmptySecurity",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": []
+            }
+        },
+        "/withSecurity": {
+            "get": {
+                "operationId": "withSecurity",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                }
+            }
+        }
+    }
+}
