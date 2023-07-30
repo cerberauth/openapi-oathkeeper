@@ -2,6 +2,7 @@ package authenticator
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/cerberauth/openapi-oathkeeper/config"
 	"github.com/getkin/kin-openapi/openapi3"
@@ -32,7 +33,7 @@ func createConfigFromSecurityScheme(s *openapi3.SecuritySchemeRef) (*config.Auth
 	cfg := config.AuthenticatorRuleConfig{
 		Config: make(map[string]interface{}),
 	}
-	switch s.Value.Type {
+	switch strings.ToLower(s.Value.Type) {
 	case string(AuthenticatorTypeOpenIdConnect):
 		cfg.Handler = "jwt"
 
@@ -74,7 +75,7 @@ func NewAuthenticatorFromSecurityScheme(s *openapi3.SecuritySchemeRef, cfg *conf
 		cfg.Config["target_audience"] = []string{*allowedAudience}
 	}
 
-	if s.Value.Type == string(AuthenticatorTypeOpenIdConnect) && (cfg.Config["jwks_urls"] == nil || cfg.Config["trusted_issuers"] == nil) {
+	if strings.ToLower(s.Value.Type) == string(AuthenticatorTypeOpenIdConnect) && (cfg.Config["jwks_urls"] == nil || cfg.Config["trusted_issuers"] == nil) {
 		c, err := fetchOpenIDConfiguration(s.Value.OpenIdConnectUrl)
 		if err != nil {
 			return nil, err
