@@ -170,6 +170,55 @@ func TestGenerateFromSimpleOpenAPIWithSeveralServerUrls(t *testing.T) {
 	assert.Equal(t, expectedRules, rules)
 }
 
+func TestGenerateOpenAPIWithoutSecurity(t *testing.T) {
+	expectedRules := []rule.Rule{
+		{
+			ID:          "withEmptySecurity",
+			Description: "",
+			Match: &rule.Match{
+				URL:     "<^(https://api\\.cerberauth\\.com/v1)(/withEmptySecurity/?)$>",
+				Methods: []string{"GET"},
+			},
+			Authenticators: []rule.Handler{
+				{
+					Handler: "noop",
+					Config:  nil,
+				},
+			},
+			Authorizer: rule.Handler{
+				Handler: "allow",
+			},
+		},
+
+		{
+			ID:          "withSecurity",
+			Description: "",
+			Match: &rule.Match{
+				URL:     "<^(https://api\\.cerberauth\\.com/v1)(/withSecurity/?)$>",
+				Methods: []string{"GET"},
+			},
+			Authenticators: []rule.Handler{
+				{
+					Handler: "noop",
+					Config:  nil,
+				},
+			},
+			Authorizer: rule.Handler{
+				Handler: "allow",
+			},
+		},
+	}
+	g, err := newGenerator("../test/stub/simple_no_security.openapi.json", &config.Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rules, err := g.Generate()
+
+	require.NoError(t, err)
+	assert.Equal(t, expectedRules, rules)
+}
+
 func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 	c, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls": []string{
