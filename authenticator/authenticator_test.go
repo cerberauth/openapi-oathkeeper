@@ -64,6 +64,34 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnect(t *testing.T)
 	assert.Equal(t, auth, expectedAuthenticator)
 }
 
+func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithLowercaseType(t *testing.T) {
+	jsonConfig, _ := json.Marshal(map[string]interface{}{
+		"jwks_urls":       []string{"https://console.ory.sh/.well-known/jwks.json"},
+		"trusted_issuers": []string{"https://console.ory.sh"},
+		"required_scope":  []string{},
+	})
+	expectedAuthenticator := &rule.Handler{
+		Handler: "jwt",
+		Config:  jsonConfig,
+	}
+	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(&openapi3.SecuritySchemeRef{
+		Value: &openapi3.SecurityScheme{
+			Type:             "openidconnect",
+			OpenIdConnectUrl: "https://project.console.ory.sh/.well-known/openid-configuration",
+		},
+	}, nil)
+	if newAuthenticatorErr != nil {
+		t.Fatal(newAuthenticatorErr)
+	}
+
+	auth, createAuthenticatorErr := a.CreateAuthenticator(&openapi3.SecurityRequirement{})
+	if createAuthenticatorErr != nil {
+		t.Fatal(createAuthenticatorErr)
+	}
+
+	assert.Equal(t, auth, expectedAuthenticator)
+}
+
 func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithConfig(t *testing.T) {
 	jsonConfig, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
