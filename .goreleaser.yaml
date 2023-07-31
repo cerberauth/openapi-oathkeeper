@@ -78,8 +78,8 @@ nfpms:
 
 dockers:
   - image_templates:
-      - "gcr.io/cerberauth/openapi-oathkeeper:{{ .Tag }}"
-      - "gcr.io/cerberauth/openapi-oathkeeper:v{{ .Major }}"
-      - "gcr.io/cerberauth/openapi-oathkeeper:v{{ .Major }}.{{ .Minor }}"
-      - "gcr.io/cerberauth/openapi-oathkeeper:latest"
+      - "ghcr.io/cerberauth/openapi-oathkeeper:{{ .Tag }}"
+      - "ghcr.io/cerberauth/openapi-oathkeeper:v{{ .Major }}"
+      - "ghcr.io/cerberauth/openapi-oathkeeper:v{{ .Major }}.{{ .Minor }}"
+      - "ghcr.io/cerberauth/openapi-oathkeeper:latest"
     dockerfile: .docker/Dockerfile-goreleaser

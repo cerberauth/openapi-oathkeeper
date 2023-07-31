@@ -14,10 +14,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: write
-  packages: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -43,6 +39,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
+
+    permissions:
+      contents: write
+      packages: write
 
     steps:
       - uses: actions/checkout@v3
