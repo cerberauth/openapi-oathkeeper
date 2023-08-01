@@ -8,6 +8,7 @@ require (
 	github.com/getkin/kin-openapi v0.116.0
 	github.com/hedhyw/rex v0.6.0
 	github.com/knadh/koanf v1.4.4
+	github.com/knadh/koanf/v2 v2.0.1
 	github.com/ory/oathkeeper v0.40.3
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.2
