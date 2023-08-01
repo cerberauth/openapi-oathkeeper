@@ -1,5 +1,3 @@
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
 before:
   hooks:
     - go mod tidy
@@ -14,7 +12,6 @@ builds:
 
 archives:
   - format: tar.gz
-    # this name template makes the OS and Arch compatible with the results of uname.
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -40,34 +37,34 @@ changelog:
       - '^docs:'
       - '^test:'
 
-brews:
-  - name: "{{ .ProjectName }}"
-    description: "This project aims to automating the generation of Ory Oathkeeper rules from an OpenAPI 3 contract and save a lot of time and effort, especially for larger projects with many endpoints or many services."
-    license: "MIT"
-    repository:
-      owner: cerberauth
-      name: "{{ .ProjectName }}"
-    goarm: 6
-    test: |
-      system "#{bin}/{{ .ProjectName }} help"
-    homepage: https://github.com/cerberauth/openapi-oathkeeper
-    commit_author:
-      name: emmanuelgautier
-      email: emmanuel@cerberauth.com
+# brews:
+#   - name: "{{ .ProjectName }}"
+#     description: "This project aims to automating the generation of Ory Oathkeeper rules from an OpenAPI 3 contract and save a lot of time and effort, especially for larger projects with many endpoints or many services."
+#     license: "MIT"
+#     repository:
+#       owner: cerberauth
+#       name: "{{ .ProjectName }}"
+#     goarm: 6
+#     test: |
+#       system "#{bin}/{{ .ProjectName }} help"
+#     homepage: https://github.com/cerberauth/openapi-oathkeeper
+#     commit_author:
+#       name: emmanuelgautier
+#       email: emmanuel@cerberauth.com
 
-nfpms:
-  - package_name: "{{ .ProjectName }}"
-    vendor: CerberAuth
-    homepage: https://github.com/cerberauth/openapi-oathkeeper
-    maintainer: Emmanuel Gautier <emmanuel@cerberauth.com>
-    description: "This project aims to automating the generation of Ory Oathkeeper rules from an OpenAPI 3 contract and save a lot of time and effort, especially for larger projects with many endpoints or many services."
-    license: "MIT"
-    formats:
-      - apk
-      - deb
-      - rpm
-      - termux.deb
-      - archlinux
+# nfpms:
+#   - package_name: "{{ .ProjectName }}"
+#     vendor: CerberAuth
+#     homepage: https://github.com/cerberauth/openapi-oathkeeper
+#     maintainer: Emmanuel Gautier <emmanuel@cerberauth.com>
+#     description: "This project aims to automating the generation of Ory Oathkeeper rules from an OpenAPI 3 contract and save a lot of time and effort, especially for larger projects with many endpoints or many services."
+#     license: "MIT"
+#     formats:
+#       - apk
+#       - deb
+#       - rpm
+#       - termux.deb
+#       - archlinux
 
 # snapcrafts:
 #   - title: OpenAPI to Ory Oathkeeper rules
