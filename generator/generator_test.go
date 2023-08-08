@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/bmizerany/assert"
-	"github.com/bradleyjkemp/cupaloy"
+	"github.com/bradleyjkemp/cupaloy/v2"
 	"github.com/cerberauth/openapi-oathkeeper/config"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/ory/oathkeeper/rule"
