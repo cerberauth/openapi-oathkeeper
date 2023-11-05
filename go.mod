@@ -7,6 +7,7 @@ require (
 	github.com/bradleyjkemp/cupaloy/v2 v2.8.0
 	github.com/getkin/kin-openapi v0.120.0
 	github.com/hedhyw/rex v0.6.0
+	github.com/jarcoal/httpmock v1.3.1
 	github.com/knadh/koanf/maps v0.1.1
 	github.com/knadh/koanf/parsers/yaml v0.1.0
 	github.com/knadh/koanf/providers/confmap v0.1.0

@@ -7,8 +7,30 @@ import (
 	"github.com/bmizerany/assert"
 	"github.com/cerberauth/openapi-oathkeeper/config"
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/jarcoal/httpmock"
 	"github.com/ory/oathkeeper/rule"
 )
+
+var (
+	oidcConfigurationUrl = "https://oauth.cerberauth.com/.well-known/openid-configuration"
+	oidcConfiguration    = OpenIdConfiguration{
+		Issuer:  "https://oauth.cerberauth.com",
+		JwksUri: "https://oauth.cerberauth.com/.well-known/jwks.json",
+	}
+)
+
+func setupSuite(tb testing.TB) func(tb testing.TB) {
+	httpmock.Activate()
+	resp, err := httpmock.NewJsonResponder(200, oidcConfiguration)
+	if err != nil {
+		tb.Fatal(err)
+	}
+	httpmock.RegisterResponder("GET", oidcConfigurationUrl, resp)
+
+	return func(tb testing.TB) {
+		defer httpmock.DeactivateAndReset()
+	}
+}
 
 func TestNewAuthenticatorFromSecurityScheme(t *testing.T) {
 	jsonConfig, _ := json.Marshal(map[string]interface{}{
@@ -40,9 +62,12 @@ func TestNewAuthenticatorFromSecurityScheme(t *testing.T) {
 }
 
 func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnect(t *testing.T) {
+	teardownSuite := setupSuite(t)
+	defer teardownSuite(t)
+
 	jsonConfig, _ := json.Marshal(map[string]interface{}{
-		"jwks_urls":       []string{"https://console.ory.sh/.well-known/jwks.json"},
-		"trusted_issuers": []string{"https://console.ory.sh"},
+		"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
+		"trusted_issuers": []string{"https://oauth.cerberauth.com"},
 		"required_scope":  []string{},
 	})
 	expectedAuthenticator := &rule.Handler{
@@ -50,7 +75,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnect(t *testing.T)
 		Config:  jsonConfig,
 	}
 	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(&openapi3.SecuritySchemeRef{
-		Value: openapi3.NewOIDCSecurityScheme("https://project.console.ory.sh/.well-known/openid-configuration"),
+		Value: openapi3.NewOIDCSecurityScheme(oidcConfigurationUrl),
 	}, nil)
 	if newAuthenticatorErr != nil {
 		t.Fatal(newAuthenticatorErr)
@@ -65,9 +90,12 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnect(t *testing.T)
 }
 
 func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithLowercaseType(t *testing.T) {
+	teardownSuite := setupSuite(t)
+	defer teardownSuite(t)
+
 	jsonConfig, _ := json.Marshal(map[string]interface{}{
-		"jwks_urls":       []string{"https://console.ory.sh/.well-known/jwks.json"},
-		"trusted_issuers": []string{"https://console.ory.sh"},
+		"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
+		"trusted_issuers": []string{"https://oauth.cerberauth.com"},
 		"required_scope":  []string{},
 	})
 	expectedAuthenticator := &rule.Handler{
@@ -77,7 +105,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithLowercaseT
 	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(&openapi3.SecuritySchemeRef{
 		Value: &openapi3.SecurityScheme{
 			Type:             "openidconnect",
-			OpenIdConnectUrl: "https://project.console.ory.sh/.well-known/openid-configuration",
+			OpenIdConnectUrl: "https://oauth.cerberauth.com/.well-known/openid-configuration",
 		},
 	}, nil)
 	if newAuthenticatorErr != nil {
@@ -103,7 +131,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithConfig(t *
 		Config:  jsonConfig,
 	}
 	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(&openapi3.SecuritySchemeRef{
-		Value: openapi3.NewOIDCSecurityScheme("https://project.console.ory.sh/.well-known/openid-configuration"),
+		Value: openapi3.NewOIDCSecurityScheme(oidcConfigurationUrl),
 	}, &config.AuthenticatorRuleConfig{
 		Handler: "jwt",
 		Config: map[string]interface{}{

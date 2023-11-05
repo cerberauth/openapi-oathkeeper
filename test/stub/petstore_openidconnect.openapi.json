@@ -1189,7 +1189,7 @@
         "securitySchemes": {
             "petstore_auth": {
                 "type": "openIdConnect",
-                "openIdConnectUrl": "https://project.console.ory.sh/.well-known/openid-configuration"
+                "openIdConnectUrl": "https://oauth.cerberauth.com/.well-known/openid-configuration"
             }
         }
     }

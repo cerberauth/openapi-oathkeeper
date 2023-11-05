@@ -65,7 +65,7 @@
                 "type": "oauth2",
                 "flows": {},
                 "x-authenticator-jwks-uri": "https://oauth.cerberauth.com/.well-known/jwks.json",
-                "x-authenticator-issuer": "https://cerberauth.com",
+                "x-authenticator-issuer": "https://oauth.cerberauth.com",
                 "x-authenticator-audience": "https://api.cerberauth.com"
             }
         }

@@ -12,7 +12,7 @@
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
         Handler: (string) (len=3) "jwt",
-        Config: (json.RawMessage) (len=206) {
+        Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
           00000010  74 74 70 73 3a 2f 2f 6f  61 75 74 68 2e 63 65 72  |ttps://oauth.cer|
           00000020  62 65 72 61 75 74 68 2e  63 6f 6d 2f 2e 77 65 6c  |berauth.com/.wel|
@@ -24,8 +24,9 @@
           00000080  22 3a 5b 22 68 74 74 70  73 3a 2f 2f 61 70 69 2e  |":["https://api.|
           00000090  63 65 72 62 65 72 61 75  74 68 2e 63 6f 6d 22 5d  |cerberauth.com"]|
           000000a0  2c 22 74 72 75 73 74 65  64 5f 69 73 73 75 65 72  |,"trusted_issuer|
-          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 63 65 72  |s":["https://cer|
-          000000c0  62 65 72 61 75 74 68 2e  63 6f 6d 22 5d 7d        |berauth.com"]}|
+          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 6f 61 75  |s":["https://oau|
+          000000c0  74 68 2e 63 65 72 62 65  72 61 75 74 68 2e 63 6f  |th.cerberauth.co|
+          000000d0  6d 22 5d 7d                                       |m"]}|
         }
       }
     },
@@ -142,7 +143,7 @@
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
         Handler: (string) (len=3) "jwt",
-        Config: (json.RawMessage) (len=206) {
+        Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
           00000010  74 74 70 73 3a 2f 2f 6f  61 75 74 68 2e 63 65 72  |ttps://oauth.cer|
           00000020  62 65 72 61 75 74 68 2e  63 6f 6d 2f 2e 77 65 6c  |berauth.com/.wel|
@@ -154,8 +155,9 @@
           00000080  22 3a 5b 22 68 74 74 70  73 3a 2f 2f 61 70 69 2e  |":["https://api.|
           00000090  63 65 72 62 65 72 61 75  74 68 2e 63 6f 6d 22 5d  |cerberauth.com"]|
           000000a0  2c 22 74 72 75 73 74 65  64 5f 69 73 73 75 65 72  |,"trusted_issuer|
-          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 63 65 72  |s":["https://cer|
-          000000c0  62 65 72 61 75 74 68 2e  63 6f 6d 22 5d 7d        |berauth.com"]}|
+          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 6f 61 75  |s":["https://oau|
+          000000c0  74 68 2e 63 65 72 62 65  72 61 75 74 68 2e 63 6f  |th.cerberauth.co|
+          000000d0  6d 22 5d 7d                                       |m"]}|
         }
       }
     },
@@ -214,7 +216,7 @@
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
         Handler: (string) (len=3) "jwt",
-        Config: (json.RawMessage) (len=206) {
+        Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
           00000010  74 74 70 73 3a 2f 2f 6f  61 75 74 68 2e 63 65 72  |ttps://oauth.cer|
           00000020  62 65 72 61 75 74 68 2e  63 6f 6d 2f 2e 77 65 6c  |berauth.com/.wel|
@@ -226,8 +228,9 @@
           00000080  22 3a 5b 22 68 74 74 70  73 3a 2f 2f 61 70 69 2e  |":["https://api.|
           00000090  63 65 72 62 65 72 61 75  74 68 2e 63 6f 6d 22 5d  |cerberauth.com"]|
           000000a0  2c 22 74 72 75 73 74 65  64 5f 69 73 73 75 65 72  |,"trusted_issuer|
-          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 63 65 72  |s":["https://cer|
-          000000c0  62 65 72 61 75 74 68 2e  63 6f 6d 22 5d 7d        |berauth.com"]}|
+          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 6f 61 75  |s":["https://oau|
+          000000c0  74 68 2e 63 65 72 62 65  72 61 75 74 68 2e 63 6f  |th.cerberauth.co|
+          000000d0  6d 22 5d 7d                                       |m"]}|
         }
       }
     },
@@ -257,7 +260,7 @@
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
         Handler: (string) (len=3) "jwt",
-        Config: (json.RawMessage) (len=206) {
+        Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
           00000010  74 74 70 73 3a 2f 2f 6f  61 75 74 68 2e 63 65 72  |ttps://oauth.cer|
           00000020  62 65 72 61 75 74 68 2e  63 6f 6d 2f 2e 77 65 6c  |berauth.com/.wel|
@@ -269,8 +272,9 @@
           00000080  22 3a 5b 22 68 74 74 70  73 3a 2f 2f 61 70 69 2e  |":["https://api.|
           00000090  63 65 72 62 65 72 61 75  74 68 2e 63 6f 6d 22 5d  |cerberauth.com"]|
           000000a0  2c 22 74 72 75 73 74 65  64 5f 69 73 73 75 65 72  |,"trusted_issuer|
-          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 63 65 72  |s":["https://cer|
-          000000c0  62 65 72 61 75 74 68 2e  63 6f 6d 22 5d 7d        |berauth.com"]}|
+          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 6f 61 75  |s":["https://oau|
+          000000c0  74 68 2e 63 65 72 62 65  72 61 75 74 68 2e 63 6f  |th.cerberauth.co|
+          000000d0  6d 22 5d 7d                                       |m"]}|
         }
       }
     },
@@ -358,7 +362,7 @@
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
         Handler: (string) (len=3) "jwt",
-        Config: (json.RawMessage) (len=206) {
+        Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
           00000010  74 74 70 73 3a 2f 2f 6f  61 75 74 68 2e 63 65 72  |ttps://oauth.cer|
           00000020  62 65 72 61 75 74 68 2e  63 6f 6d 2f 2e 77 65 6c  |berauth.com/.wel|
@@ -370,8 +374,9 @@
           00000080  22 3a 5b 22 68 74 74 70  73 3a 2f 2f 61 70 69 2e  |":["https://api.|
           00000090  63 65 72 62 65 72 61 75  74 68 2e 63 6f 6d 22 5d  |cerberauth.com"]|
           000000a0  2c 22 74 72 75 73 74 65  64 5f 69 73 73 75 65 72  |,"trusted_issuer|
-          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 63 65 72  |s":["https://cer|
-          000000c0  62 65 72 61 75 74 68 2e  63 6f 6d 22 5d 7d        |berauth.com"]}|
+          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 6f 61 75  |s":["https://oau|
+          000000c0  74 68 2e 63 65 72 62 65  72 61 75 74 68 2e 63 6f  |th.cerberauth.co|
+          000000d0  6d 22 5d 7d                                       |m"]}|
         }
       }
     },
@@ -517,7 +522,7 @@
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
         Handler: (string) (len=3) "jwt",
-        Config: (json.RawMessage) (len=206) {
+        Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
           00000010  74 74 70 73 3a 2f 2f 6f  61 75 74 68 2e 63 65 72  |ttps://oauth.cer|
           00000020  62 65 72 61 75 74 68 2e  63 6f 6d 2f 2e 77 65 6c  |berauth.com/.wel|
@@ -529,8 +534,9 @@
           00000080  22 3a 5b 22 68 74 74 70  73 3a 2f 2f 61 70 69 2e  |":["https://api.|
           00000090  63 65 72 62 65 72 61 75  74 68 2e 63 6f 6d 22 5d  |cerberauth.com"]|
           000000a0  2c 22 74 72 75 73 74 65  64 5f 69 73 73 75 65 72  |,"trusted_issuer|
-          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 63 65 72  |s":["https://cer|
-          000000c0  62 65 72 61 75 74 68 2e  63 6f 6d 22 5d 7d        |berauth.com"]}|
+          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 6f 61 75  |s":["https://oau|
+          000000c0  74 68 2e 63 65 72 62 65  72 61 75 74 68 2e 63 6f  |th.cerberauth.co|
+          000000d0  6d 22 5d 7d                                       |m"]}|
         }
       }
     },
@@ -560,7 +566,7 @@
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
         Handler: (string) (len=3) "jwt",
-        Config: (json.RawMessage) (len=206) {
+        Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
           00000010  74 74 70 73 3a 2f 2f 6f  61 75 74 68 2e 63 65 72  |ttps://oauth.cer|
           00000020  62 65 72 61 75 74 68 2e  63 6f 6d 2f 2e 77 65 6c  |berauth.com/.wel|
@@ -572,8 +578,9 @@
           00000080  22 3a 5b 22 68 74 74 70  73 3a 2f 2f 61 70 69 2e  |":["https://api.|
           00000090  63 65 72 62 65 72 61 75  74 68 2e 63 6f 6d 22 5d  |cerberauth.com"]|
           000000a0  2c 22 74 72 75 73 74 65  64 5f 69 73 73 75 65 72  |,"trusted_issuer|
-          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 63 65 72  |s":["https://cer|
-          000000c0  62 65 72 61 75 74 68 2e  63 6f 6d 22 5d 7d        |berauth.com"]}|
+          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 6f 61 75  |s":["https://oau|
+          000000c0  74 68 2e 63 65 72 62 65  72 61 75 74 68 2e 63 6f  |th.cerberauth.co|
+          000000d0  6d 22 5d 7d                                       |m"]}|
         }
       }
     },
@@ -632,7 +639,7 @@
     Authenticators: ([]rule.Handler) (len=1) {
       (rule.Handler) {
         Handler: (string) (len=3) "jwt",
-        Config: (json.RawMessage) (len=206) {
+        Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
           00000010  74 74 70 73 3a 2f 2f 6f  61 75 74 68 2e 63 65 72  |ttps://oauth.cer|
           00000020  62 65 72 61 75 74 68 2e  63 6f 6d 2f 2e 77 65 6c  |berauth.com/.wel|
@@ -644,8 +651,9 @@
           00000080  22 3a 5b 22 68 74 74 70  73 3a 2f 2f 61 70 69 2e  |":["https://api.|
           00000090  63 65 72 62 65 72 61 75  74 68 2e 63 6f 6d 22 5d  |cerberauth.com"]|
           000000a0  2c 22 74 72 75 73 74 65  64 5f 69 73 73 75 65 72  |,"trusted_issuer|
-          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 63 65 72  |s":["https://cer|
-          000000c0  62 65 72 61 75 74 68 2e  63 6f 6d 22 5d 7d        |berauth.com"]}|
+          000000b0  73 22 3a 5b 22 68 74 74  70 73 3a 2f 2f 6f 61 75  |s":["https://oau|
+          000000c0  74 68 2e 63 65 72 62 65  72 61 75 74 68 2e 63 6f  |th.cerberauth.co|
+          000000d0  6d 22 5d 7d                                       |m"]}|
         }
       }
     },

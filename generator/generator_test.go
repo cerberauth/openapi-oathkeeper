@@ -10,16 +10,36 @@ import (
 
 	"github.com/bmizerany/assert"
 	"github.com/bradleyjkemp/cupaloy/v2"
+	"github.com/cerberauth/openapi-oathkeeper/authenticator"
 	"github.com/cerberauth/openapi-oathkeeper/config"
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/jarcoal/httpmock"
 	"github.com/ory/oathkeeper/rule"
 	"github.com/stretchr/testify/require"
 )
 
 var (
-	_, b, _, _ = runtime.Caller(0)
-	basepath   = filepath.Dir(b)
+	_, b, _, _           = runtime.Caller(0)
+	basepath             = filepath.Dir(b)
+	oidcConfigurationUrl = "https://oauth.cerberauth.com/.well-known/openid-configuration"
+	oidcConfiguration    = authenticator.OpenIdConfiguration{
+		Issuer:  "https://oauth.cerberauth.com",
+		JwksUri: "https://oauth.cerberauth.com/.well-known/jwks.json",
+	}
 )
+
+func setupSuite(tb testing.TB) func(tb testing.TB) {
+	httpmock.Activate()
+	resp, err := httpmock.NewJsonResponder(200, oidcConfiguration)
+	if err != nil {
+		tb.Fatal(err)
+	}
+	httpmock.RegisterResponder("GET", oidcConfigurationUrl, resp)
+
+	return func(tb testing.TB) {
+		defer httpmock.DeactivateAndReset()
+	}
+}
 
 func getRuleById(rules []rule.Rule, id string) *rule.Rule {
 	for _, r := range rules {
@@ -220,12 +240,15 @@ func TestGenerateOpenAPIWithoutSecurity(t *testing.T) {
 }
 
 func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
+	teardownSuite := setupSuite(t)
+	defer teardownSuite(t)
+
 	c, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls": []string{
-			"https://console.ory.sh/.well-known/jwks.json",
+			"https://oauth.cerberauth.com/.well-known/jwks.json",
 		},
 		"trusted_issuers": []string{
-			"https://console.ory.sh",
+			"https://oauth.cerberauth.com",
 		},
 		"required_scope": []string{
 			"write:pets",
@@ -268,7 +291,7 @@ func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
 			"https://oauth.cerberauth.com/.well-known/jwks.json",
 		},
 		"trusted_issuers": []string{
-			"https://cerberauth.com",
+			"https://oauth.cerberauth.com",
 		},
 		"required_scope": []string{
 			"write:pets",
@@ -314,7 +337,7 @@ func TestGenerateFromSimpleOpenAPIWithHttpBearer(t *testing.T) {
 			"https://oauth.cerberauth.com/.well-known/jwks.json",
 		},
 		"trusted_issuers": []string{
-			"https://cerberauth.com",
+			"https://oauth.cerberauth.com",
 		},
 		"required_scope": []string{},
 		"target_audience": []string{
@@ -352,12 +375,15 @@ func TestGenerateFromSimpleOpenAPIWithHttpBearer(t *testing.T) {
 }
 
 func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *testing.T) {
+	teardownSuite := setupSuite(t)
+	defer teardownSuite(t)
+
 	c, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls": []string{
-			"https://console.ory.sh/.well-known/jwks.json",
+			"https://oauth.cerberauth.com/.well-known/jwks.json",
 		},
 		"trusted_issuers": []string{
-			"https://console.ory.sh",
+			"https://oauth.cerberauth.com",
 		},
 		"required_scope": []string{
 			"write:pets",
@@ -433,12 +459,15 @@ func TestGenerateFromSimpleOpenAPIWithUpstreamUrlAndPath(t *testing.T) {
 }
 
 func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSecurityScheme(t *testing.T) {
+	teardownSuite := setupSuite(t)
+	defer teardownSuite(t)
+
 	c, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls": []string{
-			"https://console.ory.sh/.well-known/jwks.json",
+			"https://oauth.cerberauth.com/.well-known/jwks.json",
 		},
 		"trusted_issuers": []string{
-			"https://console.ory.sh",
+			"https://oauth.cerberauth.com",
 		},
 		"required_scope": []string{
 			"read:pets",
@@ -474,12 +503,15 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 }
 
 func TestGenerateFromPetstoreWithOpenIdConnect(t *testing.T) {
+	teardownSuite := setupSuite(t)
+	defer teardownSuite(t)
+
 	var authenticators = make(map[string]config.AuthenticatorRuleConfig)
 	authenticators["petstore_auth"] = config.AuthenticatorRuleConfig{
 		Handler: "jwt",
 		Config: map[string]interface{}{
 			"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
-			"trusted_issuers": []string{"https://cerberauth.com"},
+			"trusted_issuers": []string{"https://oauth.cerberauth.com"},
 			"target_audience": []string{"https://api.cerberauth.com"},
 		},
 	}

@@ -12,7 +12,7 @@ import (
 
 func TestAuthenticatorDefaultCreateAuthenticator(t *testing.T) {
 	jsonConfig, _ := json.Marshal(map[string]interface{}{
-		"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
+		"jwks_urls":       []string{"https://ory.projects.oryapis.com/.well-known/jwks.json"},
 		"trusted_issuers": []string{"https://oauth.cerberauth.com"},
 		"required_scope":  []string{},
 		"target_audience": []string{},
@@ -26,7 +26,7 @@ func TestAuthenticatorDefaultCreateAuthenticator(t *testing.T) {
 	}, &config.AuthenticatorRuleConfig{
 		Handler: "jwt",
 		Config: map[string]interface{}{
-			"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
+			"jwks_urls":       []string{"https://ory.projects.oryapis.com/.well-known/jwks.json"},
 			"trusted_issuers": []string{"https://oauth.cerberauth.com"},
 			"target_audience": []string{},
 		},
@@ -45,7 +45,7 @@ func TestAuthenticatorDefaultCreateAuthenticator(t *testing.T) {
 
 func TestAuthenticatorDefaultCreateAuthenticatorWithScopes(t *testing.T) {
 	jsonConfig, _ := json.Marshal(map[string]interface{}{
-		"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
+		"jwks_urls":       []string{"https://ory.projects.oryapis.com/.well-known/jwks.json"},
 		"trusted_issuers": []string{"https://oauth.cerberauth.com"},
 		"required_scope":  []string{"resource:read", "resource:write"},
 		"target_audience": []string{"https://api.cerberauth.com"},
@@ -60,7 +60,7 @@ func TestAuthenticatorDefaultCreateAuthenticatorWithScopes(t *testing.T) {
 	}, &config.AuthenticatorRuleConfig{
 		Handler: "jwt",
 		Config: map[string]interface{}{
-			"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
+			"jwks_urls":       []string{"https://ory.projects.oryapis.com/.well-known/jwks.json"},
 			"trusted_issuers": []string{"https://oauth.cerberauth.com"},
 			"target_audience": []string{"https://api.cerberauth.com"},
 		},
