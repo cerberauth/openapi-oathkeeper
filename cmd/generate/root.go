@@ -13,6 +13,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/ory/oathkeeper/rule"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 )
 
 var (
@@ -24,7 +25,34 @@ var (
 	outputpath  string
 	upstreamUrl string
 	serverUrls  []string
+
+	jsonOutput bool
+	yamlOutput bool
 )
+
+func encodeJSON(rules []rule.Rule) (*bytes.Buffer, error) {
+	outputBuf := new(bytes.Buffer)
+	enc := json.NewEncoder(outputBuf)
+	enc.SetEscapeHTML(false)
+	enc.SetIndent("", "    ")
+
+	if encodeErr := enc.Encode(rules); encodeErr != nil {
+		return nil, encodeErr
+	}
+
+	return outputBuf, nil
+}
+
+func encodeYAML(rules []rule.Rule) (*bytes.Buffer, error) {
+	outputBuf := new(bytes.Buffer)
+	enc := yaml.NewEncoder(outputBuf)
+
+	if encodeErr := enc.Encode(rules); encodeErr != nil {
+		return nil, encodeErr
+	}
+
+	return outputBuf, nil
+}
 
 func NewGenerateCmd() (generateCmd *cobra.Command) {
 	generateCmd = &cobra.Command{
@@ -83,23 +111,29 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 				log.Fatal(err)
 			}
 
-			jsonBuf := new(bytes.Buffer)
-			enc := json.NewEncoder(jsonBuf)
-			enc.SetEscapeHTML(false)
-			enc.SetIndent("", "    ")
+			var outputBuf *bytes.Buffer
+			var encodeErr error
+			if yamlOutput && !jsonOutput {
+				outputBuf, encodeErr = encodeYAML(rules)
+			} else {
+				outputBuf, encodeErr = encodeJSON(rules)
+			}
 
-			if encodeErr := enc.Encode(rules); encodeErr != nil {
-				log.Fatal(encodeErr)
+			if encodeErr != nil {
+				log.Fatal(err)
 			}
 
 			if outputpath != "" {
-				os.WriteFile(outputpath, jsonBuf.Bytes(), 0644)
+				os.WriteFile(outputpath, outputBuf.Bytes(), 0644)
 				return
 			}
 
-			os.Stdout.Write(jsonBuf.Bytes())
+			os.Stdout.Write(outputBuf.Bytes())
 		},
 	}
+
+	generateCmd.PersistentFlags().BoolVarP(&jsonOutput, "json", "", false, "Use JSON as output format")
+	generateCmd.PersistentFlags().BoolVarP(&yamlOutput, "yaml", "", false, "Use YAML as output format")
 
 	generateCmd.PersistentFlags().StringVarP(&configFilePath, "config", "c", "", "Path to one .yaml, .yml, config file.")
 	generateCmd.PersistentFlags().StringVarP(&fileurl, "url", "u", "", "OpenAPI URL")
