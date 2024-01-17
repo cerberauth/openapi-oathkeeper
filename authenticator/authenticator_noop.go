@@ -1,8 +1,8 @@
 package authenticator
 
 import (
+	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/ory/oathkeeper/rule"
 )
 
 var _ Authenticator = (*AuthenticatorNoop)(nil)
@@ -13,8 +13,8 @@ func NewAuthenticatorNoop() (*AuthenticatorNoop, error) {
 	return &AuthenticatorNoop{}, nil
 }
 
-func (*AuthenticatorNoop) CreateAuthenticator(s *openapi3.SecurityRequirement) (*rule.Handler, error) {
-	return &rule.Handler{
+func (*AuthenticatorNoop) CreateAuthenticator(s *openapi3.SecurityRequirement) (*oathkeeper.RuleHandler, error) {
+	return &oathkeeper.RuleHandler{
 		Handler: "noop",
 	}, nil
 }

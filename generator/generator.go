@@ -6,8 +6,8 @@ import (
 
 	"github.com/cerberauth/openapi-oathkeeper/authenticator"
 	"github.com/cerberauth/openapi-oathkeeper/config"
+	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/ory/oathkeeper/rule"
 )
 
 type Generator struct {
@@ -17,7 +17,7 @@ type Generator struct {
 	authenticators map[string]authenticator.Authenticator
 }
 
-type RulesById []rule.Rule
+type RulesById []oathkeeper.Rule
 
 func (r RulesById) Len() int           { return len(r) }
 func (r RulesById) Swap(i, j int)      { r[i], r[j] = r[j], r[i] }
@@ -31,13 +31,13 @@ func (g *Generator) computeId(operationId string) string {
 	return g.cfg.Prefix + ":" + operationId
 }
 
-func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) (*rule.Rule, error) {
+func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) (*oathkeeper.Rule, error) {
 	match, matchRuleErr := createMatchRule(g.cfg.ServerUrls, verb, path, &o.Parameters)
 	if matchRuleErr != nil {
 		return nil, matchRuleErr
 	}
 
-	var authenticators = []rule.Handler{}
+	var authenticators = []oathkeeper.RuleHandler{}
 	appendAuthenticator := func(sr *openapi3.SecurityRequirements) error {
 		for _, s := range *sr {
 			for k := range s {
@@ -67,13 +67,13 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 		authenticators = append(authenticators, *ar)
 	}
 
-	return &rule.Rule{
+	return &oathkeeper.Rule{
 		ID:             g.computeId(o.OperationID),
 		Description:    o.Description,
 		Match:          match,
 		Upstream:       g.cfg.Upstream,
 		Authenticators: authenticators,
-		Authorizer: rule.Handler{
+		Authorizer: oathkeeper.RuleHandler{
 			Handler: "allow",
 		},
 		Mutators: g.cfg.Mutators,
@@ -134,8 +134,8 @@ func NewGenerator(ctx context.Context, d *openapi3.T, cfg *config.Config) (*Gene
 	}, nil
 }
 
-func (g *Generator) Generate() ([]rule.Rule, error) {
-	rules := []rule.Rule{}
+func (g *Generator) Generate() ([]oathkeeper.Rule, error) {
+	rules := []oathkeeper.Rule{}
 	for path, p := range g.doc.Paths {
 		for verb, o := range p.Operations() {
 			rule, createRuleErr := g.createRule(verb, path, o)

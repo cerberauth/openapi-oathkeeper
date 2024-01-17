@@ -5,10 +5,10 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/hedhyw/rex/pkg/dialect"
 	"github.com/hedhyw/rex/pkg/rex"
-	"github.com/ory/oathkeeper/rule"
 )
 
 var (
@@ -87,7 +87,7 @@ func createParamsMatchingGroup(name string, params *openapi3.Parameters) string 
 	return encapsulateRegexToken(t)
 }
 
-func createMatchRule(serverUrls []string, v string, p string, params *openapi3.Parameters) (*rule.Match, error) {
+func createMatchRule(serverUrls []string, v string, p string, params *openapi3.Parameters) (*oathkeeper.RuleMatch, error) {
 	pathTokens := []string{createServerUrlMatchingGroup(serverUrls)}
 	for _, dir := range strings.Split(p, "/") {
 		if dir == "" {
@@ -102,7 +102,7 @@ func createMatchRule(serverUrls []string, v string, p string, params *openapi3.P
 	}
 
 	u := strings.Join(pathTokens, "/")
-	match := &rule.Match{
+	match := &oathkeeper.RuleMatch{
 		URL:     u,
 		Methods: []string{v},
 	}

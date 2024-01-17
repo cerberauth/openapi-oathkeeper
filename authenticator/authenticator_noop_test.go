@@ -4,12 +4,12 @@ import (
 	"testing"
 
 	"github.com/bmizerany/assert"
+	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/ory/oathkeeper/rule"
 )
 
 func TestNoopAuthenticatorCreateAuthenticator(t *testing.T) {
-	expectedAuthenticator := &rule.Handler{
+	expectedAuthenticator := &oathkeeper.RuleHandler{
 		Handler: "noop",
 	}
 	a, newAuthenticatorErr := NewAuthenticatorNoop()

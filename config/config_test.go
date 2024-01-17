@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ory/oathkeeper/rule"
+	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -61,17 +61,17 @@ server_urls:
 
 	// then
 	assert.NoError(t, err)
-	assert.Equal(t, []rule.Handler{
-		rule.Handler{
+	assert.Equal(t, []oathkeeper.RuleHandler{
+		{
 			Handler: "noop",
 		},
 	}, cfg.Mutators)
-	assert.Equal(t, []rule.ErrorHandler{
-		rule.ErrorHandler{
+	assert.Equal(t, []oathkeeper.RuleErrorHandler{
+		{
 			Handler: "json",
 		},
 	}, cfg.Errors)
-	assert.Equal(t, rule.Upstream{}, cfg.Upstream)
+	assert.Equal(t, oathkeeper.RuleUpstream{}, cfg.Upstream)
 }
 
 func TestLoadWithConfigFileWithRules(t *testing.T) {

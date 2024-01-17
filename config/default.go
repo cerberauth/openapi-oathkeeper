@@ -1,22 +1,24 @@
 package config
 
-import "github.com/ory/oathkeeper/rule"
+import (
+	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
+)
 
 var defaultConfig = map[string]interface{}{
-	"authorizers": []rule.Handler{
-		rule.Handler{
+	"authorizers": []oathkeeper.RuleHandler{
+		{
 			Handler: "allow",
 		},
 	},
-	"mutators": []rule.Handler{
-		rule.Handler{
+	"mutators": []oathkeeper.RuleHandler{
+		{
 			Handler: "noop",
 		},
 	},
-	"errors": []rule.ErrorHandler{
-		rule.ErrorHandler{
+	"errors": []oathkeeper.RuleErrorHandler{
+		{
 			Handler: "json",
 		},
 	},
-	"upstream": rule.Upstream{},
+	"upstream": oathkeeper.RuleUpstream{},
 }

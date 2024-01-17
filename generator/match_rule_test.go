@@ -4,13 +4,13 @@ import (
 	"testing"
 
 	"github.com/bmizerany/assert"
+	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/ory/oathkeeper/rule"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGenerateMatchRule(t *testing.T) {
-	expectedMatchingRule := rule.Match{
+	expectedMatchingRule := oathkeeper.RuleMatch{
 		URL:     "/api/v3",
 		Methods: []string{"GET"},
 	}
@@ -21,7 +21,7 @@ func TestGenerateMatchRule(t *testing.T) {
 }
 
 func TestGenerateMatchRuleWithServerUrlEndingSlash(t *testing.T) {
-	expectedMatchingRule := rule.Match{
+	expectedMatchingRule := oathkeeper.RuleMatch{
 		URL:     "/api/v3",
 		Methods: []string{"GET"},
 	}
@@ -32,7 +32,7 @@ func TestGenerateMatchRuleWithServerUrlEndingSlash(t *testing.T) {
 }
 
 func TestGenerateMatchRuleWithMultipleServerUrls(t *testing.T) {
-	expectedMatchingRule := rule.Match{
+	expectedMatchingRule := oathkeeper.RuleMatch{
 		URL:     "<(/api/v3|https://cerberauth\\.com/api/v3)>",
 		Methods: []string{"GET"},
 	}
@@ -43,7 +43,7 @@ func TestGenerateMatchRuleWithMultipleServerUrls(t *testing.T) {
 }
 
 func TestGenerateMatchRuleWithNoPathParams(t *testing.T) {
-	expectedMatchingRule := rule.Match{
+	expectedMatchingRule := oathkeeper.RuleMatch{
 		URL:     "/<.+>/resource/<.+>",
 		Methods: []string{"GET"},
 	}
@@ -54,7 +54,7 @@ func TestGenerateMatchRuleWithNoPathParams(t *testing.T) {
 }
 
 func TestGenerateMatchRuleWithUnknownPathParams(t *testing.T) {
-	expectedMatchingRule := rule.Match{
+	expectedMatchingRule := oathkeeper.RuleMatch{
 		URL:     "/<.+>/resource/<.+>",
 		Methods: []string{"GET"},
 	}
@@ -65,7 +65,7 @@ func TestGenerateMatchRuleWithUnknownPathParams(t *testing.T) {
 }
 
 func TestGenerateMatchRuleWithStringPathParams(t *testing.T) {
-	expectedMatchingRule := rule.Match{
+	expectedMatchingRule := oathkeeper.RuleMatch{
 		URL:     "/resource/<.+>",
 		Methods: []string{"GET"},
 	}
@@ -80,7 +80,7 @@ func TestGenerateMatchRuleWithStringPathParams(t *testing.T) {
 }
 
 func TestGenerateMatchRuleWithNumberPathParams(t *testing.T) {
-	expectedMatchingRule := rule.Match{
+	expectedMatchingRule := oathkeeper.RuleMatch{
 		URL:     "/resource/<((\\x2D|\\+)?\\d+(?:\\.\\d+)?)>",
 		Methods: []string{"GET"},
 	}
@@ -95,7 +95,7 @@ func TestGenerateMatchRuleWithNumberPathParams(t *testing.T) {
 }
 
 func TestGenerateMatchRuleWithIntegerPathParams(t *testing.T) {
-	expectedMatchingRule := rule.Match{
+	expectedMatchingRule := oathkeeper.RuleMatch{
 		URL:     "/resource/<\\d+>",
 		Methods: []string{"GET"},
 	}
@@ -110,7 +110,7 @@ func TestGenerateMatchRuleWithIntegerPathParams(t *testing.T) {
 }
 
 func TestGenerateMatchRuleWithBooleanPathParams(t *testing.T) {
-	expectedMatchingRule := rule.Match{
+	expectedMatchingRule := oathkeeper.RuleMatch{
 		URL:     "/resource/<.+>",
 		Methods: []string{"GET"},
 	}
@@ -125,7 +125,7 @@ func TestGenerateMatchRuleWithBooleanPathParams(t *testing.T) {
 }
 
 func TestGenerateMatchRuleWithArrayPathParams(t *testing.T) {
-	expectedMatchingRule := rule.Match{
+	expectedMatchingRule := oathkeeper.RuleMatch{
 		URL:     "/resource/<.+>",
 		Methods: []string{"GET"},
 	}
@@ -140,7 +140,7 @@ func TestGenerateMatchRuleWithArrayPathParams(t *testing.T) {
 }
 
 func TestGenerateMatchRuleWithObjectPathParams(t *testing.T) {
-	expectedMatchingRule := rule.Match{
+	expectedMatchingRule := oathkeeper.RuleMatch{
 		URL:     "/resource/<.+>",
 		Methods: []string{"GET"},
 	}

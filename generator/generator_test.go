@@ -12,9 +12,9 @@ import (
 	"github.com/bradleyjkemp/cupaloy/v2"
 	"github.com/cerberauth/openapi-oathkeeper/authenticator"
 	"github.com/cerberauth/openapi-oathkeeper/config"
+	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/jarcoal/httpmock"
-	"github.com/ory/oathkeeper/rule"
 	"github.com/stretchr/testify/require"
 )
 
@@ -41,7 +41,7 @@ func setupSuite(tb testing.TB) func(tb testing.TB) {
 	}
 }
 
-func getRuleById(rules []rule.Rule, id string) *rule.Rule {
+func getRuleById(rules []oathkeeper.Rule, id string) *oathkeeper.Rule {
 	for _, r := range rules {
 		if r.ID == id {
 			return &r
@@ -62,20 +62,20 @@ func newGenerator(docpath string, cfg *config.Config) (*Generator, error) {
 }
 
 func TestGenerateFromSimpleOpenAPI(t *testing.T) {
-	expectedRules := []rule.Rule{
+	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
-			Match: &rule.Match{
+			Match: &oathkeeper.RuleMatch{
 				URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
-			Authenticators: []rule.Handler{
+			Authenticators: []oathkeeper.RuleHandler{
 				{
 					Handler: "noop",
 				},
 			},
-			Authorizer: rule.Handler{
+			Authorizer: oathkeeper.RuleHandler{
 				Handler: "allow",
 			},
 		},
@@ -92,20 +92,20 @@ func TestGenerateFromSimpleOpenAPI(t *testing.T) {
 }
 
 func TestGenerateFromSimpleOpenAPIWithPrefixId(t *testing.T) {
-	expectedRules := []rule.Rule{
+	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "prefix:findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
-			Match: &rule.Match{
+			Match: &oathkeeper.RuleMatch{
 				URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
-			Authenticators: []rule.Handler{
+			Authenticators: []oathkeeper.RuleHandler{
 				{
 					Handler: "noop",
 				},
 			},
-			Authorizer: rule.Handler{
+			Authorizer: oathkeeper.RuleHandler{
 				Handler: "allow",
 			},
 		},
@@ -124,20 +124,20 @@ func TestGenerateFromSimpleOpenAPIWithPrefixId(t *testing.T) {
 }
 
 func TestGenerateFromSimpleOpenAPIWithOneServerUrl(t *testing.T) {
-	expectedRules := []rule.Rule{
+	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
-			Match: &rule.Match{
+			Match: &oathkeeper.RuleMatch{
 				URL:     "https://www.cerberauth.com/api/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
-			Authenticators: []rule.Handler{
+			Authenticators: []oathkeeper.RuleHandler{
 				{
 					Handler: "noop",
 				},
 			},
-			Authorizer: rule.Handler{
+			Authorizer: oathkeeper.RuleHandler{
 				Handler: "allow",
 			},
 		},
@@ -156,20 +156,20 @@ func TestGenerateFromSimpleOpenAPIWithOneServerUrl(t *testing.T) {
 }
 
 func TestGenerateFromSimpleOpenAPIWithSeveralServerUrls(t *testing.T) {
-	expectedRules := []rule.Rule{
+	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
-			Match: &rule.Match{
+			Match: &oathkeeper.RuleMatch{
 				URL:     "<(https://www\\.cerberauth\\.com/api|https://api\\.cerberauth\\.com/api)>/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
-			Authenticators: []rule.Handler{
+			Authenticators: []oathkeeper.RuleHandler{
 				{
 					Handler: "noop",
 				},
 			},
-			Authorizer: rule.Handler{
+			Authorizer: oathkeeper.RuleHandler{
 				Handler: "allow",
 			},
 		},
@@ -191,21 +191,21 @@ func TestGenerateFromSimpleOpenAPIWithSeveralServerUrls(t *testing.T) {
 }
 
 func TestGenerateOpenAPIWithoutSecurity(t *testing.T) {
-	expectedRules := []rule.Rule{
+	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "withEmptySecurity",
 			Description: "",
-			Match: &rule.Match{
+			Match: &oathkeeper.RuleMatch{
 				URL:     "https://api.cerberauth.com/v1/withEmptySecurity",
 				Methods: []string{"GET"},
 			},
-			Authenticators: []rule.Handler{
+			Authenticators: []oathkeeper.RuleHandler{
 				{
 					Handler: "noop",
 					Config:  nil,
 				},
 			},
-			Authorizer: rule.Handler{
+			Authorizer: oathkeeper.RuleHandler{
 				Handler: "allow",
 			},
 		},
@@ -213,17 +213,17 @@ func TestGenerateOpenAPIWithoutSecurity(t *testing.T) {
 		{
 			ID:          "withSecurity",
 			Description: "",
-			Match: &rule.Match{
+			Match: &oathkeeper.RuleMatch{
 				URL:     "https://api.cerberauth.com/v1/withSecurity",
 				Methods: []string{"GET"},
 			},
-			Authenticators: []rule.Handler{
+			Authenticators: []oathkeeper.RuleHandler{
 				{
 					Handler: "noop",
 					Config:  nil,
 				},
 			},
-			Authorizer: rule.Handler{
+			Authorizer: oathkeeper.RuleHandler{
 				Handler: "allow",
 			},
 		},
@@ -255,21 +255,21 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 			"read:pets",
 		},
 	})
-	expectedRules := []rule.Rule{
+	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
-			Match: &rule.Match{
+			Match: &oathkeeper.RuleMatch{
 				URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
-			Authenticators: []rule.Handler{
+			Authenticators: []oathkeeper.RuleHandler{
 				{
 					Handler: "jwt",
 					Config:  c,
 				},
 			},
-			Authorizer: rule.Handler{
+			Authorizer: oathkeeper.RuleHandler{
 				Handler: "allow",
 			},
 		},
@@ -301,21 +301,21 @@ func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
 			"https://api.cerberauth.com",
 		},
 	})
-	expectedRules := []rule.Rule{
+	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
-			Match: &rule.Match{
+			Match: &oathkeeper.RuleMatch{
 				URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
-			Authenticators: []rule.Handler{
+			Authenticators: []oathkeeper.RuleHandler{
 				{
 					Handler: "jwt",
 					Config:  c,
 				},
 			},
-			Authorizer: rule.Handler{
+			Authorizer: oathkeeper.RuleHandler{
 				Handler: "allow",
 			},
 		},
@@ -344,21 +344,21 @@ func TestGenerateFromSimpleOpenAPIWithHttpBearer(t *testing.T) {
 			"https://api.cerberauth.com",
 		},
 	})
-	expectedRules := []rule.Rule{
+	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
-			Match: &rule.Match{
+			Match: &oathkeeper.RuleMatch{
 				URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
-			Authenticators: []rule.Handler{
+			Authenticators: []oathkeeper.RuleHandler{
 				{
 					Handler: "jwt",
 					Config:  c,
 				},
 			},
-			Authorizer: rule.Handler{
+			Authorizer: oathkeeper.RuleHandler{
 				Handler: "allow",
 			},
 		},
@@ -390,20 +390,20 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 			"read:pets",
 		},
 	})
-	expectedRule := rule.Rule{
+	expectedRule := oathkeeper.Rule{
 		ID:          "updatePet",
 		Description: "Update an existing pet by Id",
-		Match: &rule.Match{
+		Match: &oathkeeper.RuleMatch{
 			URL:     "https://petstore.swagger.io/api/v3/pet",
 			Methods: []string{"PUT"},
 		},
-		Authenticators: []rule.Handler{
+		Authenticators: []oathkeeper.RuleHandler{
 			{
 				Handler: "jwt",
 				Config:  c,
 			},
 		},
-		Authorizer: rule.Handler{
+		Authorizer: oathkeeper.RuleHandler{
 			Handler: "allow",
 		},
 	}
@@ -419,31 +419,31 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 }
 
 func TestGenerateFromSimpleOpenAPIWithUpstreamUrlAndPath(t *testing.T) {
-	expectedRules := []rule.Rule{
+	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "prefix:findPetsByStatus",
 			Description: "Multiple status values can be provided with comma separated strings",
-			Match: &rule.Match{
+			Match: &oathkeeper.RuleMatch{
 				URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
 				Methods: []string{"GET"},
 			},
-			Upstream: rule.Upstream{
+			Upstream: oathkeeper.RuleUpstream{
 				URL:       "https://petstore.com",
 				StripPath: "/api",
 			},
-			Authenticators: []rule.Handler{
+			Authenticators: []oathkeeper.RuleHandler{
 				{
 					Handler: "noop",
 				},
 			},
-			Authorizer: rule.Handler{
+			Authorizer: oathkeeper.RuleHandler{
 				Handler: "allow",
 			},
 		},
 	}
 	g, newGeneratorErr := newGenerator("../test/stub/simple.openapi.json", &config.Config{
 		Prefix: "prefix",
-		Upstream: rule.Upstream{
+		Upstream: oathkeeper.RuleUpstream{
 			URL:       "https://petstore.com",
 			StripPath: "/api",
 		},
@@ -473,20 +473,20 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 			"read:pets",
 		},
 	})
-	expectedRule := rule.Rule{
+	expectedRule := oathkeeper.Rule{
 		ID:          "findPetsByStatus",
 		Description: "Multiple status values can be provided with comma separated strings",
-		Match: &rule.Match{
+		Match: &oathkeeper.RuleMatch{
 			URL:     "https://petstore.swagger.io/api/v3/pet/findByStatus",
 			Methods: []string{"GET"},
 		},
-		Authenticators: []rule.Handler{
+		Authenticators: []oathkeeper.RuleHandler{
 			{
 				Handler: "jwt",
 				Config:  c,
 			},
 		},
-		Authorizer: rule.Handler{
+		Authorizer: oathkeeper.RuleHandler{
 			Handler: "allow",
 		},
 	}
