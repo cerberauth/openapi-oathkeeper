@@ -5,12 +5,12 @@ import (
 	"strings"
 
 	"github.com/cerberauth/openapi-oathkeeper/config"
+	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/ory/oathkeeper/rule"
 )
 
 type Authenticator interface {
-	CreateAuthenticator(s *openapi3.SecurityRequirement) (*rule.Handler, error)
+	CreateAuthenticator(s *openapi3.SecurityRequirement) (*oathkeeper.RuleHandler, error)
 }
 
 var (

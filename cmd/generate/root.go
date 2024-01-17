@@ -10,8 +10,8 @@ import (
 
 	"github.com/cerberauth/openapi-oathkeeper/config"
 	"github.com/cerberauth/openapi-oathkeeper/generator"
+	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/ory/oathkeeper/rule"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )
@@ -30,7 +30,7 @@ var (
 	yamlOutput bool
 )
 
-func encodeJSON(rules []rule.Rule) (*bytes.Buffer, error) {
+func encodeJSON(rules []oathkeeper.Rule) (*bytes.Buffer, error) {
 	outputBuf := new(bytes.Buffer)
 	enc := json.NewEncoder(outputBuf)
 	enc.SetEscapeHTML(false)
@@ -43,7 +43,7 @@ func encodeJSON(rules []rule.Rule) (*bytes.Buffer, error) {
 	return outputBuf, nil
 }
 
-func encodeYAML(rules []rule.Rule) (*bytes.Buffer, error) {
+func encodeYAML(rules []oathkeeper.Rule) (*bytes.Buffer, error) {
 	outputBuf := new(bytes.Buffer)
 	enc := yaml.NewEncoder(outputBuf)
 
@@ -74,7 +74,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 				cfg = &config.Config{
 					Prefix:     prefix,
 					ServerUrls: serverUrls,
-					Upstream: rule.Upstream{
+					Upstream: oathkeeper.RuleUpstream{
 						URL: upstreamUrl,
 					},
 				}

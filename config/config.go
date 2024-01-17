@@ -5,22 +5,22 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/confmap"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/v2"
-	"github.com/ory/oathkeeper/rule"
 )
 
 type Config struct {
-	Prefix     string        `json:"prefix" yaml:"prefix"`
-	ServerUrls []string      `json:"server_urls" yaml:"server_urls"`
-	Upstream   rule.Upstream `json:"upstream" yaml:"upstream"`
+	Prefix     string                  `json:"prefix" yaml:"prefix"`
+	ServerUrls []string                `json:"server_urls" yaml:"server_urls"`
+	Upstream   oathkeeper.RuleUpstream `json:"upstream" yaml:"upstream"`
 
 	Authenticators map[string]AuthenticatorRuleConfig `json:"authenticators" yaml:"authenticators"`
-	Authorizer     rule.Handler                       `json:"authorizer" yaml:"authorizer"`
-	Mutators       []rule.Handler                     `json:"mutators" yaml:"mutators"`
-	Errors         []rule.ErrorHandler                `json:"errors" yaml:"errors"`
+	Authorizer     oathkeeper.RuleHandler             `json:"authorizer" yaml:"authorizer"`
+	Mutators       []oathkeeper.RuleHandler           `json:"mutators" yaml:"mutators"`
+	Errors         []oathkeeper.RuleErrorHandler      `json:"errors" yaml:"errors"`
 }
 
 type AuthenticatorRuleConfig struct {

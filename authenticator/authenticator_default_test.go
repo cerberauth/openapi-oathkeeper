@@ -6,8 +6,8 @@ import (
 
 	"github.com/bmizerany/assert"
 	"github.com/cerberauth/openapi-oathkeeper/config"
+	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/ory/oathkeeper/rule"
 )
 
 func TestAuthenticatorDefaultCreateAuthenticator(t *testing.T) {
@@ -17,7 +17,7 @@ func TestAuthenticatorDefaultCreateAuthenticator(t *testing.T) {
 		"required_scope":  []string{},
 		"target_audience": []string{},
 	})
-	expectedAuthenticator := rule.Handler{
+	expectedAuthenticator := oathkeeper.RuleHandler{
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}
@@ -51,7 +51,7 @@ func TestAuthenticatorDefaultCreateAuthenticatorWithScopes(t *testing.T) {
 		"target_audience": []string{"https://api.cerberauth.com"},
 	})
 
-	expectedAuthenticator := &rule.Handler{
+	expectedAuthenticator := &oathkeeper.RuleHandler{
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}

@@ -1,16 +1,16 @@
-([]rule.Rule) (len=19) {
-  (rule.Rule) {
+([]oathkeeper.Rule) (len=19) {
+  (oathkeeper.Rule) {
     ID: (string) (len=6) "addPet",
     Version: (string) "",
     Description: (string) (len=26) "Add a new pet to the store",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
       URL: (string) (len=64) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=3) "jwt",
         Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
@@ -30,118 +30,114 @@
         }
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=10) "createUser",
     Version: (string) "",
     Description: (string) (len=44) "This can only be done by the logged in user.",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
       URL: (string) (len=65) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=4) "noop",
         Config: (json.RawMessage) <nil>
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=24) "createUsersWithListInput",
     Version: (string) "",
     Description: (string) (len=44) "Creates list of users with given input array",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
       URL: (string) (len=80) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/createWithList"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=4) "noop",
         Config: (json.RawMessage) <nil>
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=11) "deleteOrder",
     Version: (string) "",
     Description: (string) (len=113) "For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=6) "DELETE"
       },
       URL: (string) (len=78) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/store/order/<\\d+>"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=4) "noop",
         Config: (json.RawMessage) <nil>
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=9) "deletePet",
     Version: (string) "",
     Description: (string) "",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=6) "DELETE"
       },
       URL: (string) (len=70) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet/<\\d+>"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=3) "jwt",
         Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
@@ -161,60 +157,58 @@
         }
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=10) "deleteUser",
     Version: (string) "",
     Description: (string) (len=44) "This can only be done by the logged in user.",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=6) "DELETE"
       },
       URL: (string) (len=70) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/<.+>"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=4) "noop",
         Config: (json.RawMessage) <nil>
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=16) "findPetsByStatus",
     Version: (string) "",
     Description: (string) (len=67) "Multiple status values can be provided with comma separated strings",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
       URL: (string) (len=77) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet/findByStatus"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=3) "jwt",
         Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
@@ -234,31 +228,30 @@
         }
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=14) "findPetsByTags",
     Version: (string) "",
     Description: (string) (len=93) "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
       URL: (string) (len=75) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet/findByTags"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=3) "jwt",
         Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
@@ -278,89 +271,86 @@
         }
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=12) "getInventory",
     Version: (string) "",
     Description: (string) (len=43) "Returns a map of status codes to quantities",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
       URL: (string) (len=76) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/store/inventory"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=4) "noop",
         Config: (json.RawMessage) <nil>
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=12) "getOrderById",
     Version: (string) "",
     Description: (string) (len=98) "For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
       URL: (string) (len=78) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/store/order/<\\d+>"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=4) "noop",
         Config: (json.RawMessage) <nil>
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=10) "getPetById",
     Version: (string) "",
     Description: (string) (len=20) "Returns a single pet",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
       URL: (string) (len=70) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet/<\\d+>"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=3) "jwt",
         Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
@@ -380,147 +370,142 @@
         }
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=13) "getUserByName",
     Version: (string) "",
     Description: (string) "",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
       URL: (string) (len=70) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/<.+>"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=4) "noop",
         Config: (json.RawMessage) <nil>
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=9) "loginUser",
     Version: (string) "",
     Description: (string) "",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
       URL: (string) (len=71) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/login"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=4) "noop",
         Config: (json.RawMessage) <nil>
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=10) "logoutUser",
     Version: (string) "",
     Description: (string) "",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=3) "GET"
       },
       URL: (string) (len=72) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/logout"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=4) "noop",
         Config: (json.RawMessage) <nil>
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=10) "placeOrder",
     Version: (string) "",
     Description: (string) (len=30) "Place a new order in the store",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
       URL: (string) (len=72) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/store/order"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=4) "noop",
         Config: (json.RawMessage) <nil>
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=9) "updatePet",
     Version: (string) "",
     Description: (string) (len=28) "Update an existing pet by Id",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=3) "PUT"
       },
       URL: (string) (len=64) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=3) "jwt",
         Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
@@ -540,31 +525,30 @@
         }
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=17) "updatePetWithForm",
     Version: (string) "",
     Description: (string) "",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
       URL: (string) (len=70) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet/<\\d+>"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=3) "jwt",
         Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
@@ -584,60 +568,58 @@
         }
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=10) "updateUser",
     Version: (string) "",
     Description: (string) (len=44) "This can only be done by the logged in user.",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=3) "PUT"
       },
       URL: (string) (len=70) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/<.+>"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=4) "noop",
         Config: (json.RawMessage) <nil>
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   },
-  (rule.Rule) {
+  (oathkeeper.Rule) {
     ID: (string) (len=10) "uploadFile",
     Version: (string) "",
     Description: (string) "",
-    Match: (*rule.Match)({
+    Match: (*oathkeeper.RuleMatch)({
       Methods: ([]string) (len=1) {
         (string) (len=4) "POST"
       },
       URL: (string) (len=82) "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/pet/<\\d+>/uploadImage"
     }),
-    Authenticators: ([]rule.Handler) (len=1) {
-      (rule.Handler) {
+    Authenticators: ([]oathkeeper.RuleHandler) (len=1) {
+      (oathkeeper.RuleHandler) {
         Handler: (string) (len=3) "jwt",
         Config: (json.RawMessage) (len=212) {
           00000000  7b 22 6a 77 6b 73 5f 75  72 6c 73 22 3a 5b 22 68  |{"jwks_urls":["h|
@@ -657,17 +639,16 @@
         }
       }
     },
-    Authorizer: (rule.Handler) {
+    Authorizer: (oathkeeper.RuleHandler) {
       Handler: (string) (len=5) "allow",
       Config: (json.RawMessage) <nil>
     },
-    Mutators: ([]rule.Handler) <nil>,
-    Errors: ([]rule.ErrorHandler) <nil>,
-    Upstream: (rule.Upstream) {
+    Mutators: ([]oathkeeper.RuleHandler) <nil>,
+    Errors: ([]oathkeeper.RuleErrorHandler) <nil>,
+    Upstream: (oathkeeper.RuleUpstream) {
       PreserveHost: (bool) false,
       StripPath: (string) "",
       URL: (string) ""
-    },
-    matchingEngine: (rule.MatchingEngine) <nil>
+    }
   }
 }

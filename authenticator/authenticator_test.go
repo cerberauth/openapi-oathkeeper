@@ -6,9 +6,9 @@ import (
 
 	"github.com/bmizerany/assert"
 	"github.com/cerberauth/openapi-oathkeeper/config"
+	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/jarcoal/httpmock"
-	"github.com/ory/oathkeeper/rule"
 )
 
 var (
@@ -38,7 +38,7 @@ func TestNewAuthenticatorFromSecurityScheme(t *testing.T) {
 		"trusted_issuers": []string{"https://oauth.cerberauth.com"},
 		"required_scope":  []string{},
 	})
-	expectedAuthenticator := &rule.Handler{
+	expectedAuthenticator := &oathkeeper.RuleHandler{
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}
@@ -70,7 +70,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnect(t *testing.T)
 		"trusted_issuers": []string{"https://oauth.cerberauth.com"},
 		"required_scope":  []string{},
 	})
-	expectedAuthenticator := &rule.Handler{
+	expectedAuthenticator := &oathkeeper.RuleHandler{
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}
@@ -98,7 +98,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithLowercaseT
 		"trusted_issuers": []string{"https://oauth.cerberauth.com"},
 		"required_scope":  []string{},
 	})
-	expectedAuthenticator := &rule.Handler{
+	expectedAuthenticator := &oathkeeper.RuleHandler{
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}
@@ -126,7 +126,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithConfig(t *
 		"trusted_issuers": []string{"https://oauth.cerberauth.com"},
 		"required_scope":  []string{},
 	})
-	expectedAuthenticator := &rule.Handler{
+	expectedAuthenticator := &oathkeeper.RuleHandler{
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}
@@ -157,7 +157,7 @@ func TestNewAuthenticatorFromSecuritySchemeWithConfiguration(t *testing.T) {
 		"trusted_issuers": []string{"https://oauth.cerberauth.com"},
 		"required_scope":  []string{},
 	})
-	expectedAuthenticator := &rule.Handler{
+	expectedAuthenticator := &oathkeeper.RuleHandler{
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}

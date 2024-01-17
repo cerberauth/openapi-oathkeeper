@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 
 	"github.com/cerberauth/openapi-oathkeeper/config"
+	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/knadh/koanf/maps"
-	"github.com/ory/oathkeeper/rule"
 )
 
 var _ Authenticator = (*AuthenticatorDefault)(nil)
@@ -21,7 +21,7 @@ func NewAuthenticatorDefault(s *openapi3.SecuritySchemeRef, cfg *config.Authenti
 	}, nil
 }
 
-func (a *AuthenticatorDefault) CreateAuthenticator(s *openapi3.SecurityRequirement) (*rule.Handler, error) {
+func (a *AuthenticatorDefault) CreateAuthenticator(s *openapi3.SecurityRequirement) (*oathkeeper.RuleHandler, error) {
 	required_scope := make([]string, 0)
 	for _, scope := range *s {
 		required_scope = append(required_scope, scope...)
@@ -35,7 +35,7 @@ func (a *AuthenticatorDefault) CreateAuthenticator(s *openapi3.SecurityRequireme
 		return nil, jsonErr
 	}
 
-	return &rule.Handler{
+	return &oathkeeper.RuleHandler{
 		Handler: a.cfg.Handler,
 		Config:  jsonConfig,
 	}, nil
