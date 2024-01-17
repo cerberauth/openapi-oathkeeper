@@ -136,7 +136,7 @@ func NewGenerator(ctx context.Context, d *openapi3.T, cfg *config.Config) (*Gene
 
 func (g *Generator) Generate() ([]oathkeeper.Rule, error) {
 	rules := []oathkeeper.Rule{}
-	for path, p := range g.doc.Paths {
+	for path, p := range g.doc.Paths.Map() {
 		for verb, o := range p.Operations() {
 			rule, createRuleErr := g.createRule(verb, path, o)
 			if createRuleErr != nil {
