@@ -75,6 +75,10 @@ snapcrafts:
 
 dockers:
   - image_templates:
+      - "cerberauth/openapi-oathkeeper:{{ .Tag }}"
+      - "cerberauth/openapi-oathkeeper:v{{ .Major }}"
+      - "cerberauth/openapi-oathkeeper:v{{ .Major }}.{{ .Minor }}"
+      - "cerberauth/openapi-oathkeeper:latest"
       - "ghcr.io/cerberauth/openapi-oathkeeper:{{ .Tag }}"
       - "ghcr.io/cerberauth/openapi-oathkeeper:v{{ .Major }}"
       - "ghcr.io/cerberauth/openapi-oathkeeper:v{{ .Major }}.{{ .Minor }}"
