@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -22,7 +21,7 @@ server_urls:
 upstream:
   url: "https://api.cerberauth.com"
 `
-	tempFile, err := ioutil.TempFile(os.TempDir(), "config-test")
+	tempFile, err := os.CreateTemp(os.TempDir(), "config-test")
 	assert.NoError(t, err)
 	fmt.Println("Create temp file::", tempFile.Name())
 	defer os.Remove(tempFile.Name())
@@ -48,7 +47,7 @@ server_urls:
 - "https://www.cerberauth.com/api"
 - "https://api.cerberauth.com/api"
 `
-	tempFile, err := ioutil.TempFile(os.TempDir(), "config-test")
+	tempFile, err := os.CreateTemp(os.TempDir(), "config-test")
 	assert.NoError(t, err)
 	fmt.Println("Create temp file::", tempFile.Name())
 	defer os.Remove(tempFile.Name())
@@ -93,7 +92,7 @@ authenticators:
       target_audience:
       - https://api.cerberauth.com
 `
-	tempFile, err := ioutil.TempFile(os.TempDir(), "config-test")
+	tempFile, err := os.CreateTemp(os.TempDir(), "config-test")
 	assert.NoError(t, err)
 	fmt.Println("Create temp file:", tempFile.Name())
 	defer os.Remove(tempFile.Name())
@@ -118,7 +117,7 @@ authenticators:
 
 func TestLoadWithConfigFileWithInvalidFile(t *testing.T) {
 	config := `foo`
-	tempFile, err := ioutil.TempFile(os.TempDir(), "config-test")
+	tempFile, err := os.CreateTemp(os.TempDir(), "config-test")
 	assert.NoError(t, err)
 	fmt.Println("Create temp file:", tempFile.Name())
 	defer os.Remove(tempFile.Name())
