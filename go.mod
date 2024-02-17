@@ -1,6 +1,6 @@
 module github.com/cerberauth/openapi-oathkeeper
 
-go 1.21
+go 1.22
 
 require (
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869
@@ -32,7 +32,6 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
-	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
