@@ -56,16 +56,16 @@ func createServerUrlMatchingGroup(serverUrls []string) string {
 	return encapsulateRegexToken(rex.Group.Composite(serverUrlsTokens...))
 }
 
-func getPathParamType(name string, params *openapi3.Parameters) string {
+func getPathParamType(name string, params *openapi3.Parameters) *openapi3.Types {
 	if params == nil {
 		log.Default().Print("no path parameters has been defined")
-		return ""
+		return nil
 	}
 
 	p := params.GetByInAndName(openapi3.ParameterInPath, name)
 	if p == nil {
 		log.Default().Printf("path param %s is not defined", name)
-		return ""
+		return nil
 	}
 
 	return p.Schema.Value.Type
@@ -73,14 +73,16 @@ func getPathParamType(name string, params *openapi3.Parameters) string {
 
 func createParamsMatchingGroup(name string, params *openapi3.Parameters) string {
 	var t dialect.Token
-	switch getPathParamType(name, params) {
-	case "string":
+	paramType := getPathParamType(name, params)
+	if paramType == nil {
+		t = defaultToken
+	} else if paramType.Is("string") {
 		t = stringToken
-	case "number":
+	} else if paramType.Is("number") {
 		t = numberToken
-	case "integer":
+	} else if paramType.Is("integer") {
 		t = integerToken
-	default:
+	} else {
 		t = defaultToken
 	}
 

@@ -69,7 +69,8 @@ func TestGenerateMatchRuleWithStringPathParams(t *testing.T) {
 		URL:     "/resource/<.+>",
 		Methods: []string{"GET"},
 	}
-	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: "string"})
+	types := &openapi3.Types{"string"}
+	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: types})
 	matchRule, err := createMatchRule([]string{}, "GET", "/resource/{param}", &openapi3.Parameters{&openapi3.ParameterRef{
 		Ref:   "param",
 		Value: param,
@@ -84,7 +85,8 @@ func TestGenerateMatchRuleWithNumberPathParams(t *testing.T) {
 		URL:     "/resource/<((\\x2D|\\+)?\\d+(?:\\.\\d+)?)>",
 		Methods: []string{"GET"},
 	}
-	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: "number"})
+	types := &openapi3.Types{"number"}
+	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: types})
 	matchRule, err := createMatchRule([]string{}, "GET", "/resource/{param}", &openapi3.Parameters{&openapi3.ParameterRef{
 		Ref:   "param",
 		Value: param,
@@ -99,7 +101,8 @@ func TestGenerateMatchRuleWithIntegerPathParams(t *testing.T) {
 		URL:     "/resource/<\\d+>",
 		Methods: []string{"GET"},
 	}
-	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: "integer"})
+	types := &openapi3.Types{"integer"}
+	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: types})
 	matchRule, err := createMatchRule([]string{}, "GET", "/resource/{param}", &openapi3.Parameters{&openapi3.ParameterRef{
 		Ref:   "param",
 		Value: param,
@@ -114,7 +117,8 @@ func TestGenerateMatchRuleWithBooleanPathParams(t *testing.T) {
 		URL:     "/resource/<.+>",
 		Methods: []string{"GET"},
 	}
-	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: "boolean"})
+	types := &openapi3.Types{"boolean"}
+	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: types})
 	matchRule, err := createMatchRule([]string{}, "GET", "/resource/{param}", &openapi3.Parameters{&openapi3.ParameterRef{
 		Ref:   "param",
 		Value: param,
@@ -129,7 +133,8 @@ func TestGenerateMatchRuleWithArrayPathParams(t *testing.T) {
 		URL:     "/resource/<.+>",
 		Methods: []string{"GET"},
 	}
-	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: "array"})
+	types := &openapi3.Types{"array"}
+	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: types})
 	matchRule, err := createMatchRule([]string{}, "GET", "/resource/{param}", &openapi3.Parameters{&openapi3.ParameterRef{
 		Ref:   "param",
 		Value: param,
@@ -144,7 +149,8 @@ func TestGenerateMatchRuleWithObjectPathParams(t *testing.T) {
 		URL:     "/resource/<.+>",
 		Methods: []string{"GET"},
 	}
-	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: "object"})
+	types := &openapi3.Types{"object"}
+	param := openapi3.NewPathParameter("param").WithSchema(&openapi3.Schema{Type: types})
 	matchRule, err := createMatchRule([]string{}, "GET", "/resource/{param}", &openapi3.Parameters{&openapi3.ParameterRef{
 		Ref:   "param",
 		Value: param,
