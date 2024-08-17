@@ -56,7 +56,7 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 
 	if o.Security != nil && len(*o.Security) > 0 {
 		appendAuthenticator(o.Security)
-	} else if g.doc.Security != nil && len(g.doc.Security) > 0 {
+	} else if len(g.doc.Security) > 0 {
 		appendAuthenticator(&g.doc.Security)
 	} else {
 		ar, arerror := g.authenticators[string(authenticator.AuthenticatorTypeNoop)].CreateAuthenticator(nil)
