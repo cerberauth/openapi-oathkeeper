@@ -24,6 +24,8 @@ github.com/go-viper/mapstructure/v2 v2.0.0-alpha.1 h1:TQcrn6Wq+sKGkpyPvppOz99zsM
 github.com/go-viper/mapstructure/v2 v2.0.0-alpha.1/go.mod h1:oJDH3BJKyqBA2TXFhDsKDGDTlndYOZ6rGS0BRZIxGhM=
 github.com/hedhyw/rex v0.6.0 h1:VoCgjAn2st5qshzHM3Qcd4lEHq8y1PDGNp+MO5x0G64=
 github.com/hedhyw/rex v0.6.0/go.mod h1:n9CYz3ztkAp56mrMXw65Q3LeXCO2AZSUvO7VMHsVMF8=
+github.com/hedhyw/rex v1.0.0 h1:f7QNmVMBsmuEop/wg85byq6YbOHQr0q3Y78Q3IwKp+I=
+github.com/hedhyw/rex v1.0.0/go.mod h1:n9CYz3ztkAp56mrMXw65Q3LeXCO2AZSUvO7VMHsVMF8=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
 github.com/invopop/yaml v0.3.1 h1:f0+ZpmhfBSS4MhG+4HYseMdJhoeeopbSKbq5Rpeelso=
