@@ -34,10 +34,8 @@ func createConfigFromSecurityScheme(s *openapi3.SecuritySchemeRef) (*config.Auth
 		Config: make(map[string]interface{}),
 	}
 	switch strings.ToLower(s.Value.Type) {
-	case string(AuthenticatorTypeOpenIdConnect):
-		cfg.Handler = "jwt"
-
-	case string(AuthenticatorTypeOAuth2):
+	case string(AuthenticatorTypeOpenIdConnect),
+		string(AuthenticatorTypeOAuth2):
 		cfg.Handler = "jwt"
 
 	case string(AuthenticatorTypeHttp):

@@ -137,10 +137,12 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			}
 
 			if outputpath != "" {
-				os.WriteFile(outputpath, outputBuf.Bytes(), 0644)
+				// nolint:errcheck
+				os.WriteFile(outputpath, outputBuf.Bytes(), 0600)
 				return
 			}
 
+			// nolint:errcheck
 			os.Stdout.Write(outputBuf.Bytes())
 		},
 	}
