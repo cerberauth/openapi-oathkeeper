@@ -1,15 +1,15 @@
 # Ory Oathkeeper rules from OpenAPI
 
-<p align="left">
-    <a href="https://github.com/cerberauth/openapi-oathkeeper/actions/workflows/ci.yml"><img src="https://github.com/cerberauth/openapi-oathkeeper/actions/workflows/ci.yml/badge.svg?branch=main&event=push" alt="CI Tasks for Ory Hydra"></a>
-    <a href="https://codecov.io/gh/cerberauth/openapi-oathkeeper"><img src="https://codecov.io/gh/cerberauth/openapi-oathkeeper/branch/main/graph/badge.svg?token=BD1WPXJDAW"/></a>
-    <a href="https://goreportcard.com/report/github.com/cerberauth/openapi-oathkeeper"><img src="https://goreportcard.com/badge/github.com/cerberauth/openapi-oathkeeper" alt="Go Report Card"></a>
-    <a href="https://pkg.go.dev/github.com/cerberauth/openapi-oathkeeper"><img src="https://pkg.go.dev/badge/www.github.com/cerberauth/openapi-oathkeeper" alt="PkgGoDev"></a>
-</p>
 
-This CLI generates secure and consistent OathKeeper rules that enforce authentication and authorization policies for each API endpoint from an OpenAPI contrat.
+[![Join Discord](https://img.shields.io/discord/1242773130137833493?label=Discord&style=for-the-badge)](https://www.cerberauth.com/community)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cerberauth/openapi-oathkeeper/ci.yml?branch=main&label=core%20build&style=for-the-badge)](https://github.com/cerberauth/openapi-oathkeeper/actions/workflows/ci.yml)
+![Codecov](https://img.shields.io/codecov/c/gh/cerberauth/openapi-oathkeeper?token=BD1WPXJDAW&style=for-the-badge)
+[![Go Report Card](https://goreportcard.com/badge/github.com/cerberauth/openapi-oathkeeper?style=for-the-badge)](https://goreportcard.com/report/github.com/cerberauth/openapi-oathkeeper)
+[![GoDoc reference](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=for-the-badge)](https://godoc.org/github.com/cerberauth/openapi-oathkeeper)
 
-This project automate the generation of [Ory Oathkeeper](https://github.com/ory/oathkeeper) rules from an OpenAPI contract and save a lot of time especially for larger projects with many endpoints or many services by using the existing documentation provided in an OpenAPI contract. This can improve the overall security of the API and ensure that access is granted only to authorized parties. Additionally, this tool can simplify the development process by reducing the amount of manual work required to write and maintain OathKeeper rules.
+This CLI generates OathKeeper rules that enforce authentication and authorization policies for each API endpoint from an OpenAPI file.
+
+This project automate the generation of Oathkeeper rules from an OpenAPI contract and save a lot of time especially for larger projects with many endpoints or many services by using the existing documentation provided in an OpenAPI contract. This can improve the overall security of the API and ensure that access is granted only to authorized parties. Additionally, this tool can simplify the development process by reducing the amount of manual work required to write and maintain OathKeeper rules.
 
 ## Ory Oathkeeper
 
@@ -17,11 +17,32 @@ If you're not yet familiar with Ory Oathkeeper, Oathkeeper is an Identity & Acce
 
 > An Identity & Access Proxy is typically deployed in front of (think API Gateway or Service mesh) web-facing applications and is capable of authenticating and optionally authorizing access requests. The Access Control Decision API can be deployed alongside an existing API Gateway or reverse proxy.
 
+## Installation
+
+Below are the instructions to install on Linux, Windows, MacOS, and Docker. You can choose the installation method that best suits your needs and environment.
+
+If none of the installation methods below work for you, you can also download the binary from the latest [release](https://github.com/cerberauth/openapi-oathkeeper/releases).
+
+### Linux (Snap)
+
+Install using [Snap](https://snapcraft.io/openapi-oathkeeper).
+
+```sh
+sudo snap install vulnapi
+```
+
+### MacOS (Homebrew)
+
+Install using Homebrew.
+
+```sh
+brew tap cerberauth/openapi-oathkeeper https://github.com/cerberauth/openapi-oathkeeper
+brew install $(brew --repository cerberauth/openapi-oathkeeper)/openapi-oathkeeper.rb
+```
+
 ## Get Started
 
-To use this tool, follow the bellow instructions:
-1. First you have to download the binary from the latest [release](https://github.com/cerberauth/openapi-oathkeeper/releases).
-2. Provides the path to your OpenAPI contract file.
+Provides the path to your OpenAPI contract file.
 
 ```sh
 ./openapi-oathkeeper generate -f ./openapi.json
