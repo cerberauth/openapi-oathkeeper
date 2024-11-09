@@ -11,7 +11,7 @@ class OpenapiOathkeeper < Formula
   on_macos do
     on_intel do
       url "https://github.com/cerberauth/openapi-oathkeeper/releases/download/v0.7.10/openapi-oathkeeper_Darwin_x86_64.tar.gz"
-      sha256 "c956d2e6dd0264d15dc8fbc841eb3e0202c42e6505547279ce467a6f0f6e4e66"
+      sha256 "88104b3cf922ec869dfa893927f024d0fc20378bd8466d4244e4dc4844fa4de1"
 
       def install
         bin.install "openapi-oathkeeper"
@@ -19,7 +19,7 @@ class OpenapiOathkeeper < Formula
     end
     on_arm do
       url "https://github.com/cerberauth/openapi-oathkeeper/releases/download/v0.7.10/openapi-oathkeeper_Darwin_arm64.tar.gz"
-      sha256 "43cbc3ff79c34f94be993c6082b339cf854ebcbe95393448df4a171a5ae04212"
+      sha256 "e4d8766b7a9483d6b83db52dc5c0a33e51339a267f5641a82d17f3b7b76d9971"
 
       def install
         bin.install "openapi-oathkeeper"
@@ -31,7 +31,7 @@ class OpenapiOathkeeper < Formula
     on_intel do
       if Hardware::CPU.is_64_bit?
         url "https://github.com/cerberauth/openapi-oathkeeper/releases/download/v0.7.10/openapi-oathkeeper_Linux_x86_64.tar.gz"
-        sha256 "2009ef909b41c76d431506e7928c071e100f1a63e61a3e103f5f8ebf409c1cac"
+        sha256 "776603416596d180407807d26c9db5771f07664b153053f37e9461cedd1e4932"
 
         def install
           bin.install "openapi-oathkeeper"
@@ -41,7 +41,7 @@ class OpenapiOathkeeper < Formula
     on_arm do
       if Hardware::CPU.is_64_bit?
         url "https://github.com/cerberauth/openapi-oathkeeper/releases/download/v0.7.10/openapi-oathkeeper_Linux_arm64.tar.gz"
-        sha256 "b5483b34c856b47bfedc602924d3a02a09d2275e45dce763ea0b8833a66bbce0"
+        sha256 "e06c0117241483c5c7b7a670725b9d776270080a68d3cf3d628e9eb59a724d69"
 
         def install
           bin.install "openapi-oathkeeper"
