@@ -73,16 +73,14 @@ func getPathParamType(name string, params *openapi3.Parameters) *openapi3.Types 
 
 func createParamsMatchingGroup(name string, params *openapi3.Parameters) string {
 	var t dialect.Token
-	paramType := getPathParamType(name, params)
-	if paramType == nil {
-		t = defaultToken
-	} else if paramType.Is("string") {
+	switch paramType := getPathParamType(name, params); {
+	case paramType.Is("string"):
 		t = stringToken
-	} else if paramType.Is("number") {
+	case paramType.Is("number"):
 		t = numberToken
-	} else if paramType.Is("integer") {
+	case paramType.Is("integer"):
 		t = integerToken
-	} else {
+	default:
 		t = defaultToken
 	}
 

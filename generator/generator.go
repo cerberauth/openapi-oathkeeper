@@ -54,10 +54,12 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 		return nil
 	}
 
+	var err error
+	// nolint: gocritic
 	if o.Security != nil && len(*o.Security) > 0 {
-		appendAuthenticator(o.Security)
+		err = appendAuthenticator(o.Security)
 	} else if len(g.doc.Security) > 0 {
-		appendAuthenticator(&g.doc.Security)
+		err = appendAuthenticator(&g.doc.Security)
 	} else {
 		ar, arerror := g.authenticators[string(authenticator.AuthenticatorTypeNoop)].CreateAuthenticator(nil)
 		if arerror != nil {
@@ -65,6 +67,10 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 		}
 
 		authenticators = append(authenticators, *ar)
+	}
+
+	if err != nil {
+		return nil, err
 	}
 
 	return &oathkeeper.Rule{
