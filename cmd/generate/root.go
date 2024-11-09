@@ -2,7 +2,6 @@ package generate
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"log"
 	"net/url"
@@ -13,6 +12,8 @@ import (
 	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"gopkg.in/yaml.v3"
 )
 
@@ -29,6 +30,8 @@ var (
 	jsonOutput bool
 	yamlOutput bool
 )
+
+var tracer = otel.Tracer("cmd/generate")
 
 func encodeJSON(rules []oathkeeper.Rule) (*bytes.Buffer, error) {
 	outputBuf := new(bytes.Buffer)
@@ -59,7 +62,8 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 		Use:   "generate",
 		Short: "Generate Ory Oathkeeper rules from an OpenAPI 3 to file or Std output",
 		Run: func(cmd *cobra.Command, args []string) {
-			ctx := context.Background()
+			ctx, span := tracer.Start(cmd.Context(), "Generate")
+			defer span.End()
 
 			var cfg *config.Config
 			var doc *openapi3.T
@@ -68,6 +72,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			if configFilePath != "" {
 				cfg, err = config.New(configFilePath)
 				if err != nil {
+					span.RecordError(err)
 					log.Fatal(err)
 				}
 			} else {
@@ -83,6 +88,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			if fileurl != "" {
 				uri, urlerr := url.Parse(fileurl)
 				if urlerr != nil {
+					span.RecordError(urlerr)
 					log.Fatal(urlerr)
 				}
 
@@ -91,6 +97,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 
 			if filepath != "" {
 				if _, err := os.Stat(filepath); err != nil {
+					span.RecordError(err)
 					log.Fatalf("the openapi file has not been found on %s", filepath)
 				}
 
@@ -98,28 +105,34 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			}
 
 			if err != nil {
+				span.RecordError(err)
 				log.Fatal(err)
 			}
 
 			g, err := generator.NewGenerator(ctx, doc, cfg)
 			if err != nil {
+				span.RecordError(err)
 				log.Fatal(err)
 			}
 
 			rules, err := g.Generate()
 			if err != nil {
+				span.RecordError(err)
 				log.Fatal(err)
 			}
 
 			var outputBuf *bytes.Buffer
 			var encodeErr error
 			if yamlOutput && !jsonOutput {
+				span.SetAttributes(attribute.String("encode", "yaml"))
 				outputBuf, encodeErr = encodeYAML(rules)
 			} else {
+				span.SetAttributes(attribute.String("encode", "json"))
 				outputBuf, encodeErr = encodeJSON(rules)
 			}
 
 			if encodeErr != nil {
+				span.RecordError(encodeErr)
 				log.Fatal(err)
 			}
 
