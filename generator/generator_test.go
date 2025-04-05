@@ -502,6 +502,34 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 	assert.Equal(t, expectedRule, got)
 }
 
+func TestGenerateFromPetstoreOpenAPI(t *testing.T) {
+	teardownSuite := setupSuite(t)
+	defer teardownSuite(t)
+
+	g, newGeneratorErr := newGenerator("../test/stub/petstore.openapi.json", &config.Config{})
+	if newGeneratorErr != nil {
+		t.Fatal(newGeneratorErr)
+	}
+
+	_, err := g.Generate()
+
+	require.NoError(t, err)
+}
+
+func TestGenerateFromPetstoreOpenAPI31(t *testing.T) {
+	teardownSuite := setupSuite(t)
+	defer teardownSuite(t)
+
+	g, newGeneratorErr := newGenerator("../test/stub/petstore31.openapi.json", &config.Config{})
+	if newGeneratorErr != nil {
+		t.Fatal(newGeneratorErr)
+	}
+
+	_, err := g.Generate()
+
+	require.NoError(t, err)
+}
+
 func TestGenerateFromPetstoreWithOpenIdConnect(t *testing.T) {
 	teardownSuite := setupSuite(t)
 	defer teardownSuite(t)
