@@ -11,7 +11,7 @@ require (
 	github.com/jarcoal/httpmock v1.4.0
 	github.com/knadh/koanf/maps v0.1.2
 	github.com/knadh/koanf/parsers/yaml v0.1.0
-	github.com/knadh/koanf/providers/confmap v0.1.0
+	github.com/knadh/koanf/providers/confmap v1.0.0
 	github.com/knadh/koanf/providers/file v1.2.0
 	github.com/knadh/koanf/v2 v2.2.0
 	github.com/pkg/errors v0.9.1
