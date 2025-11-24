@@ -1,17 +1,23 @@
 package authenticator
 
 import (
+	"context"
 	"errors"
 	"strings"
 
 	"github.com/cerberauth/openapi-oathkeeper/config"
 	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
+	"github.com/cerberauth/x/telemetryx"
 	"github.com/getkin/kin-openapi/openapi3"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 type Authenticator interface {
 	CreateAuthenticator(s *openapi3.SecurityRequirement) (*oathkeeper.RuleHandler, error)
 }
+
+var otelName = "github.com/cerberauth/openapi-oathkeeper/authenticator"
 
 var (
 	JWKSUriExtensionName  = "x-authenticator-jwks-uri"
@@ -51,7 +57,14 @@ func createConfigFromSecurityScheme(s *openapi3.SecuritySchemeRef) (*config.Auth
 	return &cfg, nil
 }
 
-func NewAuthenticatorFromSecurityScheme(s *openapi3.SecuritySchemeRef, cfg *config.AuthenticatorRuleConfig) (Authenticator, error) {
+func NewAuthenticatorFromSecurityScheme(ctx context.Context, s *openapi3.SecuritySchemeRef, cfg *config.AuthenticatorRuleConfig) (Authenticator, error) {
+	telemetryMeter := telemetryx.GetMeterProvider().Meter(otelName)
+	telemetryAuthenticatorCreatedCounter, _ := telemetryMeter.Int64Counter(
+		"authenticator.created.counter",
+		metric.WithDescription("Number of authenticator created"),
+		metric.WithUnit("{operation}"),
+	)
+
 	if cfg == nil {
 		defaultCfg, defaultCfgErr := createConfigFromSecurityScheme(s)
 		if defaultCfgErr != nil {
@@ -82,6 +95,8 @@ func NewAuthenticatorFromSecurityScheme(s *openapi3.SecuritySchemeRef, cfg *conf
 		cfg.Config["jwks_urls"] = []string{c.JwksUri}
 		cfg.Config["trusted_issuers"] = []string{c.Issuer}
 	}
+
+	telemetryAuthenticatorCreatedCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("type", s.Value.Type), attribute.String("handler", s.Value.Scheme)))
 
 	return NewAuthenticatorDefault(s, cfg)
 }
