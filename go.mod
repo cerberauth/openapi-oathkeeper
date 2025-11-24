@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869
 	github.com/bradleyjkemp/cupaloy/v2 v2.8.0
-	github.com/cerberauth/x v0.0.0-20251108155213-e00ac03a6f5c
+	github.com/cerberauth/x v0.0.0-20251124210323-2ec1749331d4
 	github.com/getkin/kin-openapi v0.133.0
 	github.com/hedhyw/rex v1.0.0
 	github.com/jarcoal/httpmock v1.4.1
