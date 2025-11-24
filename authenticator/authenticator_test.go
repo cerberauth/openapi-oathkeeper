@@ -1,6 +1,7 @@
 package authenticator
 
 import (
+	"context"
 	"encoding/json"
 	"testing"
 
@@ -33,6 +34,7 @@ func setupSuite(tb testing.TB) func(tb testing.TB) {
 }
 
 func TestNewAuthenticatorFromSecurityScheme(t *testing.T) {
+	ctx := context.Background()
 	jsonConfig, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
 		"trusted_issuers": []string{"https://oauth.cerberauth.com"},
@@ -46,7 +48,7 @@ func TestNewAuthenticatorFromSecurityScheme(t *testing.T) {
 	s.Extensions = make(map[string]interface{})
 	s.Extensions["x-authenticator-jwks-uri"] = "https://oauth.cerberauth.com/.well-known/jwks.json"
 	s.Extensions["x-authenticator-issuer"] = "https://oauth.cerberauth.com"
-	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(&openapi3.SecuritySchemeRef{
+	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(ctx, &openapi3.SecuritySchemeRef{
 		Value: s,
 	}, nil)
 	if newAuthenticatorErr != nil {
@@ -65,6 +67,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnect(t *testing.T)
 	teardownSuite := setupSuite(t)
 	defer teardownSuite(t)
 
+	ctx := context.Background()
 	jsonConfig, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
 		"trusted_issuers": []string{"https://oauth.cerberauth.com"},
@@ -74,7 +77,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnect(t *testing.T)
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}
-	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(&openapi3.SecuritySchemeRef{
+	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(ctx, &openapi3.SecuritySchemeRef{
 		Value: openapi3.NewOIDCSecurityScheme(oidcConfigurationUrl),
 	}, nil)
 	if newAuthenticatorErr != nil {
@@ -93,6 +96,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithLowercaseT
 	teardownSuite := setupSuite(t)
 	defer teardownSuite(t)
 
+	ctx := context.Background()
 	jsonConfig, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
 		"trusted_issuers": []string{"https://oauth.cerberauth.com"},
@@ -102,7 +106,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithLowercaseT
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}
-	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(&openapi3.SecuritySchemeRef{
+	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(ctx, &openapi3.SecuritySchemeRef{
 		Value: &openapi3.SecurityScheme{
 			Type:             "openidconnect",
 			OpenIdConnectUrl: "https://oauth.cerberauth.com/.well-known/openid-configuration",
@@ -121,6 +125,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithLowercaseT
 }
 
 func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithConfig(t *testing.T) {
+	ctx := context.Background()
 	jsonConfig, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
 		"trusted_issuers": []string{"https://oauth.cerberauth.com"},
@@ -130,7 +135,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithConfig(t *
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}
-	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(&openapi3.SecuritySchemeRef{
+	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(ctx, &openapi3.SecuritySchemeRef{
 		Value: openapi3.NewOIDCSecurityScheme(oidcConfigurationUrl),
 	}, &config.AuthenticatorRuleConfig{
 		Handler: "jwt",
@@ -152,6 +157,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithConfig(t *
 }
 
 func TestNewAuthenticatorFromSecuritySchemeWithConfiguration(t *testing.T) {
+	ctx := context.Background()
 	jsonConfig, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
 		"trusted_issuers": []string{"https://oauth.cerberauth.com"},
@@ -161,7 +167,7 @@ func TestNewAuthenticatorFromSecuritySchemeWithConfiguration(t *testing.T) {
 		Handler: "jwt",
 		Config:  jsonConfig,
 	}
-	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(&openapi3.SecuritySchemeRef{
+	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(ctx, &openapi3.SecuritySchemeRef{
 		Value: openapi3.NewJWTSecurityScheme(),
 	}, &config.AuthenticatorRuleConfig{
 		Handler: "jwt",

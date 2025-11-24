@@ -7,8 +7,13 @@ import (
 	"github.com/cerberauth/openapi-oathkeeper/authenticator"
 	"github.com/cerberauth/openapi-oathkeeper/config"
 	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
+	"github.com/cerberauth/x/telemetryx"
 	"github.com/getkin/kin-openapi/openapi3"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
+
+var otelName = "github.com/cerberauth/openapi-oathkeeper/generator"
 
 type Generator struct {
 	doc *openapi3.T
@@ -87,7 +92,7 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 	}, nil
 }
 
-func createAuthenticators(d *openapi3.T, cfg *config.Config) (map[string]authenticator.Authenticator, error) {
+func createAuthenticators(ctx context.Context, d *openapi3.T, cfg *config.Config) (map[string]authenticator.Authenticator, error) {
 	authenticators := make(map[string]authenticator.Authenticator)
 
 	// Create a first authenticator for operations without security configured
@@ -97,10 +102,10 @@ func createAuthenticators(d *openapi3.T, cfg *config.Config) (map[string]authent
 		s := d.Components.SecuritySchemes[name]
 		v, ok := cfg.Authenticators[name]
 		if !ok {
-			return authenticator.NewAuthenticatorFromSecurityScheme(s, nil)
+			return authenticator.NewAuthenticatorFromSecurityScheme(ctx, s, nil)
 		}
 
-		return authenticator.NewAuthenticatorFromSecurityScheme(s, &v)
+		return authenticator.NewAuthenticatorFromSecurityScheme(ctx, s, &v)
 	}
 
 	if d.Components != nil && d.Components.SecuritySchemes != nil {
@@ -127,7 +132,7 @@ func NewGenerator(ctx context.Context, d *openapi3.T, cfg *config.Config) (*Gene
 		}
 	}
 
-	authenticators, err := createAuthenticators(d, cfg)
+	authenticators, err := createAuthenticators(ctx, d, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -140,15 +145,29 @@ func NewGenerator(ctx context.Context, d *openapi3.T, cfg *config.Config) (*Gene
 	}, nil
 }
 
-func (g *Generator) Generate() ([]oathkeeper.Rule, error) {
+func (g *Generator) Generate(ctx context.Context) ([]oathkeeper.Rule, error) {
+	telemetryMeter := telemetryx.GetMeterProvider().Meter(otelName)
+	telemetryRuleGeneratedSuccessfullyCounter, _ := telemetryMeter.Int64Counter(
+		"generator.rule_generated_successfully.counter",
+		metric.WithDescription("Number of operations"),
+		metric.WithUnit("{operation}"),
+	)
+	telemetryRuleGenerationFailedCounter, _ := telemetryMeter.Int64Counter(
+		"generator.rule_generation_failed.counter",
+		metric.WithDescription("Number of operations"),
+		metric.WithUnit("{operation}"),
+	)
+
 	rules := []oathkeeper.Rule{}
 	for path, p := range g.doc.Paths.Map() {
 		for verb, o := range p.Operations() {
 			rule, createRuleErr := g.createRule(verb, path, o)
 			if createRuleErr != nil {
+				telemetryRuleGenerationFailedCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("verb", verb)))
 				return nil, createRuleErr
 			}
 
+			telemetryRuleGeneratedSuccessfullyCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("verb", verb)))
 			rules = append(rules, *rule)
 		}
 	}

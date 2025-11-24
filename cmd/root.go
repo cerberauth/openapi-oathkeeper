@@ -1,32 +1,35 @@
 package cmd
 
 import (
-	"fmt"
+	"context"
 	"os"
 
 	"github.com/spf13/cobra"
 
 	"github.com/cerberauth/openapi-oathkeeper/cmd/generate"
-	"github.com/cerberauth/openapi-oathkeeper/internal/analytics"
+	"github.com/cerberauth/x/telemetryx"
 )
 
-var sqaOptOut bool
+var (
+	sqaOptOut    bool
+	otelShutdown func(context.Context) error
+)
+
+var name = "openapi-oathkeeper"
 
 func NewRootCmd(projectVersion string) (cmd *cobra.Command) {
 	var rootCmd = &cobra.Command{
-		Use:   "openapi-oathkeeper",
+		Use:   name,
 		Short: "Generate Ory Oathkeeper Rules from OpenAPI 3.0 files",
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			if !sqaOptOut {
-				_, err := analytics.NewAnalytics(cmd.Context(), projectVersion)
-				if err != nil {
-					fmt.Println("Failed to initialize analytics:", err)
-				}
+				otelShutdown, _ = telemetryx.New(cmd.Context(), name, projectVersion)
 			}
 		},
 		PersistentPostRun: func(cmd *cobra.Command, args []string) {
-			if !sqaOptOut {
-				analytics.Close()
+			if otelShutdown != nil {
+				_ = otelShutdown(cmd.Context())
+				otelShutdown = nil
 			}
 		},
 	}
@@ -41,8 +44,21 @@ func NewRootCmd(projectVersion string) (cmd *cobra.Command) {
 // This is called by main.main(). It only needs to happen once to the RootCmd.
 func Execute(projectVersion string) {
 	c := NewRootCmd(projectVersion)
+	defer func() {
+		if otelShutdown != nil {
+			_ = otelShutdown(context.Background())
+			otelShutdown = nil
+		}
+	}()
 
 	if err := c.Execute(); err != nil {
+		if otelShutdown != nil {
+			_ = otelShutdown(context.Background())
+			otelShutdown = nil
+		}
+
+		_, _ = os.Stderr.WriteString(err.Error() + "\n")
+		// nolint: gocritic // false positive
 		os.Exit(1)
 	}
 }

@@ -10,10 +10,11 @@ import (
 	"github.com/cerberauth/openapi-oathkeeper/config"
 	"github.com/cerberauth/openapi-oathkeeper/generator"
 	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
+	"github.com/cerberauth/x/telemetryx"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 	"gopkg.in/yaml.v3"
 )
 
@@ -31,7 +32,12 @@ var (
 	yamlOutput bool
 )
 
-var tracer = otel.Tracer("cmd/generate")
+var (
+	otelName = "github.com/cerberauth/openapi-oathkeeper/cmd/generate"
+
+	errorReasonAttributeKey = attribute.Key("error_reason")
+	encodingAttributeKey    = attribute.Key("encoding")
+)
 
 func encodeJSON(rules []oathkeeper.Rule) (*bytes.Buffer, error) {
 	outputBuf := new(bytes.Buffer)
@@ -62,9 +68,11 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 		Use:   "generate",
 		Short: "Generate Ory Oathkeeper rules from an OpenAPI 3 to file or Std output",
 		Run: func(cmd *cobra.Command, args []string) {
-			ctx, span := tracer.Start(cmd.Context(), "Generate")
-			defer span.End()
+			telemetryMeter := telemetryx.GetMeterProvider().Meter(otelName)
+			telemetryGenerateSuccessCounter, _ := telemetryMeter.Int64Counter("generate.success.counter")
+			telemetryGenerateErrorCounter, _ := telemetryMeter.Int64Counter("generate.error.counter")
 
+			ctx := cmd.Context()
 			var cfg *config.Config
 			var doc *openapi3.T
 			var err error
@@ -72,7 +80,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			if configFilePath != "" {
 				cfg, err = config.New(configFilePath)
 				if err != nil {
-					span.RecordError(err)
+					telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to load config file")))
 					log.Fatal(err)
 				}
 			} else {
@@ -88,7 +96,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			if fileurl != "" {
 				uri, urlerr := url.Parse(fileurl)
 				if urlerr != nil {
-					span.RecordError(urlerr)
+					telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to parse url")))
 					log.Fatal(urlerr)
 				}
 
@@ -97,7 +105,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 
 			if filepath != "" {
 				if _, err := os.Stat(filepath); err != nil {
-					span.RecordError(err)
+					telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("the openapi file has not been found")))
 					log.Fatalf("the openapi file has not been found on %s", filepath)
 				}
 
@@ -105,36 +113,39 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			}
 
 			if err != nil {
-				span.RecordError(err)
+				telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to load openapi file")))
 				log.Fatal(err)
 			}
 
 			g, err := generator.NewGenerator(ctx, doc, cfg)
 			if err != nil {
-				span.RecordError(err)
+				telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to create generator")))
 				log.Fatal(err)
 			}
 
-			rules, err := g.Generate()
+			rules, err := g.Generate(ctx)
 			if err != nil {
-				span.RecordError(err)
+				telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to generate rules")))
 				log.Fatal(err)
 			}
 
 			var outputBuf *bytes.Buffer
 			var encodeErr error
+			var otelEncodingAttributeValue attribute.KeyValue
 			if yamlOutput && !jsonOutput {
-				span.SetAttributes(attribute.String("encode", "yaml"))
+				otelEncodingAttributeValue = encodingAttributeKey.String("yaml")
 				outputBuf, encodeErr = encodeYAML(rules)
 			} else {
-				span.SetAttributes(attribute.String("encode", "json"))
+				otelEncodingAttributeValue = encodingAttributeKey.String("json")
 				outputBuf, encodeErr = encodeJSON(rules)
 			}
 
 			if encodeErr != nil {
-				span.RecordError(encodeErr)
+				telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(otelEncodingAttributeValue, errorReasonAttributeKey.String("failed to encode rules")))
 				log.Fatal(err)
 			}
+
+			telemetryGenerateSuccessCounter.Add(ctx, 1, metric.WithAttributes(otelEncodingAttributeValue))
 
 			if outputpath != "" {
 				// nolint:errcheck

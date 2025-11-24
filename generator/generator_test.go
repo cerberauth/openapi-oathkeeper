@@ -62,6 +62,7 @@ func newGenerator(docpath string, cfg *config.Config) (*Generator, error) {
 }
 
 func TestGenerateFromSimpleOpenAPI(t *testing.T) {
+	ctx := context.Background()
 	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "findPetsByStatus",
@@ -85,13 +86,14 @@ func TestGenerateFromSimpleOpenAPI(t *testing.T) {
 		t.Fatal(newGeneratorErr)
 	}
 
-	rules, err := g.Generate()
+	rules, err := g.Generate(ctx)
 
 	require.NoError(t, err)
 	assert.Equal(t, expectedRules, rules)
 }
 
 func TestGenerateFromSimpleOpenAPIWithPrefixId(t *testing.T) {
+	ctx := context.Background()
 	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "prefix:findPetsByStatus",
@@ -117,13 +119,14 @@ func TestGenerateFromSimpleOpenAPIWithPrefixId(t *testing.T) {
 		t.Fatal(newGeneratorErr)
 	}
 
-	rules, err := g.Generate()
+	rules, err := g.Generate(ctx)
 
 	require.NoError(t, err)
 	assert.Equal(t, expectedRules, rules)
 }
 
 func TestGenerateFromSimpleOpenAPIWithOneServerUrl(t *testing.T) {
+	ctx := context.Background()
 	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "findPetsByStatus",
@@ -149,13 +152,14 @@ func TestGenerateFromSimpleOpenAPIWithOneServerUrl(t *testing.T) {
 		t.Fatal(newGeneratorErr)
 	}
 
-	rules, err := g.Generate()
+	rules, err := g.Generate(ctx)
 
 	require.NoError(t, err)
 	assert.Equal(t, expectedRules, rules)
 }
 
 func TestGenerateFromSimpleOpenAPIWithSeveralServerUrls(t *testing.T) {
+	ctx := context.Background()
 	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "findPetsByStatus",
@@ -184,13 +188,14 @@ func TestGenerateFromSimpleOpenAPIWithSeveralServerUrls(t *testing.T) {
 		t.Fatal(newGeneratorErr)
 	}
 
-	rules, err := g.Generate()
+	rules, err := g.Generate(ctx)
 
 	require.NoError(t, err)
 	assert.Equal(t, expectedRules, rules)
 }
 
 func TestGenerateOpenAPIWithoutSecurity(t *testing.T) {
+	ctx := context.Background()
 	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "withEmptySecurity",
@@ -233,7 +238,7 @@ func TestGenerateOpenAPIWithoutSecurity(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rules, err := g.Generate()
+	rules, err := g.Generate(ctx)
 
 	require.NoError(t, err)
 	assert.Equal(t, expectedRules, rules)
@@ -243,6 +248,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 	teardownSuite := setupSuite(t)
 	defer teardownSuite(t)
 
+	ctx := context.Background()
 	c, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls": []string{
 			"https://oauth.cerberauth.com/.well-known/jwks.json",
@@ -279,13 +285,14 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 		t.Fatal(newGeneratorErr)
 	}
 
-	rules, err := g.Generate()
+	rules, err := g.Generate(ctx)
 
 	require.NoError(t, err)
 	assert.Equal(t, expectedRules, rules)
 }
 
 func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
+	ctx := context.Background()
 	c, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls": []string{
 			"https://oauth.cerberauth.com/.well-known/jwks.json",
@@ -325,13 +332,14 @@ func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
 		t.Fatal(newGeneratorErr)
 	}
 
-	rules, err := g.Generate()
+	rules, err := g.Generate(ctx)
 
 	require.NoError(t, err)
 	assert.Equal(t, expectedRules, rules)
 }
 
 func TestGenerateFromSimpleOpenAPIWithHttpBearer(t *testing.T) {
+	ctx := context.Background()
 	c, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls": []string{
 			"https://oauth.cerberauth.com/.well-known/jwks.json",
@@ -368,7 +376,7 @@ func TestGenerateFromSimpleOpenAPIWithHttpBearer(t *testing.T) {
 		t.Fatal(newGeneratorErr)
 	}
 
-	rules, err := g.Generate()
+	rules, err := g.Generate(ctx)
 
 	require.NoError(t, err)
 	assert.Equal(t, expectedRules, rules)
@@ -378,6 +386,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 	teardownSuite := setupSuite(t)
 	defer teardownSuite(t)
 
+	ctx := context.Background()
 	c, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls": []string{
 			"https://oauth.cerberauth.com/.well-known/jwks.json",
@@ -412,13 +421,14 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 		t.Fatal(newGeneratorErr)
 	}
 
-	rules, err := g.Generate()
+	rules, err := g.Generate(ctx)
 
 	require.NoError(t, err)
 	assert.Equal(t, expectedRule, *getRuleById(rules, "updatePet"))
 }
 
 func TestGenerateFromSimpleOpenAPIWithUpstreamUrlAndPath(t *testing.T) {
+	ctx := context.Background()
 	expectedRules := []oathkeeper.Rule{
 		{
 			ID:          "prefix:findPetsByStatus",
@@ -452,7 +462,7 @@ func TestGenerateFromSimpleOpenAPIWithUpstreamUrlAndPath(t *testing.T) {
 		t.Fatal(newGeneratorErr)
 	}
 
-	rules, err := g.Generate()
+	rules, err := g.Generate(ctx)
 
 	require.NoError(t, err)
 	assert.Equal(t, expectedRules, rules)
@@ -462,6 +472,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 	teardownSuite := setupSuite(t)
 	defer teardownSuite(t)
 
+	ctx := context.Background()
 	c, _ := json.Marshal(map[string]interface{}{
 		"jwks_urls": []string{
 			"https://oauth.cerberauth.com/.well-known/jwks.json",
@@ -495,7 +506,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 		t.Fatal(newGeneratorErr)
 	}
 
-	rules, err := g.Generate()
+	rules, err := g.Generate(ctx)
 
 	require.NoError(t, err)
 	got := *getRuleById(rules, "findPetsByStatus")
@@ -506,6 +517,7 @@ func TestGenerateFromPetstoreWithOpenIdConnect(t *testing.T) {
 	teardownSuite := setupSuite(t)
 	defer teardownSuite(t)
 
+	ctx := context.Background()
 	var authenticators = make(map[string]config.AuthenticatorRuleConfig)
 	authenticators["petstore_auth"] = config.AuthenticatorRuleConfig{
 		Handler: "jwt",
@@ -522,7 +534,7 @@ func TestGenerateFromPetstoreWithOpenIdConnect(t *testing.T) {
 		t.Fatal(newGeneratorErr)
 	}
 
-	rules, err := g.Generate()
+	rules, err := g.Generate(ctx)
 
 	require.NoError(t, err)
 	cupaloy.SnapshotT(t, rules)
