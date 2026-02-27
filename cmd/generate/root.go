@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	fpath "path/filepath"
 
 	"github.com/cerberauth/openapi-oathkeeper/config"
 	"github.com/cerberauth/openapi-oathkeeper/generator"
@@ -148,8 +149,8 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			telemetryGenerateSuccessCounter.Add(ctx, 1, metric.WithAttributes(otelEncodingAttributeValue))
 
 			if outputpath != "" {
-				// nolint:errcheck
-				os.WriteFile(outputpath, outputBuf.Bytes(), 0600)
+				// nolint:errcheck,gosec
+				os.WriteFile(fpath.Clean(outputpath), outputBuf.Bytes(), 0600)
 				return
 			}
 

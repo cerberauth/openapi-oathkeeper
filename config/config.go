@@ -31,8 +31,8 @@ type AuthenticatorRuleConfig struct {
 var k = koanf.New(".")
 
 func New(configFilePath string) (*Config, error) {
-	if _, err := os.Stat(configFilePath); err != nil {
-		log.Printf("the configuration file has not been found on %s", configFilePath)
+	if _, err := os.Stat(filepath.Clean(configFilePath)); err != nil { //nolint:gosec
+		log.Printf("the configuration file has not been found on %s", configFilePath) //nolint:gosec
 
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func New(configFilePath string) (*Config, error) {
 	if configFilePath != "" {
 		path, err := filepath.Abs(configFilePath)
 		if err != nil {
-			log.Printf("failed to get absolute config path for %s: %v", configFilePath, err)
+			log.Printf("failed to get absolute config path for %s: %v", configFilePath, err) //nolint:gosec
 			return nil, err
 		}
 		if err := k.Load(file.Provider(path), yaml.Parser()); err != nil {
