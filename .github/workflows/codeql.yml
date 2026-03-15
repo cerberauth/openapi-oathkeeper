@@ -1,0 +1,18 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '18 6 * * 3'
+
+jobs:
+  analyze:
+    uses: cerberauth/ci/.github/workflows/golang-codeql.yml@main
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
