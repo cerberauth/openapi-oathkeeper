@@ -1,0 +1,14 @@
+name: "Close Stale Issues"
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  stale:
+    uses: cerberauth/ci/.github/workflows/stale.yml@main
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
