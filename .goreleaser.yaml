@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=jcroql
 version: 2
 
 project_name: openapi-oathkeeper
@@ -7,16 +9,53 @@ before:
     - go mod tidy
     - go generate ./...
 
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+gomod:
+  proxy: true
+
+report_sizes: true
+
+metadata:
+  mod_timestamp: "{{ .CommitTimestamp }}"
+
 builds:
-  - env:
+  - id: openapi-oathkeeper
+    binary: openapi-oathkeeper
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
       - windows
       - darwin
+    goarch:
+      - amd64
+      - arm64
+      - arm
+      - "386"
+    goarm:
+      - "7"
+    ignore:
+      - goos: windows
+        goarch: arm64
+      - goos: windows
+        goarch: arm
+      - goos: darwin
+        goarch: "386"
+      - goos: darwin
+        goarch: arm
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate }}
 
-gomod:
-  proxy: true
+universal_binaries:
+  - id: openapi-oathkeeper-universal
+    ids:
+      - openapi-oathkeeper
+    replace: true
 
 checksum:
   name_template: "checksums.txt"
@@ -25,102 +64,221 @@ source:
   enabled: true
 
 archives:
-  - format: tar.gz
-    name_template: >-
+  - name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
       {{- if eq .Arch "amd64" }}x86_64
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
+    format: tar.gz
     format_overrides:
-    - goos: windows
-      format: zip
-
-snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+      - goos: windows
+        format: zip
+    builds_info:
+      group: root
+      owner: root
+      mtime: "{{ .CommitDate }}"
+    files:
+      - README.md
+      - LICENSE
 
 sboms:
-  - id: syft-archive
-    artifacts: archive
+  - artifacts: archive
 
 signs:
   - cmd: cosign
-    env:
-      - COSIGN_EXPERIMENTAL=1
-    certificate: "${artifact}.pem"
+    signature: "${artifact}.sigstore.json"
+    output: true
+    artifacts: checksum
     args:
       - sign-blob
-      - "--output-certificate=${certificate}"
-      - "--output-signature=${signature}"
+      - "--bundle=${signature}"
       - "${artifact}"
-      - "--yes"
-    artifacts: checksum
-    output: true
+      - --yes
 
 changelog:
   sort: asc
+  use: github
+  format: "{{ .SHA }}: {{ .Message }}{{ if .Logins }} ({{ .Logins | englishJoin }}){{ end }}"
+  groups:
+    - title: "New Features"
+      regexp: '^.*?feat(\(.+\))??!?:.+$'
+      order: 0
+    - title: "Bug Fixes"
+      regexp: '^.*?(fix|refactor)(\(.+\))??!?:.+$'
+      order: 1
+    - title: "Other"
+      order: 999
   filters:
     exclude:
       - '^docs:'
       - '^test:'
+      - '^chore\(deps\): '
+      - '^(build|ci): '
+      - Merge pull request
+      - Merge branch
+
+milestones:
+  - close: true
+
+release:
+  name_template: "v{{ .Version }}"
 
 brews:
-  - name: "{{ .ProjectName }}"
-    description: "This project aims to automating the generation of Ory Oathkeeper rules from an OpenAPI 3 contract and save a lot of time and effort, especially for larger projects with many endpoints or many services."
-    license: "MIT"
+  - name: openapi-oathkeeper
+    description: &description "Generate Ory Oathkeeper access rules from an OpenAPI 3 contract."
+    license: &license MIT
+    homepage: &homepage https://github.com/cerberauth/openapi-oathkeeper
+    goarm: "6"
     repository:
-      owner: cerberauth
-      name: "{{ .ProjectName }}"
-    goarm: 6
+      owner: &owner cerberauth
+      name: homebrew-tap
+      branch: &main main
+    commit_author: &commit_author
+      name: cerberauth-bot
+      email: 268418261+cerberauth-bot@users.noreply.github.com
     test: |
-      system "#{bin}/{{ .ProjectName }} help"
-    homepage: https://github.com/cerberauth/openapi-oathkeeper
-    commit_author:
-      name: emmanuelgautier
-      email: emmanuel@cerberauth.com
+      system "#{bin}/openapi-oathkeeper help"
 
-# nfpms:
-#   - package_name: "{{ .ProjectName }}"
-#     vendor: CerberAuth
-#     homepage: https://github.com/cerberauth/openapi-oathkeeper
-#     maintainer: Emmanuel Gautier <emmanuel@cerberauth.com>
-#     description: "This project aims to automating the generation of Ory Oathkeeper rules from an OpenAPI 3 contract and save a lot of time and effort, especially for larger projects with many endpoints or many services."
-#     license: "MIT"
-#     formats:
-#       - apk
-#       - deb
-#       - rpm
-#       - termux.deb
-#       - archlinux
+scoops:
+  - name: openapi-oathkeeper
+    description: *description
+    homepage: *homepage
+    license: *license
+    repository:
+      owner: *owner
+      name: scoop-bucket
+      branch: *main
+    commit_author: *commit_author
+
+nfpms:
+  - file_name_template: "{{ .ConventionalFileName }}"
+    package_name: openapi-oathkeeper
+    vendor: CerberAuth
+    homepage: *homepage
+    maintainer: Emmanuel Gautier <emmanuel@cerberauth.com>
+    description: *description
+    license: *license
+    bindir: /usr/bin
+    section: utils
+    formats:
+      - apk
+      - deb
+      - rpm
+      - termux.deb
+      - archlinux
 
 snapcrafts:
-  - title: OpenAPI to Ory Oathkeeper rules
+  - name_template: "{{ .ProjectName }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    title: OpenAPI to Ory Oathkeeper rules
     publish: true
-    summary: "Automating the generation of Ory Oathkeeper rules from OpenAPI"
-    description: "This project aims to automating the generation of Ory Oathkeeper rules from an OpenAPI 3 contract and save a lot of time and effort, especially for larger projects with many endpoints or many services."
-    license: MIT
+    summary: *description
+    description: "Automate generation of Ory Oathkeeper access rules from an OpenAPI 3 contract, saving time especially for larger projects with many endpoints or many services."
+    license: *license
+    confinement: classic
+    grade: stable
+    channel_templates:
+      - edge
+      - beta
+      - candidate
+      - stable
+
+aurs:
+  - name: openapi-oathkeeper-bin
+    homepage: *homepage
+    description: *description
+    maintainers:
+      - Emmanuel Gautier <emmanuel@cerberauth.com>
+    license: *license
+    private_key: "{{ .Env.AUR_KEY }}"
+    git_url: ssh://aur@aur.archlinux.org/openapi-oathkeeper-bin.git
+    skip_upload: auto
+    package: |-
+      install -Dm755 "./openapi-oathkeeper" "${pkgdir}/usr/bin/openapi-oathkeeper"
+      install -Dm644 "./LICENSE" "${pkgdir}/usr/share/licenses/openapi-oathkeeper/LICENSE"
+
+winget:
+  - name: openapi-oathkeeper
+    publisher: CerberAuth
+    publisher_url: https://cerberauth.com
+    license: *license
+    license_url: https://github.com/cerberauth/openapi-oathkeeper/blob/main/LICENSE
+    homepage: *homepage
+    short_description: *description
+    repository:
+      owner: *owner
+      name: winget-pkgs
+      branch: "openapi-oathkeeper-{{.Version}}"
+      pull_request:
+        enabled: true
+        base:
+          owner: microsoft
+          name: winget-pkgs
+          branch: master
+
+chocolateys:
+  - name: openapi-oathkeeper
+    title: OpenAPI Oathkeeper
+    owners: CerberAuth
+    description: *description
+    project_url: *homepage
+    license_url: https://github.com/cerberauth/openapi-oathkeeper/blob/main/LICENSE
+    copyright: CerberAuth
+    tags: "openapi oathkeeper security ory"
+    summary: *description
+    api_key: "{{ .Env.CHOCOLATEY_API_KEY }}"
+    source_repo: https://push.chocolatey.org/
+    skip_publish: false
 
 dockers:
-  - image_templates:
-      - "cerberauth/openapi-oathkeeper:{{ .Tag }}"
-      - "cerberauth/openapi-oathkeeper:v{{ .Major }}"
-      - "cerberauth/openapi-oathkeeper:v{{ .Major }}.{{ .Minor }}"
-      - "cerberauth/openapi-oathkeeper:latest"
-      - "ghcr.io/cerberauth/openapi-oathkeeper:{{ .Tag }}"
-      - "ghcr.io/cerberauth/openapi-oathkeeper:v{{ .Major }}"
-      - "ghcr.io/cerberauth/openapi-oathkeeper:v{{ .Major }}.{{ .Minor }}"
-      - "ghcr.io/cerberauth/openapi-oathkeeper:latest"
+  - id: openapi-oathkeeper-amd64
+    image_templates:
+      - "cerberauth/openapi-oathkeeper:{{ .Tag }}-amd64"
+      - "ghcr.io/cerberauth/openapi-oathkeeper:{{ .Tag }}-amd64"
     dockerfile: .docker/Dockerfile-goreleaser
+    use: buildx
+    build_flag_templates:
+      - "--platform=linux/amd64"
+    goarch: amd64
+
+  - id: openapi-oathkeeper-arm64
+    image_templates:
+      - "cerberauth/openapi-oathkeeper:{{ .Tag }}-arm64"
+      - "ghcr.io/cerberauth/openapi-oathkeeper:{{ .Tag }}-arm64"
+    dockerfile: .docker/Dockerfile-goreleaser
+    use: buildx
+    build_flag_templates:
+      - "--platform=linux/arm64/v8"
+    goarch: arm64
+
+docker_manifests:
+  - name_template: "cerberauth/openapi-oathkeeper:{{ .Tag }}"
+    image_templates: &dockerhub_image_templates
+      - "cerberauth/openapi-oathkeeper:{{ .Tag }}-amd64"
+      - "cerberauth/openapi-oathkeeper:{{ .Tag }}-arm64"
+  - name_template: "cerberauth/openapi-oathkeeper:v{{ .Major }}"
+    image_templates: *dockerhub_image_templates
+  - name_template: "cerberauth/openapi-oathkeeper:v{{ .Major }}.{{ .Minor }}"
+    image_templates: *dockerhub_image_templates
+  - name_template: "cerberauth/openapi-oathkeeper:latest"
+    image_templates: *dockerhub_image_templates
+  - name_template: "ghcr.io/cerberauth/openapi-oathkeeper:{{ .Tag }}"
+    image_templates: &ghcr_image_templates
+      - "ghcr.io/cerberauth/openapi-oathkeeper:{{ .Tag }}-amd64"
+      - "ghcr.io/cerberauth/openapi-oathkeeper:{{ .Tag }}-arm64"
+  - name_template: "ghcr.io/cerberauth/openapi-oathkeeper:v{{ .Major }}"
+    image_templates: *ghcr_image_templates
+  - name_template: "ghcr.io/cerberauth/openapi-oathkeeper:v{{ .Major }}.{{ .Minor }}"
+    image_templates: *ghcr_image_templates
+  - name_template: "ghcr.io/cerberauth/openapi-oathkeeper:latest"
+    image_templates: *ghcr_image_templates
 
 docker_signs:
   - cmd: cosign
-    env:
-      - COSIGN_EXPERIMENTAL=1
-    artifacts: images
+    artifacts: manifests
     output: true
     args:
       - "sign"
-      - "${artifact}"
+      - "${artifact}@${digest}"
       - "--yes"
