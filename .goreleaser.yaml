@@ -71,10 +71,10 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    format: tar.gz
+    formats: ["tar.gz"]
     format_overrides:
       - goos: windows
-        format: zip
+        formats: ["zip"]
     builds_info:
       group: root
       owner: root
@@ -125,12 +125,11 @@ milestones:
 release:
   name_template: "v{{ .Version }}"
 
-brews:
+homebrew_casks:
   - name: openapi-oathkeeper
     description: &description "Generate Ory Oathkeeper access rules from an OpenAPI 3 contract."
     license: &license MIT
     homepage: &homepage https://github.com/cerberauth/openapi-oathkeeper
-    goarm: "6"
     repository:
       owner: &owner cerberauth
       name: homebrew-tap
@@ -138,8 +137,6 @@ brews:
     commit_author: &commit_author
       name: cerberauth-bot
       email: 268418261+cerberauth-bot@users.noreply.github.com
-    test: |
-      system "#{bin}/openapi-oathkeeper help"
 
 scoops:
   - name: openapi-oathkeeper
@@ -221,6 +218,7 @@ chocolateys:
   - name: openapi-oathkeeper
     title: OpenAPI Oathkeeper
     owners: CerberAuth
+    authors: CerberAuth
     description: *description
     project_url: *homepage
     license_url: https://github.com/cerberauth/openapi-oathkeeper/blob/main/LICENSE
@@ -231,48 +229,34 @@ chocolateys:
     source_repo: https://push.chocolatey.org/
     skip_publish: false
 
-dockers:
-  - id: openapi-oathkeeper-amd64
-    image_templates:
-      - "cerberauth/openapi-oathkeeper:{{ .Tag }}-amd64"
-      - "ghcr.io/cerberauth/openapi-oathkeeper:{{ .Tag }}-amd64"
+dockers_v2:
+  - id: openapi-oathkeeper-dockerhub
     dockerfile: .docker/Dockerfile-goreleaser
-    use: buildx
-    build_flag_templates:
-      - "--platform=linux/amd64"
-    goarch: amd64
+    images:
+      - "cerberauth/openapi-oathkeeper"
+    tags:
+      - "{{ .Tag }}"
+      - "v{{ .Major }}"
+      - "v{{ .Major }}.{{ .Minor }}"
+      - "latest"
+    platforms:
+      - linux/amd64
+      - linux/arm64/v8
+      - linux/arm/v7
 
-  - id: openapi-oathkeeper-arm64
-    image_templates:
-      - "cerberauth/openapi-oathkeeper:{{ .Tag }}-arm64"
-      - "ghcr.io/cerberauth/openapi-oathkeeper:{{ .Tag }}-arm64"
+  - id: openapi-oathkeeper-ghcr
     dockerfile: .docker/Dockerfile-goreleaser
-    use: buildx
-    build_flag_templates:
-      - "--platform=linux/arm64/v8"
-    goarch: arm64
-
-docker_manifests:
-  - name_template: "cerberauth/openapi-oathkeeper:{{ .Tag }}"
-    image_templates: &dockerhub_image_templates
-      - "cerberauth/openapi-oathkeeper:{{ .Tag }}-amd64"
-      - "cerberauth/openapi-oathkeeper:{{ .Tag }}-arm64"
-  - name_template: "cerberauth/openapi-oathkeeper:v{{ .Major }}"
-    image_templates: *dockerhub_image_templates
-  - name_template: "cerberauth/openapi-oathkeeper:v{{ .Major }}.{{ .Minor }}"
-    image_templates: *dockerhub_image_templates
-  - name_template: "cerberauth/openapi-oathkeeper:latest"
-    image_templates: *dockerhub_image_templates
-  - name_template: "ghcr.io/cerberauth/openapi-oathkeeper:{{ .Tag }}"
-    image_templates: &ghcr_image_templates
-      - "ghcr.io/cerberauth/openapi-oathkeeper:{{ .Tag }}-amd64"
-      - "ghcr.io/cerberauth/openapi-oathkeeper:{{ .Tag }}-arm64"
-  - name_template: "ghcr.io/cerberauth/openapi-oathkeeper:v{{ .Major }}"
-    image_templates: *ghcr_image_templates
-  - name_template: "ghcr.io/cerberauth/openapi-oathkeeper:v{{ .Major }}.{{ .Minor }}"
-    image_templates: *ghcr_image_templates
-  - name_template: "ghcr.io/cerberauth/openapi-oathkeeper:latest"
-    image_templates: *ghcr_image_templates
+    images:
+      - "ghcr.io/cerberauth/openapi-oathkeeper"
+    tags:
+      - "{{ .Tag }}"
+      - "v{{ .Major }}"
+      - "v{{ .Major }}.{{ .Minor }}"
+      - "latest"
+    platforms:
+      - linux/amd64
+      - linux/arm64/v8
+      - linux/arm/v7
 
 docker_signs:
   - cmd: cosign
