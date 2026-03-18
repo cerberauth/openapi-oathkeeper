@@ -2,5 +2,4 @@ FROM gcr.io/distroless/static-debian12:nonroot
 
 COPY --chown=nonroot:nonroot openapi-oathkeeper /usr/bin/openapi-oathkeeper
 
-ENTRYPOINT ["openapi-oathkeeper"]
-CMD ["openapi-oathkeeper"]
+ENTRYPOINT ["/usr/bin/openapi-oathkeeper"]

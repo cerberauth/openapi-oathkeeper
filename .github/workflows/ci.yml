@@ -49,9 +49,10 @@ jobs:
 
       - uses: cerberauth/ci/actions/releaser@main
         with:
-          package-name: vulnapi
+          package-name: openapi-oathkeeper
           dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
           snapcraft-store-credentials: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
           chocolatey-api-key: ${{ secrets.CHOCOLATEY_API_KEY }}
+          aur-key: ${{ secrets.AUR_KEY }}
           github-token: ${{ secrets.PAT }}

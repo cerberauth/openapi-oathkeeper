@@ -4,8 +4,10 @@ import "github.com/cerberauth/openapi-oathkeeper/cmd"
 
 var (
 	version = "dev"
+	commit  = "none"
+	date    = "unknown"
 )
 
 func main() {
-	cmd.Execute(version)
+	cmd.Execute(version, commit, date)
 }
