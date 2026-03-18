@@ -241,7 +241,7 @@ dockers_v2:
       - "latest"
     platforms:
       - linux/amd64
-      - linux/arm64/v8
+      - linux/arm64
       - linux/arm/v7
 
   - id: openapi-oathkeeper-ghcr
@@ -255,7 +255,7 @@ dockers_v2:
       - "latest"
     platforms:
       - linux/amd64
-      - linux/arm64/v8
+      - linux/arm64
       - linux/arm/v7
 
 docker_signs:
