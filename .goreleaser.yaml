@@ -198,7 +198,7 @@ aurs:
 winget:
   - name: openapi-oathkeeper
     publisher: CerberAuth
-    publisher_url: https://cerberauth.com
+    publisher_url: https://www.cerberauth.com
     license: *license
     license_url: https://github.com/cerberauth/openapi-oathkeeper/blob/main/LICENSE
     homepage: *homepage
