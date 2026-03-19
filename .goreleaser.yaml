@@ -207,12 +207,6 @@ winget:
       owner: *owner
       name: winget-pkgs
       branch: "openapi-oathkeeper-{{.Version}}"
-      pull_request:
-        enabled: true
-        base:
-          owner: microsoft
-          name: winget-pkgs
-          branch: master
 
 chocolateys:
   - name: openapi-oathkeeper
