@@ -173,8 +173,14 @@ snapcrafts:
     summary: *description
     description: "Automate generation of Ory Oathkeeper access rules from an OpenAPI 3 contract, saving time especially for larger projects with many endpoints or many services."
     license: *license
-    confinement: classic
+    confinement: strict
     grade: stable
+    apps:
+      openapi-oathkeeper:
+        plugs:
+          - home
+          - network
+          - removable-media
     channel_templates:
       - edge
       - beta
