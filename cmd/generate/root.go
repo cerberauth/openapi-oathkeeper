@@ -11,6 +11,7 @@ import (
 	"github.com/cerberauth/openapi-oathkeeper/config"
 	"github.com/cerberauth/openapi-oathkeeper/generator"
 	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
+	"github.com/cerberauth/x/fsx"
 	"github.com/cerberauth/x/telemetryx"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
@@ -79,6 +80,10 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			var err error
 
 			if configFilePath != "" {
+				if _, err = fsx.FileExists(configFilePath); err != nil {
+					telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to read config file")))
+					log.Fatal(err)
+				}
 				cfg, err = config.New(configFilePath)
 				if err != nil {
 					telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to load config file")))
@@ -105,12 +110,14 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			}
 
 			if filepath != "" {
-				if _, err := os.Stat(filepath); err != nil {
-					telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("the openapi file has not been found")))
-					log.Fatalf("the openapi file has not been found on %s", filepath)
+				var data []byte
+				data, err = fsx.ReadFile(filepath)
+				if err != nil {
+					telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to read openapi file")))
+					log.Fatal(err)
 				}
 
-				doc, err = openapi3.NewLoader().LoadFromFile(filepath)
+				doc, err = openapi3.NewLoader().LoadFromDataWithPath(data, &url.URL{Path: filepath})
 			}
 
 			if err != nil {
@@ -149,8 +156,9 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			telemetryGenerateSuccessCounter.Add(ctx, 1, metric.WithAttributes(otelEncodingAttributeValue))
 
 			if outputpath != "" {
-				// nolint:errcheck,gosec
-				os.WriteFile(fpath.Clean(outputpath), outputBuf.Bytes(), 0600)
+				if err = fsx.WriteFile(fpath.Clean(outputpath), outputBuf.Bytes(), 0600); err != nil {
+					log.Fatal(err)
+				}
 				return
 			}
 
