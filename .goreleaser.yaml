@@ -205,10 +205,17 @@ winget:
   - name: openapi-oathkeeper
     publisher: CerberAuth
     publisher_url: https://www.cerberauth.com
+    publisher_support_url: https://github.com/cerberauth/openapi-oathkeeper/issues
     license: *license
     license_url: https://github.com/cerberauth/openapi-oathkeeper/blob/main/LICENSE
     homepage: *homepage
     short_description: *description
+    release_notes_url: "https://github.com/cerberauth/openapi-oathkeeper/releases/tag/v{{ .Version }}"
+    tags:
+      - openapi
+      - oathkeeper
+      - security
+      - ory
     repository:
       owner: *owner
       name: winget-pkgs
@@ -221,10 +228,16 @@ chocolateys:
     authors: CerberAuth
     description: *description
     project_url: *homepage
+    icon_url: https://github.com/cerberauth.png?size=128
     license_url: https://github.com/cerberauth/openapi-oathkeeper/blob/main/LICENSE
     copyright: CerberAuth
     tags: "openapi oathkeeper security ory"
     summary: *description
+    release_notes: "https://github.com/cerberauth/openapi-oathkeeper/releases/tag/v{{ .Version }}"
+    package_source_url: *homepage
+    project_source_url: *homepage
+    docs_url: *homepage
+    bug_tracker_url: https://github.com/cerberauth/openapi-oathkeeper/issues
     api_key: "{{ .Env.CHOCOLATEY_API_KEY }}"
     source_repo: https://push.chocolatey.org/
     skip_publish: false
