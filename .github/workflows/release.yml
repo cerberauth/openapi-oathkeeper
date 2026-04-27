@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to publish from (e.g. v1.2.3)"
+        required: true
+      skip:
+        description: "Comma-separated publishers to skip (aur,brew,chocolatey,docker,scoop,snapcraft,winget)"
+        required: false
+        default: ""
+      only:
+        description: "Publish only to this publisher — skips all others (aur,brew,chocolatey,docker,scoop,snapcraft,winget)"
+        required: false
+        default: ""
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write
+      packages: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.tag || github.ref }}
+
+      - run: git fetch --force --tags
+
+      - uses: cerberauth/ci/actions/releaser@main
+        with:
+          package-name: openapi-oathkeeper
+          skip: ${{ inputs.skip }}
+          only: ${{ inputs.only }}
+          goreleaser-current-tag: ${{ inputs.tag }}
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+          snapcraft-store-credentials: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+          chocolatey-api-key: ${{ secrets.CHOCOLATEY_API_KEY }}
+          aur-key: ${{ secrets.AUR_KEY }}
+          github-token: ${{ secrets.PAT }}
