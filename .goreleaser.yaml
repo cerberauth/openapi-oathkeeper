@@ -234,8 +234,8 @@ chocolateys:
     tags: "openapi oathkeeper security ory"
     summary: *description
     release_notes: "https://github.com/cerberauth/openapi-oathkeeper/releases/tag/v{{ .Version }}"
-    package_source_url: *homepage
-    project_source_url: *homepage
+    package_source_url: &source https://github.com/cerberauth/openapi-oathkeeper/tree/main
+    project_source_url: *source
     docs_url: *homepage
     bug_tracker_url: https://github.com/cerberauth/openapi-oathkeeper/issues
     api_key: "{{ .Env.CHOCOLATEY_API_KEY }}"
