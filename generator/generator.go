@@ -13,6 +13,8 @@ import (
 	"go.opentelemetry.io/otel/metric"
 )
 
+const handlerAllow = "allow"
+
 var otelName = "github.com/cerberauth/openapi-oathkeeper/generator"
 
 type Generator struct {
@@ -85,7 +87,7 @@ func (g *Generator) createRule(verb string, path string, o *openapi3.Operation) 
 		Upstream:       g.cfg.Upstream,
 		Authenticators: authenticators,
 		Authorizer: oathkeeper.RuleHandler{
-			Handler: "allow",
+			Handler: handlerAllow,
 		},
 		Mutators: g.cfg.Mutators,
 		Errors:   g.cfg.Errors,

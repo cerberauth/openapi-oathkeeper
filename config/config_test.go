@@ -67,7 +67,7 @@ server_urls:
 	}, cfg.Mutators)
 	assert.Equal(t, []oathkeeper.RuleErrorHandler{
 		{
-			Handler: "json",
+			Handler: handlerJSON,
 		},
 	}, cfg.Errors)
 	assert.Equal(t, oathkeeper.RuleUpstream{}, cfg.Upstream)

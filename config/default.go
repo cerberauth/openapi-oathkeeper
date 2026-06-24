@@ -17,7 +17,7 @@ var defaultConfig = map[string]interface{}{
 	},
 	"errors": []oathkeeper.RuleErrorHandler{
 		{
-			Handler: "json",
+			Handler: handlerJSON,
 		},
 	},
 	"upstream": oathkeeper.RuleUpstream{},

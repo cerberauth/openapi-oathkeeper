@@ -28,6 +28,8 @@ type AuthenticatorRuleConfig struct {
 	Config  map[string]interface{} `json:"config" yaml:"handler"`
 }
 
+const handlerJSON = "json"
+
 var k = koanf.New(".")
 
 func New(configFilePath string) (*Config, error) {
@@ -57,7 +59,7 @@ func New(configFilePath string) (*Config, error) {
 	}
 
 	var cfg Config
-	if err := k.UnmarshalWithConf("", &cfg, koanf.UnmarshalConf{Tag: "json", FlatPaths: false}); err != nil {
+	if err := k.UnmarshalWithConf("", &cfg, koanf.UnmarshalConf{Tag: handlerJSON, FlatPaths: false}); err != nil {
 		log.Printf("failed to unmarshal with conf: %v", err)
 		return nil, err
 	}

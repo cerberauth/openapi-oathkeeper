@@ -18,13 +18,13 @@ func TestAuthenticatorDefaultCreateAuthenticator(t *testing.T) {
 		"target_audience": []string{},
 	})
 	expectedAuthenticator := oathkeeper.RuleHandler{
-		Handler: "jwt",
+		Handler: handlerJWT,
 		Config:  jsonConfig,
 	}
 	a, newAuthenticatorErr := NewAuthenticatorDefault(&openapi3.SecuritySchemeRef{
 		Value: openapi3.NewJWTSecurityScheme(),
 	}, &config.AuthenticatorRuleConfig{
-		Handler: "jwt",
+		Handler: handlerJWT,
 		Config: map[string]interface{}{
 			"jwks_urls":       []string{"https://ory.projects.oryapis.com/.well-known/jwks.json"},
 			"trusted_issuers": []string{"https://oauth.cerberauth.com"},
@@ -52,13 +52,13 @@ func TestAuthenticatorDefaultCreateAuthenticatorWithScopes(t *testing.T) {
 	})
 
 	expectedAuthenticator := &oathkeeper.RuleHandler{
-		Handler: "jwt",
+		Handler: handlerJWT,
 		Config:  jsonConfig,
 	}
 	a, newAuthenticatorErr := NewAuthenticatorDefault(&openapi3.SecuritySchemeRef{
 		Value: openapi3.NewJWTSecurityScheme(),
 	}, &config.AuthenticatorRuleConfig{
-		Handler: "jwt",
+		Handler: handlerJWT,
 		Config: map[string]interface{}{
 			"jwks_urls":       []string{"https://ory.projects.oryapis.com/.well-known/jwks.json"},
 			"trusted_issuers": []string{"https://oauth.cerberauth.com"},
