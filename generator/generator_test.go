@@ -77,7 +77,7 @@ func TestGenerateFromSimpleOpenAPI(t *testing.T) {
 				},
 			},
 			Authorizer: oathkeeper.RuleHandler{
-				Handler: "allow",
+				Handler: handlerAllow,
 			},
 		},
 	}
@@ -108,7 +108,7 @@ func TestGenerateFromSimpleOpenAPIWithPrefixId(t *testing.T) {
 				},
 			},
 			Authorizer: oathkeeper.RuleHandler{
-				Handler: "allow",
+				Handler: handlerAllow,
 			},
 		},
 	}
@@ -141,7 +141,7 @@ func TestGenerateFromSimpleOpenAPIWithOneServerUrl(t *testing.T) {
 				},
 			},
 			Authorizer: oathkeeper.RuleHandler{
-				Handler: "allow",
+				Handler: handlerAllow,
 			},
 		},
 	}
@@ -174,7 +174,7 @@ func TestGenerateFromSimpleOpenAPIWithSeveralServerUrls(t *testing.T) {
 				},
 			},
 			Authorizer: oathkeeper.RuleHandler{
-				Handler: "allow",
+				Handler: handlerAllow,
 			},
 		},
 	}
@@ -211,7 +211,7 @@ func TestGenerateOpenAPIWithoutSecurity(t *testing.T) {
 				},
 			},
 			Authorizer: oathkeeper.RuleHandler{
-				Handler: "allow",
+				Handler: handlerAllow,
 			},
 		},
 
@@ -229,7 +229,7 @@ func TestGenerateOpenAPIWithoutSecurity(t *testing.T) {
 				},
 			},
 			Authorizer: oathkeeper.RuleHandler{
-				Handler: "allow",
+				Handler: handlerAllow,
 			},
 		},
 	}
@@ -276,7 +276,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnect(t *testing.T) {
 				},
 			},
 			Authorizer: oathkeeper.RuleHandler{
-				Handler: "allow",
+				Handler: handlerAllow,
 			},
 		},
 	}
@@ -323,7 +323,7 @@ func TestGenerateFromSimpleOpenAPIWithOAuth2(t *testing.T) {
 				},
 			},
 			Authorizer: oathkeeper.RuleHandler{
-				Handler: "allow",
+				Handler: handlerAllow,
 			},
 		},
 	}
@@ -367,7 +367,7 @@ func TestGenerateFromSimpleOpenAPIWithHttpBearer(t *testing.T) {
 				},
 			},
 			Authorizer: oathkeeper.RuleHandler{
-				Handler: "allow",
+				Handler: handlerAllow,
 			},
 		},
 	}
@@ -413,7 +413,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalSecurityScheme(t *t
 			},
 		},
 		Authorizer: oathkeeper.RuleHandler{
-			Handler: "allow",
+			Handler: handlerAllow,
 		},
 	}
 	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", &config.Config{})
@@ -447,7 +447,7 @@ func TestGenerateFromSimpleOpenAPIWithUpstreamUrlAndPath(t *testing.T) {
 				},
 			},
 			Authorizer: oathkeeper.RuleHandler{
-				Handler: "allow",
+				Handler: handlerAllow,
 			},
 		},
 	}
@@ -498,7 +498,7 @@ func TestGenerateFromSimpleOpenAPIWithOpenIdConnectWithGlobalAndLocalOverrideSec
 			},
 		},
 		Authorizer: oathkeeper.RuleHandler{
-			Handler: "allow",
+			Handler: handlerAllow,
 		},
 	}
 	g, newGeneratorErr := newGenerator("../test/stub/simple_openidconnect_global.openapi.json", &config.Config{})

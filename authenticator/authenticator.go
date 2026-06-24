@@ -19,6 +19,8 @@ type Authenticator interface {
 
 var otelName = "github.com/cerberauth/openapi-oathkeeper/authenticator"
 
+const handlerJWT = "jwt"
+
 var (
 	JWKSUriExtensionName  = "x-authenticator-jwks-uri"
 	IssuerExtensionName   = "x-authenticator-issuer"
@@ -42,11 +44,11 @@ func createConfigFromSecurityScheme(s *openapi3.SecuritySchemeRef) (*config.Auth
 	switch strings.ToLower(s.Value.Type) {
 	case string(AuthenticatorTypeOpenIdConnect),
 		string(AuthenticatorTypeOAuth2):
-		cfg.Handler = "jwt"
+		cfg.Handler = handlerJWT
 
 	case string(AuthenticatorTypeHttp):
 		if s.Value.Scheme == "bearer" {
-			cfg.Handler = "jwt"
+			cfg.Handler = handlerJWT
 		}
 	}
 

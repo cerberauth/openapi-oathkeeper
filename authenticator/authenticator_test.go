@@ -41,7 +41,7 @@ func TestNewAuthenticatorFromSecurityScheme(t *testing.T) {
 		"required_scope":  []string{},
 	})
 	expectedAuthenticator := &oathkeeper.RuleHandler{
-		Handler: "jwt",
+		Handler: handlerJWT,
 		Config:  jsonConfig,
 	}
 	s := openapi3.NewJWTSecurityScheme()
@@ -74,7 +74,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnect(t *testing.T)
 		"required_scope":  []string{},
 	})
 	expectedAuthenticator := &oathkeeper.RuleHandler{
-		Handler: "jwt",
+		Handler: handlerJWT,
 		Config:  jsonConfig,
 	}
 	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(ctx, &openapi3.SecuritySchemeRef{
@@ -103,7 +103,7 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithLowercaseT
 		"required_scope":  []string{},
 	})
 	expectedAuthenticator := &oathkeeper.RuleHandler{
-		Handler: "jwt",
+		Handler: handlerJWT,
 		Config:  jsonConfig,
 	}
 	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(ctx, &openapi3.SecuritySchemeRef{
@@ -132,13 +132,13 @@ func TestNewAuthenticatorFromSecuritySchemeWhenTypeIsOpenIDConnectWithConfig(t *
 		"required_scope":  []string{},
 	})
 	expectedAuthenticator := &oathkeeper.RuleHandler{
-		Handler: "jwt",
+		Handler: handlerJWT,
 		Config:  jsonConfig,
 	}
 	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(ctx, &openapi3.SecuritySchemeRef{
 		Value: openapi3.NewOIDCSecurityScheme(oidcConfigurationUrl),
 	}, &config.AuthenticatorRuleConfig{
-		Handler: "jwt",
+		Handler: handlerJWT,
 		Config: map[string]interface{}{
 			"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
 			"trusted_issuers": []string{"https://oauth.cerberauth.com"},
@@ -164,13 +164,13 @@ func TestNewAuthenticatorFromSecuritySchemeWithConfiguration(t *testing.T) {
 		"required_scope":  []string{},
 	})
 	expectedAuthenticator := &oathkeeper.RuleHandler{
-		Handler: "jwt",
+		Handler: handlerJWT,
 		Config:  jsonConfig,
 	}
 	a, newAuthenticatorErr := NewAuthenticatorFromSecurityScheme(ctx, &openapi3.SecuritySchemeRef{
 		Value: openapi3.NewJWTSecurityScheme(),
 	}, &config.AuthenticatorRuleConfig{
-		Handler: "jwt",
+		Handler: handlerJWT,
 		Config: map[string]interface{}{
 			"jwks_urls":       []string{"https://oauth.cerberauth.com/.well-known/jwks.json"},
 			"trusted_issuers": []string{"https://oauth.cerberauth.com"},
