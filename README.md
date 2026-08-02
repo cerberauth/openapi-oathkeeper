@@ -5,7 +5,6 @@
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cerberauth/openapi-oathkeeper/ci.yml?branch=main&label=core%20build&style=for-the-badge)](https://github.com/cerberauth/openapi-oathkeeper/actions/workflows/ci.yml)
 ![Latest version](https://img.shields.io/github/v/release/cerberauth/openapi-oathkeeper?sort=semver&style=for-the-badge)
 ![Codecov](https://img.shields.io/codecov/c/gh/cerberauth/openapi-oathkeeper?token=BD1WPXJDAW&style=for-the-badge)
-[![Go Report Card](https://goreportcard.com/badge/github.com/cerberauth/openapi-oathkeeper?style=for-the-badge)](https://goreportcard.com/report/github.com/cerberauth/openapi-oathkeeper)
 [![GoDoc reference](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=for-the-badge)](https://godoc.org/github.com/cerberauth/openapi-oathkeeper)
 
 This CLI generates OathKeeper rules that enforce authentication and authorization policies for each API endpoint from an OpenAPI file.
