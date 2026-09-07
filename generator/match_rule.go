@@ -26,7 +26,10 @@ var (
 		).Repeat().ZeroOrOne(),
 	)
 	integerToken = rex.Chars.Digits().Repeat().OneOrMore()
-	stringToken  = rex.Chars.Any().Repeat().OneOrMore()
+	// stringToken matches a single path segment: it excludes '/' so that
+	// the generated regex cannot expand across segment boundaries and
+	// unintentionally match deeper, unrelated paths (see CWE-284).
+	stringToken  = rex.Common.NotClass(rex.Chars.Single('/')).Repeat().OneOrMore()
 	defaultToken = stringToken
 )
 

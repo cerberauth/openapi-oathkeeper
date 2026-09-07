@@ -28,7 +28,7 @@ If none of the installation methods below work for you, you can also download th
 Install using [Snap](https://snapcraft.io/openapi-oathkeeper).
 
 ```sh
-sudo snap install vulnapi
+sudo snap install openapi-oathkeeper
 ```
 
 ### MacOS (Homebrew)
@@ -215,7 +215,7 @@ Here is an example Oathkeeper rules output from the [Petstore OpenAPI](./test/st
             "methods": [
                 "DELETE"
             ],
-            "url": "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/<.+>"
+            "url": "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/<[^/]+>"
         },
         "authenticators": [
             {
@@ -398,7 +398,7 @@ Here is an example Oathkeeper rules output from the [Petstore OpenAPI](./test/st
             "methods": [
                 "GET"
             ],
-            "url": "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/<.+>"
+            "url": "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/<[^/]+>"
         },
         "authenticators": [
             {
@@ -576,7 +576,7 @@ Here is an example Oathkeeper rules output from the [Petstore OpenAPI](./test/st
             "methods": [
                 "PUT"
             ],
-            "url": "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/<.+>"
+            "url": "<(https://cerberauth\\.com/api/v3|http://swagger\\.io/api/v3)>/user/<[^/]+>"
         },
         "authenticators": [
             {
