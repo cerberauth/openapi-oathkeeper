@@ -537,5 +537,13 @@ func TestGenerateFromPetstoreWithOpenIdConnect(t *testing.T) {
 	rules, err := g.Generate(ctx)
 
 	require.NoError(t, err)
-	cupaloy.SnapshotT(t, rules)
+
+	// Snapshot the marshaled JSON rather than the raw Go struct: spew's dump
+	// of the struct includes the concrete type backing oathkeeper.RuleHandler's
+	// Config field (json.RawMessage), which Go itself has changed across
+	// versions (e.g. it became an alias for jsontext.Value), breaking this
+	// snapshot for reasons unrelated to the generator's actual output.
+	rulesJSON, marshalErr := json.MarshalIndent(rules, "", "  ")
+	require.NoError(t, marshalErr)
+	cupaloy.SnapshotT(t, string(rulesJSON))
 }

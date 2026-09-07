@@ -44,7 +44,7 @@ func TestGenerateMatchRuleWithMultipleServerUrls(t *testing.T) {
 
 func TestGenerateMatchRuleWithNoPathParams(t *testing.T) {
 	expectedMatchingRule := oathkeeper.RuleMatch{
-		URL:     "/<.+>/resource/<.+>",
+		URL:     "/<[^/]+>/resource/<[^/]+>",
 		Methods: []string{"GET"},
 	}
 	matchRule, err := createMatchRule([]string{}, "GET", "/{param}/resource/{otherParam}", nil)
@@ -55,7 +55,7 @@ func TestGenerateMatchRuleWithNoPathParams(t *testing.T) {
 
 func TestGenerateMatchRuleWithUnknownPathParams(t *testing.T) {
 	expectedMatchingRule := oathkeeper.RuleMatch{
-		URL:     "/<.+>/resource/<.+>",
+		URL:     "/<[^/]+>/resource/<[^/]+>",
 		Methods: []string{"GET"},
 	}
 	matchRule, err := createMatchRule([]string{}, "GET", "/{param}/resource/{otherParam}", &openapi3.Parameters{})
@@ -66,7 +66,7 @@ func TestGenerateMatchRuleWithUnknownPathParams(t *testing.T) {
 
 func TestGenerateMatchRuleWithStringPathParams(t *testing.T) {
 	expectedMatchingRule := oathkeeper.RuleMatch{
-		URL:     "/resource/<.+>",
+		URL:     "/resource/<[^/]+>",
 		Methods: []string{"GET"},
 	}
 	types := &openapi3.Types{"string"}
@@ -114,7 +114,7 @@ func TestGenerateMatchRuleWithIntegerPathParams(t *testing.T) {
 
 func TestGenerateMatchRuleWithBooleanPathParams(t *testing.T) {
 	expectedMatchingRule := oathkeeper.RuleMatch{
-		URL:     "/resource/<.+>",
+		URL:     "/resource/<[^/]+>",
 		Methods: []string{"GET"},
 	}
 	types := &openapi3.Types{"boolean"}
@@ -130,7 +130,7 @@ func TestGenerateMatchRuleWithBooleanPathParams(t *testing.T) {
 
 func TestGenerateMatchRuleWithArrayPathParams(t *testing.T) {
 	expectedMatchingRule := oathkeeper.RuleMatch{
-		URL:     "/resource/<.+>",
+		URL:     "/resource/<[^/]+>",
 		Methods: []string{"GET"},
 	}
 	types := &openapi3.Types{"array"}
@@ -146,7 +146,7 @@ func TestGenerateMatchRuleWithArrayPathParams(t *testing.T) {
 
 func TestGenerateMatchRuleWithObjectPathParams(t *testing.T) {
 	expectedMatchingRule := oathkeeper.RuleMatch{
-		URL:     "/resource/<.+>",
+		URL:     "/resource/<[^/]+>",
 		Methods: []string{"GET"},
 	}
 	types := &openapi3.Types{"object"}
