@@ -27,3 +27,23 @@ jobs:
         with:
           codecov-token: ${{ secrets.CODECOV_TOKEN }}
 
+  integration-test:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      # Builds the real CLI, generates Ory Oathkeeper access rules from a
+      # test OpenAPI document, and loads them into a real, unmodified Ory
+      # Oathkeeper gateway (via Docker, --network host) to exercise them
+      # with real HTTP requests. See test/integration for details.
+      - name: Run integration tests against a real Oathkeeper instance
+        run: go test -tags=integration -v ./test/integration/...
+

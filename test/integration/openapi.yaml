@@ -1,0 +1,36 @@
+openapi: 3.0.2
+info:
+  title: Integration Test API
+  version: "1.0.0"
+paths:
+  /public/{slug}:
+    get:
+      operationId: getPublicSlug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+  /secure/{id}:
+    get:
+      operationId: getSecureResource
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: ok
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

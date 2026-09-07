@@ -1,0 +1,40 @@
+log:
+  level: debug
+  format: json
+
+serve:
+  proxy:
+    port: 4455
+  api:
+    port: 4456
+
+errors:
+  fallback:
+    - json
+  handlers:
+    json:
+      enabled: true
+      config:
+        verbose: true
+
+access_rules:
+  matching_strategy: regexp
+  repositories:
+    - file:///etc/config/oathkeeper/access-rules.json
+
+authenticators:
+  noop:
+    enabled: true
+  jwt:
+    enabled: true
+    config:
+      jwks_urls:
+        - http://127.0.0.1:1/jwks.json
+
+authorizers:
+  allow:
+    enabled: true
+
+mutators:
+  noop:
+    enabled: true
