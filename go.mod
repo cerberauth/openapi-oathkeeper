@@ -8,7 +8,7 @@ require (
 	github.com/cerberauth/x v0.0.0-20260901215913-9d7750841dbb
 	github.com/getkin/kin-openapi v0.149.0
 	github.com/hedhyw/rex v1.1.0
-	github.com/jarcoal/httpmock v1.4.1
+	github.com/jarcoal/httpmock v1.4.2
 	github.com/knadh/koanf/maps v0.1.3
 	github.com/knadh/koanf/parsers/yaml v1.1.1
 	github.com/knadh/koanf/providers/confmap v1.0.1
