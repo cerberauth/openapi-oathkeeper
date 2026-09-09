@@ -29,7 +29,11 @@ var (
 	// stringToken matches a single path segment: it excludes '/' so that
 	// the generated regex cannot expand across segment boundaries and
 	// unintentionally match deeper, unrelated paths (see CWE-284).
-	stringToken  = rex.Common.NotClass(rex.Chars.Single('/')).Repeat().OneOrMore()
+	stringToken = rex.Common.NotClass(rex.Chars.Single('/')).Repeat().OneOrMore()
+	// arrayToken and objectToken match a single path segment, same as stringToken:
+	// arrays and objects are not expected to be split across path segments.
+	arrayToken   = stringToken
+	objectToken  = stringToken
 	defaultToken = stringToken
 )
 
@@ -83,6 +87,10 @@ func createParamsMatchingGroup(name string, params *openapi3.Parameters) string 
 		t = numberToken
 	case paramType.Is("integer"):
 		t = integerToken
+	case paramType.Is("array"):
+		t = arrayToken
+	case paramType.Is("object"):
+		t = objectToken
 	default:
 		t = defaultToken
 	}
