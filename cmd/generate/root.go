@@ -3,7 +3,6 @@ package generate
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 	"net/url"
 	"os"
 	fpath "path/filepath"
@@ -15,8 +14,6 @@ import (
 	"github.com/cerberauth/x/telemetryx"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
 	"gopkg.in/yaml.v3"
 )
 
@@ -32,13 +29,6 @@ var (
 
 	jsonOutput bool
 	yamlOutput bool
-)
-
-var (
-	otelName = "github.com/cerberauth/openapi-oathkeeper/cmd/generate"
-
-	errorReasonAttributeKey = attribute.Key("error_reason")
-	encodingAttributeKey    = attribute.Key("encoding")
 )
 
 func encodeJSON(rules []oathkeeper.Rule) (*bytes.Buffer, error) {
@@ -70,9 +60,6 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 		Use:   "generate",
 		Short: "Generate Ory Oathkeeper rules from an OpenAPI 3 to file or Std output",
 		Run: func(cmd *cobra.Command, args []string) {
-			telemetryMeter := telemetryx.GetMeterProvider().Meter(otelName)
-			telemetryGenerateSuccessCounter, _ := telemetryMeter.Int64Counter("generate.success.counter")
-			telemetryGenerateErrorCounter, _ := telemetryMeter.Int64Counter("generate.error.counter")
 
 			ctx := cmd.Context()
 			var cfg *config.Config
@@ -81,13 +68,11 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 
 			if configFilePath != "" {
 				if _, err = fsx.FileExists(configFilePath); err != nil {
-					telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to read config file")))
-					log.Fatal(err)
+					telemetryx.Fatal(cmd, telemetryx.Reason(err, "failed-to-read-config-file"))
 				}
 				cfg, err = config.New(configFilePath)
 				if err != nil {
-					telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to load config file")))
-					log.Fatal(err)
+					telemetryx.Fatal(cmd, telemetryx.Reason(err, "failed-to-load-config-file"))
 				}
 			} else {
 				cfg = &config.Config{
@@ -102,8 +87,7 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			if fileurl != "" {
 				uri, urlerr := url.Parse(fileurl)
 				if urlerr != nil {
-					telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to parse url")))
-					log.Fatal(urlerr)
+					telemetryx.Fatal(cmd, telemetryx.Reason(urlerr, "failed-to-parse-url"))
 				}
 
 				doc, err = openapi3.NewLoader().LoadFromURI(uri)
@@ -113,51 +97,44 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 				var data []byte
 				data, err = fsx.ReadFile(filepath)
 				if err != nil {
-					telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to read openapi file")))
-					log.Fatal(err)
+					telemetryx.Fatal(cmd, telemetryx.Reason(err, "failed-to-read-openapi-file"))
 				}
 
 				doc, err = openapi3.NewLoader().LoadFromDataWithPath(data, &url.URL{Path: filepath})
 			}
 
 			if err != nil {
-				telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to load openapi file")))
-				log.Fatal(err)
+				telemetryx.Fatal(cmd, telemetryx.Reason(err, "failed-to-load-openapi-file"))
 			}
 
 			g, err := generator.NewGenerator(ctx, doc, cfg)
 			if err != nil {
-				telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to create generator")))
-				log.Fatal(err)
+				telemetryx.Fatal(cmd, telemetryx.Reason(err, "failed-to-create-generator"))
 			}
 
 			rules, err := g.Generate(ctx)
 			if err != nil {
-				telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(errorReasonAttributeKey.String("failed to generate rules")))
-				log.Fatal(err)
+				telemetryx.Fatal(cmd, telemetryx.Reason(err, "failed-to-generate-rules"))
 			}
 
 			var outputBuf *bytes.Buffer
 			var encodeErr error
-			var otelEncodingAttributeValue attribute.KeyValue
+			format := "json"
 			if yamlOutput && !jsonOutput {
-				otelEncodingAttributeValue = encodingAttributeKey.String("yaml")
+				format = "yaml"
 				outputBuf, encodeErr = encodeYAML(rules)
 			} else {
-				otelEncodingAttributeValue = encodingAttributeKey.String("json")
 				outputBuf, encodeErr = encodeJSON(rules)
 			}
 
 			if encodeErr != nil {
-				telemetryGenerateErrorCounter.Add(ctx, 1, metric.WithAttributes(otelEncodingAttributeValue, errorReasonAttributeKey.String("failed to encode rules")))
-				log.Fatal(err)
+				telemetryx.Fatal(cmd, telemetryx.Reason(encodeErr, "failed-to-encode-rules"))
 			}
-
-			telemetryGenerateSuccessCounter.Add(ctx, 1, metric.WithAttributes(otelEncodingAttributeValue))
+			telemetryx.Counter(ctx, "generate.output", 1, format)
 
 			if outputpath != "" {
 				if err = fsx.WriteFile(fpath.Clean(outputpath), outputBuf.Bytes(), 0600); err != nil {
-					log.Fatal(err)
+					telemetryx.Fatal(cmd, err)
 				}
 				return
 			}

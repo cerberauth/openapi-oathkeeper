@@ -9,15 +9,11 @@ import (
 	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/cerberauth/x/telemetryx"
 	"github.com/getkin/kin-openapi/openapi3"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
 )
 
 type Authenticator interface {
 	CreateAuthenticator(s *openapi3.SecurityRequirement) (*oathkeeper.RuleHandler, error)
 }
-
-var otelName = "github.com/cerberauth/openapi-oathkeeper/authenticator"
 
 const handlerJWT = "jwt"
 
@@ -60,12 +56,6 @@ func createConfigFromSecurityScheme(s *openapi3.SecuritySchemeRef) (*config.Auth
 }
 
 func NewAuthenticatorFromSecurityScheme(ctx context.Context, s *openapi3.SecuritySchemeRef, cfg *config.AuthenticatorRuleConfig) (Authenticator, error) {
-	telemetryMeter := telemetryx.GetMeterProvider().Meter(otelName)
-	telemetryAuthenticatorCreatedCounter, _ := telemetryMeter.Int64Counter(
-		"authenticator.created.counter",
-		metric.WithDescription("Number of authenticator created"),
-		metric.WithUnit("{operation}"),
-	)
 
 	if cfg == nil {
 		defaultCfg, defaultCfgErr := createConfigFromSecurityScheme(s)
@@ -98,7 +88,22 @@ func NewAuthenticatorFromSecurityScheme(ctx context.Context, s *openapi3.Securit
 		cfg.Config["trusted_issuers"] = []string{c.Issuer}
 	}
 
-	telemetryAuthenticatorCreatedCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("type", s.Value.Type), attribute.String("handler", s.Value.Scheme)))
+	a, err := NewAuthenticatorDefault(s, cfg)
+	if err == nil {
+		telemetryx.Counter(ctx, "authenticator.created", 1, counterLabel(s.Value))
+	}
+	return a, err
+}
 
-	return NewAuthenticatorDefault(s, cfg)
+// counterLabel names a security scheme for the Argvio counter from a fixed
+// vocabulary, so nothing taken from the OpenAPI document is ever sent.
+func counterLabel(s *openapi3.SecurityScheme) string {
+	switch t := strings.ToLower(s.Type); t {
+	case string(AuthenticatorTypeHttp):
+		return "http-" + telemetryx.Vocab(s.Scheme, "bearer", "basic")
+	case string(AuthenticatorTypeOAuth2), string(AuthenticatorTypeOpenIdConnect):
+		return t
+	default:
+		return telemetryx.Vocab(t, "apikey", "mutualtls")
+	}
 }
