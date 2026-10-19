@@ -940,7 +940,7 @@ The documentation is available as markdown files in the [docs](./docs/openapi-oa
 
 ## Telemetry
 
-The scanner collects anonymous usage data to help improve the tool. This data includes the number of scans performed, number of detected vulnerabilities, and the severity of vulnerabilities. No sensitive information is collected. You can opt-out of telemetry by passing the `--sqa-opt-out` flag.
+The CLI collects anonymous usage data to help improve the tool: which command ran, the names (never the values) of the flags used, how the command exited and how long it took, the CLI version, OS and architecture, and basic resource usage, plus a few counts that never contain your input: the rules generated or failed (by HTTP verb), the kinds of authenticator created and the output format. Interactive runs also include a random install and session identifier; runs in CI are fully anonymous. No tokens, targets, secrets or other input are collected. You can opt out of telemetry by passing the `--sqa-opt-out` flag, or by setting `DO_NOT_TRACK=1` (or `ARGVIO_DISABLED=1`).
 
 ## Roadmap
 
