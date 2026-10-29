@@ -9,13 +9,9 @@ import (
 	"github.com/cerberauth/openapi-oathkeeper/oathkeeper"
 	"github.com/cerberauth/x/telemetryx"
 	"github.com/getkin/kin-openapi/openapi3"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
 )
 
 const handlerAllow = "allow"
-
-var otelName = "github.com/cerberauth/openapi-oathkeeper/generator"
 
 type Generator struct {
 	doc *openapi3.T
@@ -148,29 +144,19 @@ func NewGenerator(ctx context.Context, d *openapi3.T, cfg *config.Config) (*Gene
 }
 
 func (g *Generator) Generate(ctx context.Context) ([]oathkeeper.Rule, error) {
-	telemetryMeter := telemetryx.GetMeterProvider().Meter(otelName)
-	telemetryRuleGeneratedSuccessfullyCounter, _ := telemetryMeter.Int64Counter(
-		"generator.rule_generated_successfully.counter",
-		metric.WithDescription("Number of operations"),
-		metric.WithUnit("{operation}"),
-	)
-	telemetryRuleGenerationFailedCounter, _ := telemetryMeter.Int64Counter(
-		"generator.rule_generation_failed.counter",
-		metric.WithDescription("Number of operations"),
-		metric.WithUnit("{operation}"),
-	)
 
 	rules := []oathkeeper.Rule{}
 	for path, p := range g.doc.Paths.Map() {
 		for verb, o := range p.Operations() {
+			verbLabel := telemetryx.Vocab(verb, "get", "post", "put", "patch", "delete", "head", "options", "trace", "connect")
 			rule, createRuleErr := g.createRule(verb, path, o)
 			if createRuleErr != nil {
-				telemetryRuleGenerationFailedCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("verb", verb)))
+				telemetryx.Counter(ctx, "generator.rules", 1, verbLabel+".failed")
 				return nil, createRuleErr
 			}
 
-			telemetryRuleGeneratedSuccessfullyCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("verb", verb)))
 			rules = append(rules, *rule)
+			telemetryx.Counter(ctx, "generator.rules", 1, verbLabel+".generated")
 		}
 	}
 
