@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/getargvio/argvio/main/schema/metrics/v1.schema.json
+#
+# openapi-oathkeeper's product metrics, as shown on the Argvio Product
+# dashboard. Synced to Argvio on release (.github/workflows/argvio-metrics.yml);
+# see https://github.com/getargvio/argvio/blob/main/docs/metric-catalog.md.
+# Every dimension value is a fixed identifier chosen in code.
+version: 1
+service: openapi-oathkeeper
+metrics:
+  - name: generator.rules
+    kind: counter
+    title: Rules generated
+    description: Oathkeeper rules made from OpenAPI operations, by HTTP method and result. A failed rule stops the generation.
+    dims: [method, result]
+    dim_order:
+      method: [get, post, put, patch, delete, head, options, trace, connect, other]
+      result: [generated, failed]
+  - name: generate.rules
+    kind: value
+    title: Rules per run
+    description: Rules written by one successful generate run.
+  - name: generator.generate
+    kind: duration
+    title: Generation time
+    description: Time to turn the OpenAPI document into rules.
+    direction: down_is_good
+  - name: authenticator.created
+    kind: counter
+    title: Authenticators by security scheme
+    description: Authenticators made from the specs' security schemes.
+    dims: [scheme]
+  - name: generate.output
+    kind: counter
+    title: Output formats
+    description: Successful generate runs by output format and whether the rules went to a file or stdout.
+    dims: [format, destination]
+  - name: generator.rule-failure-rate
+    kind: ratio
+    title: Rule failure rate
+    description: Share of operations whose rule could not be generated.
+    unit: "%"
+    scale: 100
+    direction: down_is_good
+    numerator: { metric: generator.rules, where: { result: failed } }
+    denominator: { metric: generator.rules }

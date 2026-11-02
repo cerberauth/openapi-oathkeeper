@@ -144,25 +144,32 @@ func NewGenerator(ctx context.Context, d *openapi3.T, cfg *config.Config) (*Gene
 	}, nil
 }
 
+// Generator metrics, declared in argvio.metrics.yaml.
+var (
+	rulesCounter     = telemetryx.NewCounter("generator.rules", "method", "result")
+	generateDuration = telemetryx.NewDuration("generator.generate")
+	httpMethods      = []string{"get", "post", "put", "patch", "delete", "head", "options", "trace", "connect"}
+)
+
 func (g *Generator) Generate(ctx context.Context) ([]oathkeeper.Rule, error) {
 	start := time.Now()
 
 	rules := []oathkeeper.Rule{}
 	for path, p := range g.doc.Paths.Map() {
 		for verb, o := range p.Operations() {
-			verbLabel := telemetryx.Vocab(verb, "get", "post", "put", "patch", "delete", "head", "options", "trace", "connect")
+			method := telemetryx.Vocab(verb, httpMethods...)
 			rule, createRuleErr := g.createRule(verb, path, o)
 			if createRuleErr != nil {
-				telemetryx.Counter(ctx, "generator.rules", 1, verbLabel+".failed")
+				rulesCounter.Add(ctx, 1, method, "failed")
 				return nil, createRuleErr
 			}
 
 			rules = append(rules, *rule)
-			telemetryx.Counter(ctx, "generator.rules", 1, verbLabel+".generated")
+			rulesCounter.Add(ctx, 1, method, "generated")
 		}
 	}
 
 	sort.Sort(RulesById(rules))
-	telemetryx.Duration(ctx, "generator.generate", time.Since(start), "")
+	generateDuration.Record(ctx, time.Since(start))
 	return rules, nil
 }

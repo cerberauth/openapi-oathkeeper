@@ -31,6 +31,12 @@ var (
 	yamlOutput bool
 )
 
+// Output metrics, declared in argvio.metrics.yaml.
+var (
+	outputCounter = telemetryx.NewCounter("generate.output", "format", "destination")
+	rulesPerRun   = telemetryx.NewValue("generate.rules", telemetryx.UnitCount)
+)
+
 func encodeJSON(rules []oathkeeper.Rule) (*bytes.Buffer, error) {
 	outputBuf := new(bytes.Buffer)
 	enc := json.NewEncoder(outputBuf)
@@ -130,7 +136,12 @@ func NewGenerateCmd() (generateCmd *cobra.Command) {
 			if encodeErr != nil {
 				telemetryx.Fatal(cmd, telemetryx.Reason(encodeErr, "failed-to-encode-rules"))
 			}
-			telemetryx.Counter(ctx, "generate.output", 1, format)
+			destination := "stdout"
+			if outputpath != "" {
+				destination = "file"
+			}
+			outputCounter.Add(ctx, 1, format, destination)
+			rulesPerRun.Record(ctx, float64(len(rules)))
 
 			if outputpath != "" {
 				if err = fsx.WriteFile(fpath.Clean(outputpath), outputBuf.Bytes(), 0600); err != nil {

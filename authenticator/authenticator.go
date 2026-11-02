@@ -90,10 +90,14 @@ func NewAuthenticatorFromSecurityScheme(ctx context.Context, s *openapi3.Securit
 
 	a, err := NewAuthenticatorDefault(s, cfg)
 	if err == nil {
-		telemetryx.Counter(ctx, "authenticator.created", 1, counterLabel(s.Value))
+		authenticatorsCounter.Add(ctx, 1, counterLabel(s.Value))
 	}
 	return a, err
 }
+
+// authenticatorsCounter counts the authenticators made from security schemes,
+// by scheme (argvio.metrics.yaml).
+var authenticatorsCounter = telemetryx.NewCounter("authenticator.created", "scheme")
 
 // counterLabel names a security scheme for the Argvio counter from a fixed
 // vocabulary, so nothing taken from the OpenAPI document is ever sent.
