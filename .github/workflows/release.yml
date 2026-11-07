@@ -25,6 +25,8 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      ARGVIO_API_KEY: ${{ secrets.ARGVIO_API_KEY }}
 
     permissions:
       contents: write
